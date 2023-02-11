@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Warning_Note.png">
+	<!-- Created with Adobe Animate version 21.0.7.42652 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Warning_Note0000" x="0" y="0" width="200" height="200"/>
+	<SubTexture name="Warning_Note0001" x="200" y="0" width="200" height="200"/>
+	<SubTexture name="Warning_Note0002" x="400" y="0" width="200" height="200"/>
+	<SubTexture name="Warning_Note0003" x="600" y="0" width="200" height="200"/>
+	<SubTexture name="Warning_Note0004" x="800" y="0" width="200" height="200"/>
+	<SubTexture name="Warning_Note0005" x="1000" y="0" width="200" height="200"/>
+	<SubTexture name="Warning_Note0006" x="1200" y="0" width="200" height="200"/>
+	<SubTexture name="Warning_Note0007" x="1400" y="0" width="200" height="200"/>
+</TextureAtlas>

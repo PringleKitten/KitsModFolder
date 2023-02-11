@@ -1,0 +1,31 @@
+{
+	"storyName": "cyber",
+	"difficulties": "Se, Easy, Normal, Hard, Expert+",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"cyber",
+			"bf",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"weekName": "cyber"
+}

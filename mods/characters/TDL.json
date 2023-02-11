@@ -1,0 +1,155 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [
+				140,
+				-100
+			],
+			"anim": "hey",
+			"fps": 24,
+			"name": "WhatYouKnowAboutRollingDownInTheDeep",
+			"indices": []
+		},
+		{
+			"loop": true,
+			"offsets": [
+				110,
+				100
+			],
+			"anim": "singUP-loop",
+			"fps": 24,
+			"name": "TCO Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				100,
+				-46
+			],
+			"anim": "idle",
+			"fps": 24,
+			"name": "TDL Idle Export",
+			"indices": []
+		},
+		{
+			"loop": true,
+			"offsets": [
+				100,
+				-46
+			],
+			"anim": "idle-loop",
+			"fps": 24,
+			"name": "TDL Idle Export",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				242,
+				-250
+			],
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "TDL Down Export",
+			"indices": []
+		},
+		{
+			"loop": true,
+			"offsets": [
+				242,
+				-250
+			],
+			"anim": "singDOWN-loop",
+			"fps": 24,
+			"name": "TDL Down Export",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				288,
+				-120
+			],
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "TDL Left Export",
+			"indices": []
+		},
+		{
+			"loop": true,
+			"offsets": [
+				288,
+				-120
+			],
+			"anim": "singLEFT-loop",
+			"fps": 24,
+			"name": "TDL Left Export",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				202,
+				-106
+			],
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "TDL Right Export",
+			"indices": []
+		},
+		{
+			"loop": true,
+			"offsets": [
+				202,
+				-106
+			],
+			"anim": "singRIGHT-loop",
+			"fps": 24,
+			"name": "TDL Right Export",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				174,
+				30
+			],
+			"anim": "singUP",
+			"fps": 24,
+			"name": "TDL Up Export",
+			"indices": []
+		},
+		{
+			"loop": true,
+			"offsets": [
+				174,
+				30
+			],
+			"anim": "singUP-loop ",
+			"fps": 24,
+			"name": "TDL Up Export",
+			"indices": []
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/TheDarkLord",
+	"position": [
+		0,
+		0
+	],
+	"healthicon": "tdl",
+	"flip_x": false,
+	"healthbar_colors": [
+		235,
+		0,
+		0
+	],
+	"camera_position": [
+		-310,
+		170
+	],
+	"sing_duration": 6.1,
+	"scale": 1
+}

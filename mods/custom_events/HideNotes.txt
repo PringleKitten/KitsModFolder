@@ -1,0 +1,9 @@
+Toggle Note Opacity
+2 Values more multi Use
+
+Value 1: 0 to SHOW ALL NOTES
+Value 1: 1 Toggles OPPONENT Notes
+Value 1: 2 Toggles PLAYER Notes
+
+Value 2: 1 Toggles OPPONENT Notes
+Value 2: 2 Toggles PLAYER Notes

@@ -1,0 +1,155 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				140,
+				-100
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "hey",
+			"indices": [],
+			"name": "WhatYouKnowAboutRollingDownInTheDeep"
+		},
+		{
+			"offsets": [
+				110,
+				100
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "singUP-loop",
+			"indices": [],
+			"name": "TCO Up"
+		},
+		{
+			"offsets": [
+				174,
+				30
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singUP-loop ",
+			"loop": true,
+			"name": "TDL Up"
+		},
+		{
+			"offsets": [
+				174,
+				30
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singUP",
+			"loop": false,
+			"name": "TDL Up"
+		},
+		{
+			"offsets": [
+				100,
+				-46
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "idle",
+			"loop": false,
+			"name": "TDL Idle"
+		},
+		{
+			"offsets": [
+				100,
+				-46
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "idle-loop",
+			"loop": true,
+			"name": "TDL Idle"
+		},
+		{
+			"offsets": [
+				242,
+				-250
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singDOWN",
+			"loop": false,
+			"name": "TDL Down"
+		},
+		{
+			"offsets": [
+				242,
+				-250
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singDOWN-loop",
+			"loop": true,
+			"name": "TDL Down"
+		},
+		{
+			"offsets": [
+				288,
+				-40
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singLEFT",
+			"loop": false,
+			"name": "TDL Left"
+		},
+		{
+			"offsets": [
+				288,
+				-40
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singLEFT-loop",
+			"loop": true,
+			"name": "TDL Left"
+		},
+		{
+			"offsets": [
+				202,
+				-46
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singRIGHT",
+			"loop": false,
+			"name": "TDL Right"
+		},
+		{
+			"offsets": [
+				202,
+				-56
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singRIGHT-loop",
+			"loop": true,
+			"name": "TDL Right"
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/TheDarkLordFlying",
+	"position": [
+		0,
+		0
+	],
+	"healthicon": "tco",
+	"flip_x": false,
+	"healthbar_colors": [
+		235,
+		142,
+		0
+	],
+	"camera_position": [
+		0,
+		0
+	],
+	"sing_duration": 6.1,
+	"scale": 1
+}

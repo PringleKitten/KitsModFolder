@@ -1,0 +1,49 @@
+{
+	"storyName": "Listening to some radio music",
+	"difficulties": "Se, Easy, Normal, Hard, Expert, Expert+",
+	"hideFreeplay": false,
+	"weekBackground": "stage",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"weekCharacters": [
+		"",
+		"bf",
+		"gf"
+	],
+	"songs": [	
+		[
+			"speed-in-my-soul",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"surface-pressure",
+			"mom",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"willow",
+			"mom",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"hideStoryMode": true,
+	"weekName": "radio"
+}

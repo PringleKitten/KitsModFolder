@@ -1,0 +1,10 @@
+Value1: CAM ZOOM
+00=Reset
+1=Game Default Zoom - 2=Game Big Zoom
+anything other than 1-2 is YOUR custom angle
+
+Value2: GAME ZOOM
+00=Reset
+1234=tilt dance - 1111=stops and goes to default
+1=Cam Default Zoom - 2=Cam Big Zoom
+anything other than 1-2 is YOUR custom angle

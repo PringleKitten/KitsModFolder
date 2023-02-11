@@ -1,0 +1,31 @@
+{
+	"storyName": "",
+	"difficulties": "Se, Normal",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"welcome-to-the-internet",
+			"pico",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"weekName": "goodluck"
+}
