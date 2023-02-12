@@ -1,7 +1,0 @@
-Value1 - 
-If 1, then NO CAM ZOOM
-Anything else, zooms normally
-
-Value2 - 
-If 1, then NO UI ZOOM
-Anything else, zooms normally

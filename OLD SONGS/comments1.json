@@ -1,0 +1,31 @@
+{
+    "storyName": "comment1",
+	"difficulties": "Se, Normal, Expert, Expert+, Extra",
+	"hideFreeplay": false,
+	"weekBackground": "stage",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"weekCharacters": [
+		"",
+		"bf",
+		"gf"
+	],
+	"songs": [	
+	    [
+			"losing-my-mind",
+			"bf",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"hideStoryMode": true,
+	"weekName": "comment1"
+}

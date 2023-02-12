@@ -1,4 +1,0 @@
-0 RESET FOR BOTH VALUES
-
-value1: 1 turns HUD off (smoothly); 2 turns HUD back on (if off)
-value2 is same thing but it hides EVERYTHING but notes
