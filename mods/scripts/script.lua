@@ -1,6 +1,7 @@
 local stopcam = false
 local stopui = false
 function onCreate()
+    setProperty('skipArrowStartTween', true)
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
     setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
@@ -65,6 +66,10 @@ function noteMiss()
 end
 
 function onSongStart()
+    noteTweenAlpha("o1",0,0.5,0.001,"quartInOut");
+    noteTweenAlpha("o2",1,0.5,0.001,"quartInOut");
+    noteTweenAlpha("o3",2,0.5,0.001,"quartInOut");
+    noteTweenAlpha("o4",3,0.5,0.001,"quartInOut");
     setPropertyFromClass('ClientPrefs', 'camZooms', true);
     setPropertyFromClass("openfl.Lib", "application.window.title", songName);
 end
@@ -86,12 +91,6 @@ end
 
 function onUpdate(elapsed)
     el = elapsed
-    if curBeat == 4 then
-        noteTweenAlpha("o1",0,0.5,0.001,"quartInOut");
-        noteTweenAlpha("o2",1,0.5,0.001,"quartInOut");
-        noteTweenAlpha("o3",2,0.5,0.001,"quartInOut");
-        noteTweenAlpha("o4",3,0.5,0.001,"quartInOut");
-    end
     if stopui == false then
         doTweenZoom('tweeningZoom', 'camHUD', 1, 0.15, 'quadOut')
     else
