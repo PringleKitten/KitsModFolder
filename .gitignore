@@ -3,6 +3,7 @@ icon.ico
 libvlc.dll
 libvlccore.dll
 lime.ndll
+.gitignore
 PsychEngine.exe
 plugins/
 manifest/
