@@ -1,7 +1,7 @@
 {
-    "storyName": "comment1",
-	"difficulties": "Se, Normal, Expert, Expert+, Extra",
-	"hideFreeplay": false,
+    "storyName": "comments2",
+	"difficulties": "Se, Easy, Normal, Hard, Expert, Expert+",
+	"hideFreeplay": true,
 	"weekBackground": "stage",
 	"freeplayColor": [
 		146,
@@ -16,9 +16,9 @@
 		"gf"
 	],
 	"songs": [	
-	    [
-			"losing-my-mind",
-			"bf",
+		[
+			"",
+			"",
 			[
 				146,
 				113,
@@ -27,5 +27,5 @@
 		]
 	],
 	"hideStoryMode": true,
-	"weekName": "comment1"
+	"weekName": "comments2"
 }
