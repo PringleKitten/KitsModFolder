@@ -9,12 +9,20 @@ function onEvent(name, value1, value2)
                 noteTweenAlpha("o2",1,0.5,0.5,"quartInOut");
                 noteTweenAlpha("o3",2,0.5,0.5,"quartInOut");
                 noteTweenAlpha("o4",3,0.5,0.5,"quartInOut");
+                noteTweenX("x1",0,defaultOpponentStrumX0-1000,0.2,"cubeInOut");
+                noteTweenX("x2",1,defaultOpponentStrumX1-1000,0.2,"cubeInOut");
+                noteTweenX("x3",2,defaultOpponentStrumX2-1000,0.2,"cubeInOut");
+                noteTweenX("x4",3,defaultOpponentStrumX3-1000,0.2,"cubeInOut");
                 ran = false
             else
                 noteTweenAlpha("o1",0,0,0.5,"quartInOut");
                 noteTweenAlpha("o2",1,0,0.5,"quartInOut");
                 noteTweenAlpha("o3",2,0,0.5,"quartInOut");
                 noteTweenAlpha("o4",3,0,0.5,"quartInOut");
+                noteTweenX("x1",0,defaultOpponentStrumX0+1000,0.2,"cubeInOut");
+                noteTweenX("x2",1,defaultOpponentStrumX1+1000,0.2,"cubeInOut");
+                noteTweenX("x3",2,defaultOpponentStrumX2+1000,0.2,"cubeInOut");
+                noteTweenX("x4",3,defaultOpponentStrumX3+1000,0.2,"cubeInOut");
                 ran = true
             end
         elseif value1 == 2 then
@@ -40,6 +48,10 @@ function onEvent(name, value1, value2)
             noteTweenAlpha("o2",1,0.5,0.5,"quartInOut");
             noteTweenAlpha("o3",2,0.5,0.5,"quartInOut");
             noteTweenAlpha("o4",3,0.5,0.5,"quartInOut");
+            noteTweenX("x1",0,defaultOpponentStrumX0+1000,0.2,"cubeInOut");
+            noteTweenX("x2",1,defaultOpponentStrumX1+1000,0.2,"cubeInOut");
+            noteTweenX("x3",2,defaultOpponentStrumX2+1000,0.2,"cubeInOut");
+            noteTweenX("x4",3,defaultOpponentStrumX3+1000,0.2,"cubeInOut");
             ran = false
         end
         if value2 == 1 then
