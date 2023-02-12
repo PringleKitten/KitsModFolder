@@ -33,14 +33,14 @@ function onUpdate()
         setProperty('health', getProperty('health')-.8)
         removeLuaSprite('spacebar')
     end
-    if (canDodge == true and keyPressed('space')) or (botPlay == true and canDodge == true) then
+    if (canDodge == true and keyJustPressed('space')) or (botPlay == true and canDodge == true) then
         Dodged = true
         twice = 0
         removeLuaSprite('spacebar')
         canDodge = false
         setProperty('health', getProperty('health')+.1)
     elseif (canDodge == false and keyJustPressed('space')) then
-        setProperty('health', getProperty('health')-.1)
+        setProperty('health', getProperty('health')-.3)
     end
 end
 
