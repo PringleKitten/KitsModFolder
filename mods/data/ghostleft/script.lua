@@ -1,6 +1,7 @@
 local angleshit = 1;
 local anglevar = 1;
 function onBeatHit()
+    if ClientPrefs.assetMovement == true then
     if curBeat > 95 then
         if curBeat % 2 == 0 then
             angleshit = anglevar;
@@ -15,11 +16,14 @@ function onBeatHit()
         doTweenX('ttrn', 'camGame', -angleshit*8, crochet*0.001, 'linear')
     end
 end
+end
 function opponentNoteHit()
+    if ClientPrefs.healthDrain = true then
         if difficulty >= 2 then
             health = getProperty('health')
             if getProperty('health') > 0.3 then
                 setProperty('health', health- 0.014);
             end
         end
+    end
 end
