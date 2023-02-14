@@ -2,33 +2,31 @@ local stopcam = false
 local stopui = false
 function onCreate()
     setProperty('skipArrowStartTween', true)
+    noteTweenAlpha("o1",0,0.5,0.001,"quartInOut");
+    noteTweenAlpha("o2",1,0.5,0.001,"quartInOut");
+    noteTweenAlpha("o3",2,0.5,0.001,"quartInOut");
+    noteTweenAlpha("o4",3,0.5,0.001,"quartInOut");
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
     setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
+    if ClientPrefs.assetMovement == true then
     if songname == "party-rock" then 
         setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
         setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/1.5)
         setPropertyFromClass("openfl.Lib", "application.window.height", screenHeight/1.5) 
     end
 end
-function opponentNoteHit()
-    if week <= 3 then
-        if difficulty >= 2 then
-            health = getProperty('health')
-            if getProperty('health') > 0.3 then
-                setProperty('health', health- 0.014);
-            end
-        end
-    end
 end
 
 function opponentNoteHit()
+    if ClientPrefs.assetMovement == true then
     if week == 'geometrydash' then
         health = getProperty('health')
         if getProperty('health') > 0.3 then
             setProperty('health', health- 0.02);
         end
     end
+end
 end
 
 function goodNoteHit()
@@ -66,10 +64,6 @@ function noteMiss()
 end
 
 function onSongStart()
-    noteTweenAlpha("o1",0,0.5,0.001,"quartInOut");
-    noteTweenAlpha("o2",1,0.5,0.001,"quartInOut");
-    noteTweenAlpha("o3",2,0.5,0.001,"quartInOut");
-    noteTweenAlpha("o4",3,0.5,0.001,"quartInOut");
     setPropertyFromClass('ClientPrefs', 'camZooms', true);
     setPropertyFromClass("openfl.Lib", "application.window.title", songName);
 end

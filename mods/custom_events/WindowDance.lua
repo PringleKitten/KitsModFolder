@@ -6,6 +6,7 @@ local dance = false
 local v2 = 0
 function onEvent(name, value1, value2)
     if name == "WindowDance" then
+        if ClientPrefs.assetMovement == true then
         value1 = tonumber(value1);
         value2 = tonumber(value2);
         v2 = tonumber(value2);
@@ -17,8 +18,10 @@ function onEvent(name, value1, value2)
             dance = false
         end
     end
+    end
 end
 function onUpdatePost(elapsed)
+    if ClientPrefs.assetMovement == true then
     if dance then
         Elap = Elap + (elapsed*v2)
         setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false)
@@ -27,4 +30,5 @@ function onUpdatePost(elapsed)
     else
         setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
     end
+end
 end

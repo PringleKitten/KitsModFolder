@@ -14,7 +14,9 @@ function onBeatHit()
    if camzoom == true then
       triggerEvent('Add Camera Zoom', 0.24, 0.18);
       health = getProperty('health')
+      if ClientPrefs.healthDrain = true then
       setProperty('health', health- 0.08);
+      end
       characterPlayAnim('bf', 'idle', true);
    end
 end
