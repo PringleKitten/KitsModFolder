@@ -1,5 +1,5 @@
 function opponentNoteHit()
-    if ClientPrefs.healthDrain = true then
+    if getPropertyFromClass('ClientPrefs', 'healthDrain') == true then
         if difficulty >= 2 then
             health = getProperty('health')
             if getProperty('health') > 0.3 then
@@ -10,7 +10,7 @@ function opponentNoteHit()
 end
 
 function goodNoteHit()    
-    if ClientPrefs.healthDrain = true then    
+    if getPropertyFromClass('ClientPrefs', 'healthDrain') == true then    
     if difficulty >= 2 then
         health = getProperty('health')
     if getProperty('health') > 0.3 then
