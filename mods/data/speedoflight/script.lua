@@ -4,7 +4,7 @@ function onBeatHit()
     objectPlayAnimation('bf', 'idle', false);
     setProperty('bf.offset.x',0)
     setProperty('bf.offset.y', 0)
-    if ClientPrefs.assetMovement == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if curBeat >= 40 then
         thing = thing * -1
         doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')

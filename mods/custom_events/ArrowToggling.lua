@@ -2,7 +2,7 @@ local ran = false
 local ran1 = false
 function onEvent(name, value1, value2)
     if name == "ArrowToggling" then
-        if ClientPrefs.assetMovement == true then
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         value1 = tonumber(value1);
         value2 = tonumber(value2);
 

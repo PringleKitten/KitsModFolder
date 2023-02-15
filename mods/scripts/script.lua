@@ -9,7 +9,7 @@ function onCreate()
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
     setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
-    if ClientPrefs.assetMovement == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if songname == "party-rock" then 
         setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
         setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/1.5)
@@ -19,7 +19,7 @@ end
 end
 
 function opponentNoteHit()
-    if ClientPrefs.assetMovement == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if week == 'geometrydash' then
         health = getProperty('health')
         if getProperty('health') > 0.3 then

@@ -1,5 +1,5 @@
 function mysplit (inputstr, sep)
-    if ClientPrefs.assetMovement == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if sep == nil then
         sep = "%s";
     end
@@ -14,7 +14,7 @@ end
 -- Event notes hooks
 function onEvent(name, value1, value2)
     if name == "MoveArrow" then
-        if ClientPrefs.assetMovement == true then
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         local tableee=mysplit(value2,", "); -- Splits value1 into a table
         value1 = tonumber(value1);
         tableee[1] = tonumber(tableee[1]);
