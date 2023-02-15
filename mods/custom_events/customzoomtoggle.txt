@@ -1,0 +1,2 @@
+Value1: 1 turns off my custom zoom
+value2: empty

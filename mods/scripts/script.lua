@@ -9,7 +9,7 @@ function onCreate()
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
     setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
-    if ClientPrefs.assetMovement == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if songname == "party-rock" then 
         setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
         setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/1.5)
@@ -19,7 +19,7 @@ end
 end
 
 function opponentNoteHit()
-    if ClientPrefs.assetMovement == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if week == 'geometrydash' then
         health = getProperty('health')
         if getProperty('health') > 0.3 then
@@ -74,30 +74,18 @@ function onDestroy()
     setPropertyFromClass("openfl.Lib", "application.window.y", 25)
 end
 local el = 0
-function onSectionHit()
-    if stopui == false then
-        doTweenZoom('tweeningZoom', 'camHUD', 1.25, 0.07, 'quadOut')
-    end
-    if stopcam == false then
-        doTweenZoom('tweeningZoomin', 'camGame', 1.25, 0.07, 'quadOut')
-    end
-end
-
-function onUpdate(elapsed)
-    el = elapsed
-    if stopui == false then
-        doTweenZoom('tweeningZoom', 'camHUD', 1, 0.15, 'quadOut')
-    else
-        doTweenZoom('tweeningZoom', 'camHUD', 1, el, 'quadOut')
-    end
-    if stopcam == false then
-        doTweenZoom('tweeningZoomin', 'camGame', 1, 0.15, 'quadOut')
-    else
-        doTweenZoom('tweeningZoomin', 'camGame', 1, el, 'quadOut')
-    end
-end
+local customzoom = true
 
 function onEvent(name, value1, value2)
+    if name == "customzoomtoggle" then
+        value1 = tonumber(value1)
+        if value1 == 1 then
+            customzoom = false
+        else
+            customzoom = true
+        end
+    end
+
     if name == "nozoom" then
         value1 = tonumber(value1);
         value2 = tonumber(value2);
@@ -112,10 +100,35 @@ function onEvent(name, value1, value2)
             stopui = false
         end
         if stopui then
-            doTweenZoom('tweeningZoom', 'camHUD', 1, el, 'quadOut')
+            setPropertyFromClass('ClientPrefs', 'hudZoomSections', false)
         end
         if stopcam then
-            doTweenZoom('tweeningZoomin', 'camGame', 1, el, 'quadOut')
+            setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)
         end
     end
 end
+
+function onSectionHit()
+    if customzoom then
+    if stopui == false then
+        doTweenZoom('tweeningZoom', 'camHUD', 1.25, 0.07, 'quadOut')
+    end
+    if stopcam == false then
+        doTweenZoom('tweeningZoomin', 'camGame', 1.25, 0.07, 'quadOut')
+    end
+end
+end
+
+function onUpdate(elapsed)
+    el = elapsed
+    if customzoom then
+    if stopui == false then
+        doTweenZoom('tweeningZoom', 'camHUD', 1, 0.15, 'quadOut')
+    end
+    if stopcam == false then
+        doTweenZoom('tweeningZoomin', 'camGame', 1, 0.15, 'quadOut')
+    end
+end
+end
+
+
