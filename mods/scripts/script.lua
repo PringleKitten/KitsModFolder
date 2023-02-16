@@ -9,11 +9,13 @@ function onCreate()
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
     setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
+    setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/4)
+    setPropertyFromClass("openfl.Lib", "application.window.height", screenheight/2.25)
+    setPropertyFromClass("openfl.Lib", "application.window.x", screenWidth/2.25)
+    setPropertyFromClass("openfl.Lib", "application.window.y", screenHeight/2.25)
     if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if songname == "party-rock" then 
         setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
-        setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/1.5)
-        setPropertyFromClass("openfl.Lib", "application.window.height", screenHeight/1.5) 
     end
 end
 end
@@ -30,8 +32,10 @@ end
 end
 
 function goodNoteHit()
+
     if songName == "losing-my-mind" then
     else
+        if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
     if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
         setProperty('health', getProperty('health') + 0.01);
     elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
@@ -45,10 +49,12 @@ function goodNoteHit()
     end
     end
 end
+end
 
 function noteMiss()
     if songName == "losing-my-mind" then
     else
+        if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
     if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
         setProperty('health', getProperty('health') - 0.1);
     elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
@@ -62,6 +68,7 @@ function noteMiss()
     end
     end
 end
+end
 
 function onSongStart()
     setPropertyFromClass('ClientPrefs', 'camZooms', true);
@@ -74,15 +81,15 @@ function onDestroy()
     setPropertyFromClass("openfl.Lib", "application.window.y", 25)
 end
 local el = 0
-local customzoom = true
+local customzoom = false
 
 function onEvent(name, value1, value2)
     if name == "customzoomtoggle" then
         value1 = tonumber(value1)
         if value1 == 1 then
-            customzoom = false
-        else
             customzoom = true
+        else
+            customzoom = false
         end
     end
 
@@ -131,4 +138,11 @@ function onUpdate(elapsed)
 end
 end
 
-
+function onDestroy()
+    setPropertyFromClass("openfl.Lib", "application.window.x", screenWidth/2.25)
+    setPropertyFromClass("openfl.Lib", "application.window.y", screenHeight/2.25)
+    setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false)
+    setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
+    setPropertyFromClass("openfl.Lib", "application.window.width", 853.9)
+    setPropertyFromClass("openfl.Lib", "application.window.height", 480)
+end
