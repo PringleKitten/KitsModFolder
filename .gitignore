@@ -1,7 +1,7 @@
 export/release/
 .haxelib/discord_rpc/git/
-	.haxelib/faxe/git/
-	.haxelib/hscript-ex/git/
-	.haxelib/hxvm-luajit/git/
-	.haxelib/linc_lua/git/
-	.haxelib/linc_luajit/git/
+.haxelib/faxe/git/
+.haxelib/hscript-ex/git/
+.haxelib/hxvm-luajit/git/
+.haxelib/linc_lua/git/
+.haxelib/linc_luajit/git/
