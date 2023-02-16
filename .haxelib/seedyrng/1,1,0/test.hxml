@@ -1,5 +1,0 @@
--cp src/
--cp test/
--lib utest
--debug
--main seedyrng.TestAll
