@@ -1,0 +1,4 @@
+-main AliasScript
+-D command=hxp
+-D HXCPP_M32
+-cpp obj

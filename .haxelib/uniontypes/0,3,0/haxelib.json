@@ -1,0 +1,15 @@
+{
+  "name": "uniontypes",
+  "description": "Union types in Haxe, similar to Typescript.",
+  "license": "MIT",
+  "tags": [
+    "cross", "utility"
+  ],
+  "classPath": "src",
+  "contributors": [
+    "ciscoheat"
+  ],
+  "releasenote": "Support for (typedef'd) anonymous structures.",
+  "version": "0.3.0",
+  "dependencies": {}
+}

@@ -1,0 +1,17 @@
+*/.DS_Store
+.DS_Store
+.DS_Store?
+Export/
+*.userprefs
+*.swp
+.idea/
+*.iml
+scripts/*.n
+scripts/*.exe
+scripts/obj
+haxedoc.xml
+.vscode/settings.json
+package-lock.json
+node_modules
+!bin/**/node_modules
+.vscode/

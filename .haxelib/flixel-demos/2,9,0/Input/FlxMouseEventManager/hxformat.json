@@ -1,0 +1,30 @@
+{
+	"lineEnds": {
+		"leftCurly": "both",
+		"rightCurly": "both",
+		"objectLiteralCurly": {
+			"leftCurly": "after"
+		}
+	},
+	"sameLine": {
+		"ifElse": "next",
+		"doWhile": "next",
+		"tryBody": "next",
+		"tryCatch": "next"
+	},
+	"wrapping": {
+		"functionSignature": {
+			"rules": [
+				{
+					"type": "onePerLineAfterFirst",
+					"conditions": [
+						{
+							"cond": "lineLength >= n",
+							"value": 100
+						}
+					]
+				}
+			]
+		}
+	}
+}

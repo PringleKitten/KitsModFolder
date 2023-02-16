@@ -1,0 +1,9 @@
+<project name="selecthxml" url="http://code.google.com/p/selecthxml/" license="BSD">
+    <user name="simn"/>
+    <tag v="cross"/>
+    <tag v="xml"/>
+    <tag v="utility"/>
+    <description>Allows type-safe CSS-style selection on Xml objects.</description>
+    <version name="0.2">Sync to haxe 2.10</version>
+    <depends name="tink_macros"/>
+</project>

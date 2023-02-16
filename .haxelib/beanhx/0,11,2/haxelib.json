@@ -1,0 +1,14 @@
+{
+  "name": "beanhx",
+  "license": "MIT",
+  "tags": ["js","events","dom"],
+  "description": "Externs to the BeanJS lightweight event library for Javascript.",
+  "contributors": ["jason"],
+  "releasenote": "Update for Haxe 3.2 EventHandler changes.",
+  "version": "0.11.2",
+  "url": "https://github.com/jasononeil/beanhx",
+  "classPath": "src/",
+  "dependencies": {
+
+  }
+}
