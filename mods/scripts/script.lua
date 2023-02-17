@@ -74,12 +74,6 @@ function onSongStart()
     setPropertyFromClass('ClientPrefs', 'camZooms', true);
     setPropertyFromClass("openfl.Lib", "application.window.title", songName);
 end
-
-function onDestroy()
-    setPropertyFromClass("openfl.lib", "application.window.borderless", false)
-    setPropertyFromClass("openfl.Lib", "application.window.x", 0)
-    setPropertyFromClass("openfl.Lib", "application.window.y", 25)
-end
 local el = 0
 local customzoom = false
 
