@@ -1,3 +1,4 @@
+if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
 require 'math'
 math.randomseed(os.time())
 
@@ -74,4 +75,5 @@ function onTimerCompleted(tag, loops, loopsLeft)
 		setTextString('timer', loopsLeft)
 		setTextString('timer', FinalBeat - curBeat)
 	end
+end
 end
