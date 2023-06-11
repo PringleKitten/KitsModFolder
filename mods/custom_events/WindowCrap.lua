@@ -1,7 +1,8 @@
+-- If tagged like this it means it breaks if not using full mod with exe
 local movingX = false
 local movingY = false
 function onEvent(name, value1, value2)
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+    --if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if name == "WindowCrap" then
         value1 = tonumber(value1);
         value2 = tonumber(value2);
@@ -32,5 +33,5 @@ function onEvent(name, value1, value2)
             movingY = false
         end
     end
-end
+--end
 end

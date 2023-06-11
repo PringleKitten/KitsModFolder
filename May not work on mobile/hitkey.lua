@@ -1,3 +1,5 @@
+-- If tagged like this it means it breaks if not using full mod with exe
+-- fyi this does not work on mobile unless you have a working keyboard
 require 'math'
 math.randomseed(os.time())
 

@@ -55,7 +55,7 @@ function onUpdate()
     end
 end
 function onUpdatePost(elapsed)
-    if ClientPrefs.assetMovement == true then
+    --if ClientPrefs.assetMovement == true then
     Elap = Elap + (elapsed*4)
     if stop then
     else
@@ -77,7 +77,7 @@ function onUpdatePost(elapsed)
         setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
     end
 end
-end
+--end
 end
 
 function onDestroy()

@@ -1,8 +1,9 @@
+-- If tagged like this it means it breaks if not using full mod with exe
 local ran = false
 local ran1 = false
 function onEvent(name, value1, value2)
     if name == "ArrowToggling" then
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+        --if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         value1 = tonumber(value1);
         value2 = tonumber(value2);
 
@@ -112,5 +113,5 @@ function onEvent(name, value1, value2)
             noteTweenX("x8",7,defaultPlayerStrumX3-323,0.2,"cubeInOut");
         end
     end
-end
+--end
 end

@@ -1,5 +1,6 @@
+-- If tagged like this it means it breaks if not using full mod with exe
 function mysplit (inputstr, sep)
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+    --if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if sep == nil then
         sep = "%s";
     end
@@ -8,13 +9,13 @@ function mysplit (inputstr, sep)
         table.insert(t, str);
     end
     return t;
-end
+--end
 end
 
 -- Event notes hooks
 function onEvent(name, value1, value2)
     if name == "MoveArrow" then
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+        --if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         local tableee=mysplit(value2,", "); -- Splits value1 into a table
         value1 = tonumber(value1);
         tableee[1] = tonumber(tableee[1]);
@@ -82,5 +83,5 @@ function onEvent(name, value1, value2)
             noteTweenAlpha("o8",7,opacity,duration,"quartInOut");
         end
     end
-end
+--end
 end

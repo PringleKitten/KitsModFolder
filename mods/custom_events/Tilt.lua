@@ -1,3 +1,4 @@
+-- If tagged like this it means it breaks if not using full mod with exe
 local ran = false
 local ran1 = false
 local thing = 1
@@ -6,7 +7,7 @@ local v1 = 0
 local v2 = false
 function onEvent(name, value1, value2)
     if name == "Tilt" then
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+        --if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         event = "Tilt"
         value1 = tonumber(value1) or 0;
         value2 = tonumber(value2) or 0;
@@ -70,16 +71,16 @@ function onEvent(name, value1, value2)
                 ran1 = true
         end
     end
-end
+--end
 end
 
 function onBeatHit()
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+    --if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if v2 then
         thing = thing * -1
         doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')
 end
-end
+--end
 end
 
 

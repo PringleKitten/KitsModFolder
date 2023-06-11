@@ -2,7 +2,7 @@ local angleshit = 1;
 local anglevar = 1;
 
 function onBeatHit()
-    if ClientPrefs.assetMovement == true then
+    --if ClientPrefs.assetMovement == true then
     if curBeat >= 132 and curBeat <= 580 then
         if curBeat % 2 == 0 then
             angleshit = anglevar;
@@ -42,5 +42,5 @@ function onBeatHit()
         doTweenAngle('tt', 'camGame', angleshit, stepCrochet*0.002, 'circOut')
         doTweenX('ttrn', 'camGame', -angleshit*8, crochet*0.001, 'linear')
     end
-end
+--end
 end

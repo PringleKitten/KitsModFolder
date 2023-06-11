@@ -1,3 +1,5 @@
+-- If tagged like this it means it breaks if not using full mod with exe
+
 local stopcam = false
 local stopui = false
 function onCreate()
@@ -9,24 +11,24 @@ function onCreate()
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
     setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+    --if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
     if songname == "party-rock" then 
         setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
         setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/1.5)
         setPropertyFromClass("openfl.Lib", "application.window.height", screenHeight/1.5) 
     end
-end
+--end
 end
 
 function opponentNoteHit()
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
-    if week == 'geometrydash' then
-        health = getProperty('health')
-        if getProperty('health') > 0.3 then
-            setProperty('health', health- 0.02);
+    -- if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+        if week == 'geometrydash' then
+            health = getProperty('health')
+            if getProperty('health') > 0.3 then
+                setProperty('health', health- 0.02);
+            end
         end
-    end
-end
+    --end
 end
 
 function goodNoteHit()
@@ -100,10 +102,10 @@ function onEvent(name, value1, value2)
             stopui = false
         end
         if stopui then
-            setPropertyFromClass('ClientPrefs', 'hudZoomSections', false)
+            --setPropertyFromClass('ClientPrefs', 'hudZoomSections', false)
         end
         if stopcam then
-            setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)
+            --setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)
         end
     end
 end
