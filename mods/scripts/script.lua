@@ -2,22 +2,23 @@ local stopcam = false
 local stopui = false
 function onCreate()
     setProperty('skipArrowStartTween', true)
-    noteTweenAlpha("o1",0,0.5,0.001,"quartInOut");
-    noteTweenAlpha("o2",1,0.5,0.001,"quartInOut");
-    noteTweenAlpha("o3",2,0.5,0.001,"quartInOut");
-    noteTweenAlpha("o4",3,0.5,0.001,"quartInOut");
-    setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
-    setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
-    setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
-    setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/4)
-    setPropertyFromClass("openfl.Lib", "application.window.height", screenheight/2.25)
-    setPropertyFromClass("openfl.Lib", "application.window.x", screenWidth/2.25)
-    setPropertyFromClass("openfl.Lib", "application.window.y", screenHeight/2.25)
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
-    if songname == "party-rock" then 
-        setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
+    noteTweenAlpha("o1",0,0.5,0.001,"quartInOut")
+    noteTweenAlpha("o2",1,0.5,0.001,"quartInOut")
+    noteTweenAlpha("o3",2,0.5,0.001,"quartInOut")
+    noteTweenAlpha("o4",3,0.5,0.001,"quartInOut")
+    if getPropertyFromClass("openfl.Lib", "application.window.height") < 50 or getPropertyFromClass("openfl.Lib", "application.window.width") < 50 then
+        setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/4)
+        setPropertyFromClass("openfl.Lib", "application.window.height", screenheight/2.25)
     end
-end
+    if getPropertyFromClass("openfl.Lib", "application.window.x") > 10 or getPropertyFromClass("openfl.Lib", "application.window.x") < 0 then
+        setPropertyFromClass("openfl.Lib", "application.window.x", screenWidth/2.25)
+        setPropertyFromClass("openfl.Lib", "application.window.y", screenHeight/2.25)
+    end
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+        if songname == "party-rock" then 
+            setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
+        end
+    end
 end
 
 function opponentNoteHit()
@@ -25,7 +26,7 @@ function opponentNoteHit()
     if week == 'geometrydash' then
         health = getProperty('health')
         if getProperty('health') > 0.3 then
-            setProperty('health', health- 0.02);
+            setProperty('health', health- 0.02)
         end
     end
 end
@@ -37,15 +38,15 @@ function goodNoteHit()
     else
         if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
     if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
-        setProperty('health', getProperty('health') + 0.01);
+        setProperty('health', getProperty('health') + 0.01)
     elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
-        setProperty('health', getProperty('health') + 0.02);
+        setProperty('health', getProperty('health') + 0.02)
     elseif getProperty('ratingPercent') < 0.8 and getProperty('ratingPercent') > 0.75 then
-        setProperty('health', getProperty('health') + 0.03);
+        setProperty('health', getProperty('health') + 0.03)
     elseif getProperty('ratingPercent') < 0.7 and getProperty('ratingPercent') > 0.65 then
-        setProperty('health', getProperty('health') + 0.04);
+        setProperty('health', getProperty('health') + 0.04)
     elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0 then
-        setProperty('health', getProperty('health') + 0.05);
+        setProperty('health', getProperty('health') + 0.05)
     end
     end
 end
@@ -56,23 +57,25 @@ function noteMiss()
     else
         if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
     if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
-        setProperty('health', getProperty('health') - 0.1);
+        setProperty('health', getProperty('health') - 0.1)
     elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
-        setProperty('health', getProperty('health') - 0.12);
+        setProperty('health', getProperty('health') - 0.12)
     elseif getProperty('ratingPercent') < 0.67 and getProperty('ratingPercent') > 0.63 then
-        setProperty('health', getProperty('health') - 0.16);
+        setProperty('health', getProperty('health') - 0.16)
     elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0.55 then
-        setProperty('health', getProperty('health') - 0.2);
+        setProperty('health', getProperty('health') - 0.2)
     elseif getProperty('ratingPercent') < 0.53 and getProperty('ratingPercent') > 0 then
-        setProperty('health', getProperty('health') - 0.23);
+        setProperty('health', getProperty('health') - 0.23)
     end
     end
 end
 end
 
 function onSongStart()
-    setPropertyFromClass('ClientPrefs', 'camZooms', true);
-    setPropertyFromClass("openfl.Lib", "application.window.title", songName);
+    setPropertyFromClass('ClientPrefs', 'camZooms', true)
+    setPropertyFromClass("openfl.Lib", "application.window.title", songName)
+    setPropertyFromClass('ClientPrefs', 'hudZoomSections', true)
+    setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)
 end
 local el = 0
 local customzoom = false
@@ -88,8 +91,8 @@ function onEvent(name, value1, value2)
     end
 
     if name == "nozoom" then
-        value1 = tonumber(value1);
-        value2 = tonumber(value2);
+        value1 = tonumber(value1)
+        value2 = tonumber(value2)
         if value1 == 1 then
             stopcam = true
         else
@@ -133,10 +136,11 @@ end
 end
 
 function onDestroy()
-    setPropertyFromClass("openfl.Lib", "application.window.x", screenWidth/2.25)
-    setPropertyFromClass("openfl.Lib", "application.window.y", screenHeight/2.25)
-    setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false)
-    setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
-    setPropertyFromClass("openfl.Lib", "application.window.width", 853.9)
-    setPropertyFromClass("openfl.Lib", "application.window.height", 480)
+    if getPropertyFromClass("openfl.Lib", "application.window.fullscreen") == false then 
+        setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
+        setPropertyFromClass("openfl.Lib", "application.window.x", 60)
+        setPropertyFromClass("openfl.Lib", "application.window.y", 60)
+        setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/0.72)
+        setPropertyFromClass("openfl.Lib", "application.window.height", screenHeight/0.72)
+    end
 end
