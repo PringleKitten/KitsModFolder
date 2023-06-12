@@ -6,16 +6,8 @@ function onCreate()
     noteTweenAlpha("o2",1,0.5,0.001,"quartInOut")
     noteTweenAlpha("o3",2,0.5,0.001,"quartInOut")
     noteTweenAlpha("o4",3,0.5,0.001,"quartInOut")
-    if getPropertyFromClass("openfl.Lib", "application.window.height") < 50 or getPropertyFromClass("openfl.Lib", "application.window.width") < 50 then
-        setPropertyFromClass("openfl.Lib", "application.window.width", screenWidth/4)
-        setPropertyFromClass("openfl.Lib", "application.window.height", screenheight/2.25)
-    end
-    if getPropertyFromClass("openfl.Lib", "application.window.x") > 10 or getPropertyFromClass("openfl.Lib", "application.window.x") < 0 then
-        setPropertyFromClass("openfl.Lib", "application.window.x", screenWidth/2.25)
-        setPropertyFromClass("openfl.Lib", "application.window.y", screenHeight/2.25)
-    end
     if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
-        if songname == "party-rock" then 
+        if songName == "party-rock" then 
             setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
         end
     end
@@ -71,11 +63,11 @@ function noteMiss()
 end
 end
 
-function onSongStart()
-    setPropertyFromClass('ClientPrefs', 'camZooms', true)
+function onSongStart()    
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)
     setPropertyFromClass('ClientPrefs', 'hudZoomSections', true)
     setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)
+    setProperty('camZooms', true)
 end
 local el = 0
 local customzoom = false
@@ -97,17 +89,19 @@ function onEvent(name, value1, value2)
             stopcam = true
         else
             stopcam = false
+            setProperty('camZoomingMult', 1)
         end
         if value2 == 1 then
             stopui = true
         else
             stopui = false
+            setProperty('camZoomingMult', 1)
         end
         if stopui then
-            setPropertyFromClass('ClientPrefs', 'hudZoomSections', false)
+            setProperty('camZoomingMult', 0)
         end
         if stopcam then
-            setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)
+            setProperty('camZoomingMult', 0)
         end
     end
 end

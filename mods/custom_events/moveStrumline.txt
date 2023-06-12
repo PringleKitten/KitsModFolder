@@ -1,4 +1,6 @@
 Change Note Position
 
-Value 1: Note (0-7)
-Value 2: x value, y value, rotation, opacity (0-1), duration
+Value 1
+"opponent" for opponent strumline
+"player" for player strumline
+v2: x, y
