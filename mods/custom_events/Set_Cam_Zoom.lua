@@ -2,12 +2,25 @@ function onEvent(name,value1,value2)
 
     if name == "Set_Cam_Zoom" then
         
-        setProperty("defaultCamZoom",value1) 
-        if not value1 == '' then
-            setProperty("camGame.zoom",value1) 
+        if value2 == '' then
+      	  setProperty("defaultCamZoom",value1)
+	debugPrint(value2 )
+	else
+            doTweenZoom('camz','camGame',tonumber(value1),tonumber(value2),'sineInOut')
 	end
-            
     end
+
+
+end
+
+function onTweenCompleted(name)
+
+if name == 'camz' then
+
+
+      	 setProperty("defaultCamZoom",getProperty('camGame.zoom')) 
+
+end
 
 
 end

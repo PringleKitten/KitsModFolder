@@ -1,0 +1,6 @@
+Change Note Position
+
+Value 1
+"opponent" for opponent strumline
+"player" for player strumline
+v2: x, y

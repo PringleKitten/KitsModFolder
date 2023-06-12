@@ -1,6 +1,9 @@
 -- If tagged like this it means it breaks if not using full mod with exe
 local ran = false
 local ran1 = false
+local xx1 = false
+local xx2 = false
+local xx3 = false
 function onEvent(name, value1, value2)
     if name == "ArrowToggling" then
         --if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
@@ -61,6 +64,46 @@ function onEvent(name, value1, value2)
                 setProperty('iconP1.y',570)
                 setProperty('iconP2.y', 570)
                 ran = false
+                end
+            else
+                if value1 == 10 then
+                    if xx1 then
+                        noteTweenX("x5",4,defaultPlayerStrumX0-323,0.1,"cubeInOut");
+                        noteTweenX("x8",7,defaultPlayerStrumX3-323,0.1,"cubeInOut");
+                        xx1 = false
+                    else
+                        noteTweenX("x5",4,defaultPlayerStrumX3-323,0.1,"cubeInOut");
+                        noteTweenX("x8",7,defaultPlayerStrumX0-323,0.1,"cubeInOut");
+                        xx1 = true
+                    end
+                else
+                    if value1 == 11 then
+                        if xx2 then
+                            noteTweenX("x6",5,defaultPlayerStrumX1-323,0.1,"cubeInOut");
+                            noteTweenX("x7",6,defaultPlayerStrumX2-323,0.1,"cubeInOut");
+                            xx2 = false
+                        else
+                            noteTweenX("x6",5,defaultPlayerStrumX2-323,0.1,"cubeInOut");
+                            noteTweenX("x7",6,defaultPlayerStrumX1-323,0.1,"cubeInOut");
+                           xx2 = true
+                        end
+                    else
+                        if value1 == 12 then
+                            if xx3 then
+                                noteTweenX("x5",4,defaultPlayerStrumX0-323,0.1,"cubeInOut");
+                                noteTweenX("x8",7,defaultPlayerStrumX3-323,0.1,"cubeInOut");
+                                noteTweenX("x6",5,defaultPlayerStrumX1-323,0.1,"cubeInOut");
+                                noteTweenX("x7",6,defaultPlayerStrumX2-323,0.1,"cubeInOut");
+                                xx3 = false
+                            else
+                                noteTweenX("x5",4,defaultPlayerStrumX3-323,0.1,"cubeInOut");
+                                noteTweenX("x8",7,defaultPlayerStrumX0-323,0.1,"cubeInOut");
+                                noteTweenX("x6",5,defaultPlayerStrumX2-323,0.1,"cubeInOut");
+                                noteTweenX("x7",6,defaultPlayerStrumX1-323,0.1,"cubeInOut");
+                                xx3 = true
+                            end
+                        end
+                    end
                 end
             end
         end

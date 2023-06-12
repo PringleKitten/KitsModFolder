@@ -70,8 +70,8 @@ function onEvent(name, value1, value2)
                 doTweenAngle('GUI7tween', 'camGame', -value2, 0.3, 'bounceOut');
                 ran1 = true
         end
-    end
---end
+    --end
+end
 end
 
 function onBeatHit()
