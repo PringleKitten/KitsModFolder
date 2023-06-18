@@ -1,6 +1,19 @@
 local stopcam = false
 local stopui = false
 function onCreate()
+    makeLuaText('st', 'l', '800', 400,450)
+    addLuaText('st')
+    setTextSize('st', 50)
+    setTextAlignment('st', 'center')
+    setProperty('st.x', (screenWidth/2)-(getProperty('st.width')/2))
+    setObjectCamera('st', 'other')
+    setProperty('st.alpha', 0)
+    makeLuaSprite('bars', 'me/popup/bars', 0,0)
+    setObjectCamera('bars', 'other')
+    addLuaSprite('bars')
+    setProperty('bars.scale.x', 2)
+    setProperty('bars.scale.y', 2)
+    setProperty('bars.alpha', 0)
     setProperty('skipArrowStartTween', true)
     noteTweenAlpha("o1",0,0.5,0.001,"quartInOut")
     noteTweenAlpha("o2",1,0.5,0.001,"quartInOut")
@@ -107,13 +120,14 @@ function onEvent(name, value1, value2)
     end
 end
 
+
 function onSectionHit()
     if customzoom then
         if stopui == false then
-            doTweenZoom('tweeningZoom', 'camHUD', 1.25, 0.07, 'quadOut')
+            --doTweenZoom('tweeningZoom', 'camHUD', 1.25, 0.07, 'quadOut')
         end
         if stopcam == false then
-            doTweenZoom('tweeningZoomin', 'camGame', 1.25, 0.07, 'quadOut')
+            --doTweenZoom('tweeningZoomin', 'camGame', 1.25, 0.07, 'quadOut')
         end
     end
 end

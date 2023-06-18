@@ -81,4 +81,3 @@ function onTimerCompleted(tag, loops, loopsLeft)
 		end
 	end
 end
-end

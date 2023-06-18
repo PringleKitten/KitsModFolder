@@ -1,0 +1,5 @@
+v1: bars size
+9999 = set bars to hide everything
+8888 = set bars to NOT hide hud
+
+v2: time to resize
