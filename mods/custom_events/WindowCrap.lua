@@ -21,15 +21,18 @@ function onEvent(name, value1, value2)
                     else 
                     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
                 end
+            elseif value1 == 5 then
+                setPropertyFromClass("openfl.Lib", "application.window.angle", value2)
+            
         end
         if movingX then
             value2 = getPropertyFromClass("openfl.Lib", "application.window.x") + value2
             setPropertyFromClass("openfl.Lib", "application.window.x", value2)
-            movingX = false
+
             elseif movingY then
             value2 = getPropertyFromClass("openfl.Lib", "application.window.y") + value2
             setPropertyFromClass("openfl.Lib", "application.window.y", value2)
-            movingY = false
+
         end
     end
 end

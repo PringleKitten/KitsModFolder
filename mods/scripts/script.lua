@@ -1,6 +1,40 @@
 local stopcam = false
 local stopui = false
+function onUpdate()
+    if runHaxeCode("return FlxG.keys.firstJustPressed();") then
+        if songName ~= 'listen' then
+            f = runHaxeCode("return FlxG.keys.firstJustPressed();")
+
+            if getPropertyFromClass('flixel.FlxG', 'keys.justPressed.R') then
+                uhoh = 1
+            elseif uhoh == 1 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.E') then
+                uhoh = 2
+            
+            elseif uhoh == 2 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.B') then
+                uhoh = 3
+            
+            elseif uhoh == 3 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.E') then
+                uhoh = 4
+            
+            elseif uhoh == 4 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.C') then
+                uhoh = 5
+            
+            elseif uhoh == 5 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.C') then
+                uhoh = 6
+            
+            elseif uhoh == 6 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.A') then
+                loadSong('listen', 1);
+            elseif f > 0 then
+                    if f ~= 82 and f ~= 69 and f ~= 66 and f ~= 67 and f ~= 65 then
+                        uhoh = 0
+                    end
+                end
+        end
+    end
+end
+
 function onCreate()
+    setProperty('skipArrowStartTween', true)
     makeLuaText('st', 'l', '800', 400,450)
     addLuaText('st')
     setTextSize('st', 50)
@@ -134,4 +168,35 @@ end
 
 function onDestroy()
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
+end
+
+function onCreatePost()
+    setProperty('healthBar.numDivisions', 10000)
+end
+
+local flip = false
+local percent = 50
+function onUpdatePost(e)
+    flip = getProperty('healthBar.flipX') or getProperty('healthBar.angle') == 180 or getProperty('healthBar.scale.x') == -1
+
+    percent = math.lerp(percent, math.max((getProperty('health') * 50), 0), (e * 10))
+    setProperty('healthBar.percent', percent)
+    if percent > 100 then percent = 100 end
+
+    local usePer = (flip and percent or remap(percent, 0, 100, 100, 0)) * 0.01
+    local part1 = getProperty('healthBar.x') + ((getProperty('healthBar.width')) * usePer)
+    local iconParts = {part1 + (150 * getProperty('iconP1.scale.x') - 150) / 2 - 26, part1 - (150 * getProperty('iconP2.scale.x')) / 2 - 26 * 2}
+
+    for i = 1, 2 do
+        setProperty('iconP'..i..'.x', iconParts[flip and ((i % 2) + 1) or i])
+        setProperty('iconP'..i..'.flipX', flip)
+    end
+end
+
+function math.lerp(a, b, t)
+    return (b - a) * t + a;
+end
+
+function remap(v, str1, stp1, str2, stp2)
+	return str2 + (v - str1) * ((stp2 - str2) / (stp1 - str1));
 end

@@ -1,9 +1,9 @@
 function onEvent(name, value1)
     if name == "Offset" then
-        local asdlkj = 0
+        asdlkj = 0
         asdlkj = getPropertyFromClass('ClientPrefs', 'noteOffset')
         value1 = tonumber(value1)
-        setPropertyFromClass('ClientPrefs', 'noteOffset', value1)
+        setPropertyFromClass('ClientPrefs', 'noteOffset', asdlkj+value1)
     end
 end
 

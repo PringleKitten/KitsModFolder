@@ -1,4 +1,9 @@
 0 RESET FOR BOTH VALUES
 
 value1: 1 turns HUD off (smoothly); 2 turns HUD back on (if off)
-value2 is same thing but it hides EVERYTHING but notes
+
+v2
+1-Hide all but notes
+2-Show Everything
+3-Hide all but notes and healthbar
+4-Hide all but Healthbar
