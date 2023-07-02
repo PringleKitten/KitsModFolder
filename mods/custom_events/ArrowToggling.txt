@@ -1,4 +1,4 @@
-60 RESET with visible notes for both sides
+60 RESET with visible notes for both sides v1 and v2
 
 Value1: 0 to RESET -OR- 1 Toggle ScrollMode
 

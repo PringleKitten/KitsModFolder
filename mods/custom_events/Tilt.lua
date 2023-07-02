@@ -1,6 +1,7 @@
 local ran = false
 local ran1 = false
 local thing = 1
+local thing2 = 1
 local event = 0
 local v1 = 0
 local v2 = false
@@ -35,6 +36,12 @@ function onEvent(name, value1, value2)
             else
                 doTweenAngle('GUI3tween', 'camHUD', -value1, 0.3, 'bounceOut');
                 ran = true
+        elseif value1 == 1234 then
+            v1 = true
+        elseif value1 == 1111 then
+            v1 = false
+            value1 = 0
+            value2 = 0
         end
 
         if value2 == 00 then
@@ -75,11 +82,15 @@ end
 
 function onBeatHit()
     if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
-    if v2 then
-        thing = thing * -1
-        doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')
-end
-end
+        if v2 then
+            thing = thing * -1
+            doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')
+        end
+        if v1 then
+            thing2 = thing2 * -1
+            doTweenAngle('rotate', 'camHUD', thing2 * 5, crochet / 1000, 'quadInOut')
+        end
+    end
 end
 
 

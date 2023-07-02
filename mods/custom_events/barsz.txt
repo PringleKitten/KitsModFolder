@@ -1,4 +1,6 @@
-v1: bars size
+v1: 1 = ON | 0 = OFF
+
+These turn it on automatically:
 9999 = set bars to hide everything
 8888 = set bars to NOT hide hud
 

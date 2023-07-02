@@ -1,2 +1,4 @@
-value1: 1 = ON 2 = OFF
+      V1:
+1 = ON | 2 = OFF
+
 Kinda buggy idfk why

@@ -1,2 +1,2 @@
-Value 1 = 1 make transparent
-0 = undo
+		V1:
+1 = make transparent  |  0 = undo
