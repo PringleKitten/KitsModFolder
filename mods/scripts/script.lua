@@ -83,7 +83,6 @@ function goodNoteHit()
                 setProperty('health', getProperty('health') + 0.05)
             end
         end
-    end
 end
 
 function noteMiss()
@@ -102,7 +101,6 @@ function noteMiss()
                 setProperty('health', getProperty('health') - 0.23)
             end
         end
-    end
 end
 
 function onSongStart()
