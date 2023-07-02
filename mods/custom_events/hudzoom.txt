@@ -1,6 +1,6 @@
-Sets Camera Zoom
+Sets HUD Zoom
 
-Value 1: Cam zoom
+V1: HUD Zoom Value
 
-Value 2: if blank, it will smoothly zoom regularly,
-otherwise duration of time you set
+V2: Blank zooms normally
+Your value is how long it takes to zoom

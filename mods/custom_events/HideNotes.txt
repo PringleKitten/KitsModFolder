@@ -1,9 +1,10 @@
 Toggle Note Opacity
-2 Values more multi Use
 
-Value 1: 0 to SHOW ALL NOTES
-Value 1: 1 Toggles OPPONENT Notes
-Value 1: 2 Toggles PLAYER Notes
-
-Value 2: 1 Toggles OPPONENT Notes
-Value 2: 2 Toggles PLAYER Notes
+V1 Variables:
+0 SHOW ALL NOTES
+0+ SHOW ALL NOTES at full opac
+1 Toggles OPPONENT Notes
+1+ Toggle but OPPONENT shows notes at full opacity
+2 Toggles PLAYER Notes
+2+ Toggle but shows PLAYER notes at half opacity
+**V2 Variables are the same**

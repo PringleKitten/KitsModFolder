@@ -1,5 +1,3 @@
--- If tagged like this it means it breaks if not using full mod with exe
--- fyi this does not work on mobile unless you have a working keyboard
 require 'math'
 math.randomseed(os.time())
 
@@ -25,6 +23,7 @@ function onCreate()
 end
 
 function onUpdate()
+
 	setTextString('key', keytopress)
 	setProperty('timer.x', (screenWidth/2)-(getProperty('timer.width')/2))
 	
@@ -51,10 +50,12 @@ function onUpdate()
 		setProperty('timer.alpha', 0)
 		setProperty('boyfriend.stunned', false)
 	end
+
 end
 
 function onEvent(name, value1, value2)
 	if name == 'hitkey' then
+
 		
 		setTextAlignment('pressit', 'center')
 
@@ -68,12 +69,15 @@ function onEvent(name, value1, value2)
 		oldBeat = curBeat
 		FinalBeat = oldBeat + time
 		setTextString('timer', time)
-	end
+
+end
 end
 
 function onTimerCompleted(tag, loops, loopsLeft)
 	if tag == 'hitkey' then
+
 		setTextString('timer', loopsLeft)
 		setTextString('timer', FinalBeat - curBeat)
+
 	end
 end
