@@ -1,0 +1,6 @@
+Sets HUD Zoom
+
+V1: HUD Zoom Value
+
+V2: Blank zooms normally
+Your value is how long it takes to zoom

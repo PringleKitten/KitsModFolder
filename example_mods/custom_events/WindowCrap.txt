@@ -1,7 +1,8 @@
-Value1: 
+	V1: 
 1=Xaxis 2=Yaxis
 3=FullScreen 4=Borderless
 
-Value2: 
-X Y Coordinates are additive to current
-for settings: 1=True anythingElse/Empty=False
+	V2:
+*Y Coordinates are additive to current*
+     Settings:
+1=True  |  AnythingElse/Empty=False

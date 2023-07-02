@@ -1,4 +1,8 @@
-0 RESET FOR BOTH VALUES
+V1: 1 Turns HUD off | 2 Turns HUD back on
 
-value1: 1 turns HUD off (smoothly); 2 turns HUD back on (if off)
-value2 is same thing but it hides EVERYTHING but notes
+V2:
+1 = Show ONLY notes | 1+ = HIDE ALL NOTES
+2 = Show ONLY Notes+HealthBar | 3 = Show ONLY HealthBar
+4 = ALWAYS Hide Combo
+4+ = ALWAYS Show Combo
+4++ = Undo ALWAYS Trigger

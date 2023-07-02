@@ -1,8 +1,8 @@
-Toggle scroll types
-::Downscroll/Upscroll
-::LeftSide/RightSide
+60 RESET with visible notes for both sides v1 and v2
 
 Value1: 0 to RESET -OR- 1 Toggle ScrollMode
 
 Value2: 0 to RESET -OR- 1 Toggle Playing Side
-NEW 3 = MIDDLE SCROLL
+3 = MIDDLE SCROLL
+90 = Arrow Dance ON
+91 = Arrow Dance OFF

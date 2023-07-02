@@ -3,11 +3,11 @@ function onCreate()
     addHaxeLibrary('Event', 'openfl.events')
 end
 local videoSprites = {}
-function makeVideoSprite(tag, videoPath, x, y, camera)
+function makeVideoSprite(tag, videoPath, x, y, camera, aa, bb)
     makeLuaSprite(tag, '', x, y)
     setObjectCamera(tag, camera)
     addLuaSprite(tag, false)
-    scaleObject(tag, 0.667, 0.667)
+    scaleObject(tag, aa, bb)
     runHaxeCode([[
         ]]..tag..[[= new MP4Handler();
         ]]..tag..[[.playVideo(Paths.video("]]..videoPath..[["));

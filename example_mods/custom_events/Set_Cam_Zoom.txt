@@ -1,6 +1,6 @@
-Sets Camera Zoom
+Sets Game/BG Zoom
 
-Value 1: Cam zoom
+V1: Game/BG Zoom Value
 
-Value 2: if blank, it will smoothly zoom regularly,
-otherwise it will do an instant zoom
+V2: Blank zooms normally
+Your value is how long it takes to zoom

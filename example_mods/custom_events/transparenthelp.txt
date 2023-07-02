@@ -1,0 +1,2 @@
+		V1:
+1 = make transparent  |  0 = undo

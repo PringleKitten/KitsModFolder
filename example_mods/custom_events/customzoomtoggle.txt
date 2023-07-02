@@ -1,4 +1,3 @@
-Value1: 1 turns on zoom each section even if opponent hasn't played
-note: pretty buggy for other zooming events
-
-value2: nothing
+Value1: 1 turns on zoom each section even if opponent dont play
+note: kinda buggy with zoom events
+value2: empty
