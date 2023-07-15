@@ -1,38 +1,5 @@
 local stopcam = false
 local stopui = false
-function onUpdate()
-    if runHaxeCode("return FlxG.keys.firstJustPressed();") then
-        if songName ~= 'listen' then
-            f = runHaxeCode("return FlxG.keys.firstJustPressed();")
-
-            if getPropertyFromClass('flixel.FlxG', 'keys.justPressed.R') then
-                uhoh = 1
-            elseif uhoh == 1 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.E') then
-                uhoh = 2
-            
-            elseif uhoh == 2 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.B') then
-                uhoh = 3
-            
-            elseif uhoh == 3 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.E') then
-                uhoh = 4
-            
-            elseif uhoh == 4 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.C') then
-                uhoh = 5
-            
-            elseif uhoh == 5 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.C') then
-                uhoh = 6
-            
-            elseif uhoh == 6 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.A') then
-                loadSong('listen', 1);
-            elseif f > 0 then
-                    if f ~= 82 and f ~= 69 and f ~= 66 and f ~= 67 and f ~= 65 then
-                        uhoh = 0
-                    end
-                end
-        end
-    end
-end
-
 function onCreate()
     setProperty('skipArrowStartTween', true)
     makeLuaText('st', 'l', '800', 400,450)
