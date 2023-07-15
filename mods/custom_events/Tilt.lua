@@ -3,7 +3,7 @@ local ran1 = false
 local thing = 1
 local thing2 = 1
 local event = 0
-local v1 = 0
+local v1 = false
 local v2 = false
 function onEvent(name, value1, value2)
     if name == "Tilt" then
@@ -30,18 +30,18 @@ function onEvent(name, value1, value2)
                 doTweenAngle('GUI2tween', 'camHUD', -30, 0.3, 'bounceOut');
                 ran = true
             end
-        elseif ran then
-                doTweenAngle('GUI3tween', 'camHUD', value1, 0.3, 'bounceOut');
-                ran = false
-            else
-                doTweenAngle('GUI3tween', 'camHUD', -value1, 0.3, 'bounceOut');
-                ran = true
         elseif value1 == 1234 then
             v1 = true
         elseif value1 == 1111 then
             v1 = false
             value1 = 0
             value2 = 0
+        elseif ran then
+                doTweenAngle('GUI3tween', 'camHUD', value1, 0.3, 'bounceOut');
+                ran = false
+            else
+                doTweenAngle('GUI3tween', 'camHUD', -value1, 0.3, 'bounceOut');
+                ran = true
         end
 
         if value2 == 00 then
