@@ -6,7 +6,7 @@ function onEvent(name, value1, value2)
             setProperty('bars.alpha', 1);
             doTweenY('ba', 'bars.scale', 1, value2, 'quadInOut')
         elseif value1 == 0 then
-            doTweenY('ba1', 'bars.scale', 0, value2, 'quadInOut')
+            doTweenY('ba1', 'bars.scale', 3, value2, 'quadInOut')
         end
         if value1 == 8888 then
             setObjectCamera('bars', 'hud')

@@ -53,54 +53,36 @@ function onCreate()
     noteTweenAlpha("o2",1,0.5,0.001,"quartInOut")
     noteTweenAlpha("o3",2,0.5,0.001,"quartInOut")
     noteTweenAlpha("o4",3,0.5,0.001,"quartInOut")
-        if songName == "party-rock" then 
-            setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false) 
-    end
-end
-
-function opponentNoteHit()
-        if week == 'geometrydash' then
-            health = getProperty('health')
-            if getProperty('health') > 0.3 then
-                setProperty('health', health- 0.02)
-        end
-    end
 end
 
 function goodNoteHit()
-    if songName == "losing-my-mind" then
-    else
-
-            if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
-                setProperty('health', getProperty('health') + 0.01)
-            elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
-                setProperty('health', getProperty('health') + 0.02)
-            elseif getProperty('ratingPercent') < 0.8 and getProperty('ratingPercent') > 0.75 then
-                setProperty('health', getProperty('health') + 0.03)
-            elseif getProperty('ratingPercent') < 0.7 and getProperty('ratingPercent') > 0.65 then
-                setProperty('health', getProperty('health') + 0.04)
-            elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0 then
-                setProperty('health', getProperty('health') + 0.05)
-            end
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
+        if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
+            setProperty('health', getProperty('health') + 0.01)
+        elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
+            setProperty('health', getProperty('health') + 0.02)
+        elseif getProperty('ratingPercent') < 0.8 and getProperty('ratingPercent') > 0.75 then
+            setProperty('health', getProperty('health') + 0.03)
+        elseif getProperty('ratingPercent') < 0.7 and getProperty('ratingPercent') > 0.65 then
+            setProperty('health', getProperty('health') + 0.04)
+        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0 then
+            setProperty('health', getProperty('health') + 0.05)
         end
     end
 end
 
 function noteMiss()
-    if songName == "losing-my-mind" then
-    else
-
-            if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
-                setProperty('health', getProperty('health') - 0.1)
-            elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
-                setProperty('health', getProperty('health') - 0.12)
-            elseif getProperty('ratingPercent') < 0.67 and getProperty('ratingPercent') > 0.63 then
-                setProperty('health', getProperty('health') - 0.16)
-            elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0.55 then
-                setProperty('health', getProperty('health') - 0.2)
-            elseif getProperty('ratingPercent') < 0.53 and getProperty('ratingPercent') > 0 then
-                setProperty('health', getProperty('health') - 0.23)
-            end
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
+        if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
+            setProperty('health', getProperty('health') - 0.1)
+        elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
+            setProperty('health', getProperty('health') - 0.12)
+        elseif getProperty('ratingPercent') < 0.67 and getProperty('ratingPercent') > 0.63 then
+            setProperty('health', getProperty('health') - 0.16)
+        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0.55 then
+            setProperty('health', getProperty('health') - 0.2)
+        elseif getProperty('ratingPercent') < 0.53 and getProperty('ratingPercent') > 0 then
+            setProperty('health', getProperty('health') - 0.23)
         end
     end
 end

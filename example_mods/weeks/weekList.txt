@@ -1,11 +1,5 @@
 tutorial
-cyber
-wtf
-geometrydash
 hard
 hard-oneplayer
-wtti
+dumb
 -----------------------------------------------------
-comments2
-ghost
-ghostleft

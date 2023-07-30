@@ -44,7 +44,27 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o7",6,1,0.5,"quartInOut");
             noteTweenAlpha("o8",7,1,0.5,"quartInOut");
 		end
-		
+		if value1 == '0' then
+			setProperty('healthBar.alpha', 1);
+			setProperty('healthBarBG.alpha', 1);
+			setProperty('iconP1.alpha', 1);
+			setProperty('iconP2.alpha', 1);
+			setProperty('scoreTxt.alpha', 1);
+			setProperty('timeBar.alpha', 1);
+			setProperty('timeTxt.alpha', 1);
+			if not hidecbo then
+				setProperty('showRating', false);
+				setProperty('showComboNum', false);
+			end
+			noteTweenAlpha("o1",0,1,0.5,"quartInOut");
+            noteTweenAlpha("o2",1,1,0.5,"quartInOut");
+            noteTweenAlpha("o3",2,1,0.5,"quartInOut");
+            noteTweenAlpha("o4",3,1,0.5,"quartInOut");
+			noteTweenAlpha("o5",4,1,0.5,"quartInOut");
+            noteTweenAlpha("o6",5,1,0.5,"quartInOut");
+            noteTweenAlpha("o7",6,1,0.5,"quartInOut");
+            noteTweenAlpha("o8",7,1,0.5,"quartInOut");
+		end
 		if value2 == '1' then
 			setProperty('healthBar.alpha', 0);
 			setProperty('healthBarBG.alpha', 0);

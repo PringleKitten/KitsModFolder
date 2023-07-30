@@ -3,11 +3,11 @@ local ran1 = false
 local thing = 1
 local thing2 = 1
 local event = 0
-local v1 = 0
+local v1 = false
 local v2 = false
 function onEvent(name, value1, value2)
     if name == "Tilt" then
-
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         event = "Tilt"
         value1 = tonumber(value1) or 0;
         value2 = tonumber(value2) or 0;
@@ -30,18 +30,18 @@ function onEvent(name, value1, value2)
                 doTweenAngle('GUI2tween', 'camHUD', -30, 0.3, 'bounceOut');
                 ran = true
             end
-        elseif ran then
-                doTweenAngle('GUI3tween', 'camHUD', value1, 0.3, 'bounceOut');
-                ran = false
-            else
-                doTweenAngle('GUI3tween', 'camHUD', -value1, 0.3, 'bounceOut');
-                ran = true
         elseif value1 == 1234 then
             v1 = true
         elseif value1 == 1111 then
             v1 = false
             value1 = 0
             value2 = 0
+        elseif ran then
+                doTweenAngle('GUI3tween', 'camHUD', value1, 0.3, 'bounceOut');
+                ran = false
+            else
+                doTweenAngle('GUI3tween', 'camHUD', -value1, 0.3, 'bounceOut');
+                ran = true
         end
 
         if value2 == 00 then
@@ -77,11 +77,11 @@ function onEvent(name, value1, value2)
                 ran1 = true
         end
     end
-
+end
 end
 
 function onBeatHit()
-
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         if v2 then
             thing = thing * -1
             doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')
@@ -90,7 +90,7 @@ function onBeatHit()
             thing2 = thing2 * -1
             doTweenAngle('rotate', 'camHUD', thing2 * 5, crochet / 1000, 'quadInOut')
         end
-
+    end
 end
 
 
