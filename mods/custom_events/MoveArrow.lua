@@ -1,5 +1,4 @@
 function mysplit (inputstr, sep)
-
     if sep == nil then
         sep = "%s";
     end
@@ -8,7 +7,6 @@ function mysplit (inputstr, sep)
         table.insert(t, str);
     end
     return t;
-
 end
 
 -- Event notes hooks
@@ -82,5 +80,4 @@ function onEvent(name, value1, value2)
             noteTweenAlpha("o8",7,opacity,duration,"quartInOut");
         end
     end
-
 end

@@ -1,8 +1,5 @@
-Change Note Position
+v1: 
+ "oX" | "oY" | "pX" | "pY" | "bX" | "bY"
+opponent X|Y | player X|Y  | Move Both X|Y
 
-Value 1
-"opponent" for opponent strumline
-"player" for player strumline
-v2: x, y
-
-I don't think this works properly
+v2: Current X/Y+(your value)

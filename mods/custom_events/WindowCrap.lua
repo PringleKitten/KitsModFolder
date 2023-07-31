@@ -1,7 +1,6 @@
 local movingX = false
 local movingY = false
 function onEvent(name, value1, value2)
-
     if name == "WindowCrap" then
         value1 = tonumber(value1);
         value2 = tonumber(value2);
@@ -35,5 +34,4 @@ function onEvent(name, value1, value2)
 
         end
     end
-
 end

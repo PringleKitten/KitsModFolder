@@ -10,7 +10,6 @@ end
 
 function onEvent(name, value1, value2)
     if name == "DodgeEvent" then
-        
             --Get Dodge time
             DodgeTime = (value1)
             Dodged = false
@@ -25,12 +24,10 @@ function onEvent(name, value1, value2)
             canDodge = true
             runTimer('Died', DodgeTime)
             twice = twice+1
-
-	end
+        end
 end
 
 function onUpdate()
-    
     if twice == 2 then
         twice = 0
         setProperty('health', getProperty('health')-.8)
@@ -44,14 +41,12 @@ function onUpdate()
         setProperty('health', getProperty('health')+.1)
     elseif (canDodge == false and keyJustPressed('space')) then
         setProperty('health', getProperty('health')-.3)
-
-end
+    end
 end
 
 
 
 function onTimerCompleted(tag, loops, loopsLeft)
-    
     if tag == 'Died' and Dodged == false then
         setProperty('health', getProperty('health')-.8)
         removeLuaSprite('spacebar')
@@ -61,6 +56,5 @@ function onTimerCompleted(tag, loops, loopsLeft)
         removeLuaSprite('spacebar')
         twice = 0
 
-
-end
+    end
 end

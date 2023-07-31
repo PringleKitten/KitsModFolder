@@ -6,7 +6,6 @@ keys = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','S',
 keytopress = 'A'
 
 function onCreate()
-
 	makeLuaText('pressit', 'HIT THE KEY!', '300', 400,200)
 	addLuaText('pressit')
 	setTextSize('pressit', 40)
@@ -19,11 +18,9 @@ function onCreate()
 	makeLuaText('timer', '1', '300', 400,450)
 	addLuaText('timer')
 	setTextSize('timer', 40)
-
 end
 
 function onUpdate()
-
 	setTextString('key', keytopress)
 	setProperty('timer.x', (screenWidth/2)-(getProperty('timer.width')/2))
 	
@@ -50,12 +47,10 @@ function onUpdate()
 		setProperty('timer.alpha', 0)
 		setProperty('boyfriend.stunned', false)
 	end
-
 end
 
 function onEvent(name, value1, value2)
 	if name == 'hitkey' then
-
 		
 		setTextAlignment('pressit', 'center')
 
@@ -69,15 +64,12 @@ function onEvent(name, value1, value2)
 		oldBeat = curBeat
 		FinalBeat = oldBeat + time
 		setTextString('timer', time)
-
-end
+	end
 end
 
 function onTimerCompleted(tag, loops, loopsLeft)
 	if tag == 'hitkey' then
-
 		setTextString('timer', loopsLeft)
 		setTextString('timer', FinalBeat - curBeat)
-
 	end
 end

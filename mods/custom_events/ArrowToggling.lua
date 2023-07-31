@@ -90,22 +90,22 @@ function onEvent(name, value1, value2)
                         ran = false
                     end
                 else
-                        for i=0,7 do
-                            setPropertyFromGroup('opponentStrums',i,'downScroll',true)
-                            setPropertyFromGroup('playerStrums',i,'downScroll',true)
-                            noteTweenY("y1",0,550,0.15,"cubeInOut");
-                            noteTweenY("y2",1,550,0.15,"cubeInOut");
-                            noteTweenY("y3",2,550,0.15,"cubeInOut");
-                            noteTweenY("y4",3,550,0.15,"cubeInOut");
-                            noteTweenY("y5",4,550,0.15,"cubeInOut");
-                            noteTweenY("y6",5,550,0.15,"cubeInOut");
-                            noteTweenY("y7",6,550,0.15,"cubeInOut");
-                            noteTweenY("y8",7,550,0.15,"cubeInOut");
-                            setProperty('healthBar.y', 110)
-                            setProperty('iconP1.y', 40)
-                            setProperty('iconP2.y', 40)
-                            ran = true
-                        end
+                    for i=0,7 do
+                        setPropertyFromGroup('opponentStrums',i,'downScroll',true)
+                        setPropertyFromGroup('playerStrums',i,'downScroll',true)
+                        noteTweenY("y1",0,550,0.15,"cubeInOut");
+                        noteTweenY("y2",1,550,0.15,"cubeInOut");
+                        noteTweenY("y3",2,550,0.15,"cubeInOut");
+                        noteTweenY("y4",3,550,0.15,"cubeInOut");
+                        noteTweenY("y5",4,550,0.15,"cubeInOut");
+                        noteTweenY("y6",5,550,0.15,"cubeInOut");
+                        noteTweenY("y7",6,550,0.15,"cubeInOut");
+                        noteTweenY("y8",7,550,0.15,"cubeInOut");
+                        setProperty('healthBar.y', 110)
+                        setProperty('iconP1.y', 40)
+                        setProperty('iconP2.y', 40)
+                        ran = true
+                    end
                 end
             else
                 if value1 == 0 then
@@ -263,26 +263,26 @@ function onEvent(name, value1, value2)
                 ls = false
                 mdsc = true
             end
+            if value2 == 90 then
+                lk = true
+            elseif value2 == 91 then
+                lk = false
+                cancelTween('defaultOpponentStrumY0')
+                cancelTween('defaultOpponentStrumY1')
+                cancelTween('defaultOpponentStrumY2')
+                cancelTween('defaultOpponentStrumY3')
+                cancelTween('defaultPlayerStrumY0')
+                cancelTween('defaultPlayerStrumY1')
+                cancelTween('defaultPlayerStrumY2')
+                cancelTween('defaultPlayerStrumY3')
+                cancelTween('defaultOpponentStrumX0')
+                cancelTween('defaultOpponentStrumX1')
+                cancelTween('defaultOpponentStrumX2')
+                cancelTween('defaultOpponentStrumX3')
+                cancelTween('defaultPlayerStrumX0')
+                cancelTween('defaultPlayerStrumX1')
+                cancelTween('defaultPlayerStrumX2')
+                cancelTween('defaultPlayerStrumX3')
+            end
         end
-    if value2 == 90 then
-        lk = true
-    elseif value2 == 91 then
-        lk = false
-        cancelTween('defaultOpponentStrumY0')
-        cancelTween('defaultOpponentStrumY1')
-        cancelTween('defaultOpponentStrumY2')
-        cancelTween('defaultOpponentStrumY3')
-        cancelTween('defaultPlayerStrumY0')
-        cancelTween('defaultPlayerStrumY1')
-        cancelTween('defaultPlayerStrumY2')
-        cancelTween('defaultPlayerStrumY3')
-        cancelTween('defaultOpponentStrumX0')
-        cancelTween('defaultOpponentStrumX1')
-        cancelTween('defaultOpponentStrumX2')
-        cancelTween('defaultOpponentStrumX3')
-        cancelTween('defaultPlayerStrumX0')
-        cancelTween('defaultPlayerStrumX1')
-        cancelTween('defaultPlayerStrumX2')
-        cancelTween('defaultPlayerStrumX3')
-    end
 end
