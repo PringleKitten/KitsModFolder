@@ -88,6 +88,13 @@ function noteMiss()
 end
 
 function onSongStart()
+    setProperty('bars.alpha', 1);
+    doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
+    setObjectCamera('bars', 'other')
+    setObjectCamera('bars', 'hud')
+    screenCenter('bars')
+    setProperty('bars.alpha', 0)
+    doTweenY('ba', 'bars.scale', 3, 0.1, 'quadInOut')
     doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
     setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)

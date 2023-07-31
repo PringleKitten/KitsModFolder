@@ -1,8 +1,6 @@
-
-
-
 function onEvent(name, value1, value2)
     if name == 'moveStrumline' then
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         oX1 = getPropertyFromGroup('opponentStrums', 0, 'x')
         oX2 = getPropertyFromGroup('opponentStrums', 1, 'x')
         oX3 = getPropertyFromGroup('opponentStrums', 2, 'x')
@@ -60,51 +58,4 @@ function onEvent(name, value1, value2)
         end
     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
---function mysplit (inputstr, sep)
---    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
---        if sep == nil then
---            sep = "%s";
---        end
---        local t={};
---        for str in string.gmatch(inputstr, "([^"..sep.."]+)") note
---            table.insert(t, str);
---        end
---        return t;
---    end
---end
---function onEvent(name, value1, value2)
---    if name == "moveStrumline" then
---        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
---            value1 = tonumber(value1)
---            value2 = tonumber(value2)
---            local tableee=mysplit(value2,", ") -- Splits value1 into a table
---            
---            tableee[1] = tonumber(tableee[1])
---            tableee[2] = tonumber(tableee[2])
---
---            if value1 == 1 then
---                for i = 4,7 note
---                noteTweenX('x1', 4, stf, 0.4, 'quartInOut')
---                noteTweenY('y1', 5, stf, 0.4, 'quartInOut')
---                end
---            elseif value1 == 2 then
---                for i = 0,3 note
---                noteTweenX('x0', i, tableee[1], 0.4, 'quartInOut')
---                noteTweenY('y0', i, tableee[2], 0.4, 'quartInOut')
---                end
---            end
---        end
---    end
---end
+end
