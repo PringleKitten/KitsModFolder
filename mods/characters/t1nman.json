@@ -3,7 +3,7 @@
 		{
 			"offsets": [
 				-5,
-				0
+				250
 			],
 			"loop": false,
 			"fps": 24,
@@ -14,7 +14,7 @@
 		{
 			"offsets": [
 				5,
-				-6
+				244
 			],
 			"loop": false,
 			"fps": 24,
@@ -25,7 +25,7 @@
 		{
 			"offsets": [
 				-10,
-				-50
+				200
 			],
 			"loop": false,
 			"fps": 24,
@@ -36,7 +36,7 @@
 		{
 			"offsets": [
 				-29,
-				27
+				277
 			],
 			"loop": false,
 			"fps": 24,
@@ -47,7 +47,7 @@
 		{
 			"offsets": [
 				-48,
-				-7
+				243
 			],
 			"loop": false,
 			"fps": 24,
@@ -65,13 +65,13 @@
 	"healthicon": "t1nman",
 	"flip_x": false,
 	"healthbar_colors": [
-		49,
-		176,
-		209
+		150,
+		20,
+		193
 	],
 	"camera_position": [
 		0,
-		0
+		-200
 	],
 	"sing_duration": 4,
 	"scale": 1
