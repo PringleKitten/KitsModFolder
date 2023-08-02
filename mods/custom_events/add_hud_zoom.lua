@@ -11,6 +11,6 @@ end
 
 function onTweenCompleted(name)
 	if name == 'camz' then
-  		setProperty("defaultCanUIZoom",getProperty('camHUD.zoom')) 
+  		setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
 	end
 end
