@@ -167,7 +167,7 @@ function onEvent(name, value1, value2)
                     end
                 end
             end
-        -- Swap sides with opponent
+            -- Swap sides with opponent
             if value2 == 1 then 
                 if ran1 then
                     noteTweenX("x1",0,defaultOpponentStrumX0,0.2,"cubeInOut");
