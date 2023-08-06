@@ -1,7 +1,8 @@
 60 RESET with visible notes for both sides v1 and v2
-
 Value1: 0 to RESET -OR- 1 Toggle ScrollMode
-
+10 swaps left and right notes (player)
+11 swaps up and down notes (player)
+12 swaps all notes (player)
 Value2: 0 to RESET -OR- 1 Toggle Playing Side
 3 = MIDDLE SCROLL
 90 = Arrow Dance ON
