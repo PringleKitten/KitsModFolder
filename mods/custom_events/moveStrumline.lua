@@ -1,6 +1,3 @@
-
-
-
 function onEvent(name, value1, value2)
     if name == 'moveStrumline' then
         oX1 = getPropertyFromGroup('opponentStrums', 0, 'x')

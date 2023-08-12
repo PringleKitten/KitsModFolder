@@ -1,5 +1,5 @@
 function onEvent(name,value1,value2)
-    if name == "add_cam_zoom" then      
+    if name == "add_hud_zoom" then      
 		aa = getProperty('camHUD.zoom')  
         if value2 == '' then
 			doTweenZoom('camz','camHUD',aa+tonumber(value1),0.01,'sineInOut')
@@ -11,6 +11,6 @@ end
 
 function onTweenCompleted(name)
 	if name == 'camz' then
-  		setProperty("defaultCanUIZoom",getProperty('camHUD.zoom')) 
+  		setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
 	end
 end
