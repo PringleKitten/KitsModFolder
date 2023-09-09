@@ -1,8 +1,3 @@
-local ran = false
-local ran1 = false
-local xx1 = false
-local xx2 = false
-local xx3 = false
 function onSongStart()
     dosx0 = defaultOpponentStrumX0
     dosx1 = defaultOpponentStrumX1
@@ -45,6 +40,7 @@ function onUpdate()
 end
 function onEvent(name, value1, value2)
     if name == "newArrowToggler" then
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
             value1 = tonumber(value1);
             ALTdosx0 = defaultOpponentStrumX0
             ALTdosx1 = defaultOpponentStrumX1
@@ -238,10 +234,10 @@ function onEvent(name, value1, value2)
                     end
             elseif value1 == 10 then
                 if xx1 then
-                    noteTweenX("x5",4,defaultPlayerStrumX0,value2,"cubeInOut");
-                    noteTweenX("x8",7,defaultPlayerStrumX3,value2,"cubeInOut");
-                    defaultPlayerStrumX0 = ALTdpsx0
-                    defaultPlayerStrumX3 = ALTdpsx3
+                    noteTweenX("x5",4,defaultPlayerStrumX3,value2,"cubeInOut");
+                    noteTweenX("x8",7,defaultPlayerStrumX0,value2,"cubeInOut");
+                    defaultPlayerStrumX0 = ALTdpsx3
+                    defaultPlayerStrumX3 = ALTdpsx0
                     xx1 = false
                 else
                     noteTweenX("x5",4,defaultPlayerStrumX3,value2,"cubeInOut");
@@ -252,10 +248,10 @@ function onEvent(name, value1, value2)
                 end
             elseif value1 == 11 then
                 if xx2 then
-                    noteTweenX("x6",5,defaultPlayerStrumX1,value2,"cubeInOut");
-                    noteTweenX("x7",6,defaultPlayerStrumX2,value2,"cubeInOut");
-                    defaultPlayerStrumX2 = ALTdpsx2
-                    defaultPlayerStrumX1 = ALTdpsx1
+                    noteTweenX("x6",5,defaultPlayerStrumX2,value2,"cubeInOut");
+                    noteTweenX("x7",6,defaultPlayerStrumX1,value2,"cubeInOut");
+                    defaultPlayerStrumX2 = ALTdpsx1
+                    defaultPlayerStrumX1 = ALTdpsx2
                     xx2 = false
                 else
                     noteTweenX("x6",5,defaultPlayerStrumX2,value2,"cubeInOut");
@@ -266,14 +262,14 @@ function onEvent(name, value1, value2)
                 end
             elseif value1 == 12 then
                 if xx3 then
-                    noteTweenX("x5",4,defaultPlayerStrumX0,value2,"cubeInOut");
-                    noteTweenX("x8",7,defaultPlayerStrumX3,value2,"cubeInOut");
-                    noteTweenX("x6",5,defaultPlayerStrumX1,value2,"cubeInOut");
-                    noteTweenX("x7",6,defaultPlayerStrumX2,value2,"cubeInOut");
-                    defaultPlayerStrumX0 = ALTdpsx0
-                    defaultPlayerStrumX1 = ALTdpsx1
-                    defaultPlayerStrumX2 = ALTdpsx2
-                    defaultPlayerStrumX3 = ALTdpsx3
+                    noteTweenX("x5",4,defaultPlayerStrumX3,value2,"cubeInOut");
+                    noteTweenX("x8",7,defaultPlayerStrumX0,value2,"cubeInOut");
+                    noteTweenX("x6",5,defaultPlayerStrumX2,value2,"cubeInOut");
+                    noteTweenX("x7",6,defaultPlayerStrumX1,value2,"cubeInOut");
+                    defaultPlayerStrumX0 = ALTdpsx3
+                    defaultPlayerStrumX1 = ALTdpsx2
+                    defaultPlayerStrumX2 = ALTdpsx1
+                    defaultPlayerStrumX3 = ALTdpsx0
                     xx3 = false
                 else
                     noteTweenX("x5",4,defaultPlayerStrumX3,value2,"cubeInOut");
@@ -409,4 +405,5 @@ function onEvent(name, value1, value2)
                 noteTweenY("defaultPlayerStrumY3",7,defaultPlayerStrumY3,value2,"cubeInOut");
             end
         end
+    end
 end
