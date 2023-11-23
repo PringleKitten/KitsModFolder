@@ -1,10 +1,11 @@
-local c1 = false;
-local c2 = false
 local ran = false
 local ran1 = false
 local xx1 = false
 local xx2 = false
 local xx3 = false
+local camzoomN = false
+local camzoomS = false
+local camzoomB = false
 function onEvent(name, value1, value2)
     value1 = tonumber(value1);
     value2 = tonumber(value2);
@@ -226,32 +227,42 @@ function onEvent(name, value1, value2)
        cancelTween('defaultPlayerStrumX2')
        cancelTween('defaultPlayerStrumX3')
    end
-   if name == "OldConvertDONTUSE" then
-      value1 = tonumber(value1)
-      value2 = tonumber(value2)
-      if value1 == 1 then
-         if c1 == false then
-            c1 = true
-         else
-            c1 = false
-         end
-      elseif value1 == 2 then
-         if c2 == false then
-            c2 = true
-         else
-            c2 = false
-         end
-      end
+   if name == 'Cam Zoom Toggle B' then
+    if camzoomB == false then
+        camzoomB = true
+    elseif camzoomB == true then
+        camzoomB = false
+    end
    end
+    if name == 'Cam Zoom Toggle Small' then
+        if camzoomS == false then
+            camzoomS = true
+        elseif camzoomS == true then
+            camzoomS = false
+        end
+    end
+    if name == 'Cam Zoom Toggle' then
+        if camzoomN == false then
+            camzoomN = true
+        elseif camzoomN == true then
+            camzoomN = false
+        end
+    end
 end
 
 function onBeatHit()
-   if c1 == true then
-      triggerEvent('Add Camera Zoom', 0.03, 0.05);
-   end
-   if c2 == true then
-      triggerEvent('Add Camera Zoom', 0.1, 0.1);
-   end
+    if camzoomB == true then
+        triggerEvent('Add Camera Zoom', 0.24, 0.18);
+        health = getProperty('health')
+        setProperty('health', health- 0.08);
+        characterPlayAnim('bf', 'idle', true);
+     end
+     if camzoomS == true then
+        triggerEvent('Add Camera Zoom', 0.08, 0.035);
+    end
+    if camzoomN == true then
+        triggerEvent('Add Camera Zoom', 0.24, 0.1);
+    end
 end
 --eww onUpdate crap
 function onUpdate()
