@@ -34,6 +34,7 @@ function onUpdate()
 end
 
 function onCreate()
+    precacheImage('me/popup/bars')
     setProperty('skipArrowStartTween', true)
     makeLuaText('st', 'l', '800', 400,450)
     addLuaText('st')
@@ -56,6 +57,7 @@ function onCreate()
 end
 
 function goodNoteHit()
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
         if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
             setProperty('health', getProperty('health') + 0.01)
         elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
@@ -67,9 +69,11 @@ function goodNoteHit()
         elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0 then
             setProperty('health', getProperty('health') + 0.05)
         end
+    end
 end
 
 function noteMiss()
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
         if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
             setProperty('health', getProperty('health') - 0.1)
         elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
@@ -81,9 +85,17 @@ function noteMiss()
         elseif getProperty('ratingPercent') < 0.53 and getProperty('ratingPercent') > 0 then
             setProperty('health', getProperty('health') - 0.23)
         end
+    end
 end
 
 function onSongStart()
+    setProperty('bars.alpha', 1);
+    doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
+    setObjectCamera('bars', 'other')
+    setObjectCamera('bars', 'hud')
+    screenCenter('bars')
+    setProperty('bars.alpha', 0)
+    doTweenY('ba', 'bars.scale', 3, 0.1, 'quadInOut')
     doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
     setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)

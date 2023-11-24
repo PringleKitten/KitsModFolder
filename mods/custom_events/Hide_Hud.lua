@@ -9,6 +9,9 @@ function onEvent(name,value1,value2)
 			setProperty('scoreTxt.alpha', 0);
 			setProperty('timeBar.alpha', 0);
 			setProperty('timeTxt.alpha', 0);
+			setProperty('timeBar.visible', false)
+			setProperty('timeBarBG.visible', false)
+			setProperty('timeTxt.visible', false)
 			if not hidecbo then
 				setProperty('showRating', false);
 				setProperty('showComboNum', false);
@@ -24,6 +27,9 @@ function onEvent(name,value1,value2)
 		end
 	
 		if value1 == '2' then
+			setProperty('timeBar.visible', true)
+			setProperty('timeBarBG.visible', true)
+			setProperty('timeTxt.visible', true)
 			setProperty('healthBar.alpha', 1);
 			setProperty('healthBarBG.alpha', 1);
 			setProperty('iconP1.alpha', 1);
@@ -45,6 +51,9 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o8",7,1,0.5,"quartInOut");
 		end
 		if value1 == '0' then
+			setProperty('timeBar.visible', true)
+			setProperty('timeBarBG.visible', true)
+			setProperty('timeTxt.visible', true)
 			setProperty('healthBar.alpha', 1);
 			setProperty('healthBarBG.alpha', 1);
 			setProperty('iconP1.alpha', 1);
@@ -66,6 +75,9 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o8",7,1,0.5,"quartInOut");
 		end
 		if value2 == '1' then
+			setProperty('timeBar.visible', false)
+			setProperty('timeBarBG.visible', false)
+			setProperty('timeTxt.visible', false)
 			setProperty('healthBar.alpha', 0);
 			setProperty('healthBarBG.alpha', 0);
 			setProperty('iconP1.alpha', 0);
@@ -87,6 +99,9 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o4",3,1,0.5,"quartInOut");
 		end
 		if value2 == '1+' then
+			setProperty('timeBar.visible', true)
+			setProperty('timeBarBG.visible', true)
+			setProperty('timeTxt.visible', true)
 			setProperty('healthBar.alpha', 1);
 			setProperty('healthBarBG.alpha', 1);
 			setProperty('iconP1.alpha', 1);
@@ -108,6 +123,9 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o4",3,1,0.5,"quartInOut");
 		end
 		if value2 == '2' then
+			setProperty('timeBar.visible', false)
+			setProperty('timeBarBG.visible', false)
+			setProperty('timeTxt.visible', false)
 			setProperty('healthBar.alpha', 1);
 			setProperty('healthBarBG.alpha', 1);
 			setProperty('iconP1.alpha', 1);
@@ -129,6 +147,9 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o4",3,1,0.5,"quartInOut");
 		end
 		if value2 == '3' then
+			setProperty('timeBar.visible', false)
+			setProperty('timeBarBG.visible', false)
+			setProperty('timeTxt.visible', false)
 			setProperty('healthBar.alpha', 1);
 			setProperty('healthBarBG.alpha', 1);
 			setProperty('iconP1.alpha', 1);

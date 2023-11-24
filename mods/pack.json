@@ -1,7 +1,7 @@
 {
-	"name": "Wolf/Pringle",
+	"name": "Wolf/Pringle/Kitty",
 	"description": "Anything you want to play I'll add",
 	"restart":false,
 	"runsGlobally": false,
-	"color": [170, 0, 255]
+	"color": [251, 77, 155]
 }
