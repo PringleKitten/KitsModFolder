@@ -1,0 +1,7 @@
+v1: 1 = ON | 0 = OFF
+
+These turn it on automatically:
+9999 = move arrows down with bars
+8888 = only move bars, arrows are in them.
+
+v2: time to resize

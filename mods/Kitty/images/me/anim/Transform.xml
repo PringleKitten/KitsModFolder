@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Transform.png">
+<SubTexture name="Transform Transform0000" x="0" y="0" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0001" x="99" y="0" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0002" x="0" y="99" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0003" x="99" y="99" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0004" x="198" y="0" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0005" x="198" y="99" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0006" x="0" y="198" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0007" x="99" y="198" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0008" x="198" y="198" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0009" x="297" y="0" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0010" x="297" y="99" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0011" x="297" y="198" width="99" height="99" frameX="0" frameY="0" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0012" x="194" y="297" width="76" height="73" frameX="-13" frameY="-13" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0013" x="0" y="297" width="97" height="94" frameX="0" frameY="-2" frameWidth="99" frameHeight="99" />
+<SubTexture name="Transform Transform0014" x="97" y="297" width="97" height="94" frameX="0" frameY="-2" frameWidth="99" frameHeight="99" />
+</TextureAtlas>
