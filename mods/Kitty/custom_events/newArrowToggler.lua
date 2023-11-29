@@ -168,23 +168,23 @@ function onEvent(name, value1, value2)
                 noteTweenAlpha("o2",1,0,0.5,"quartInOut");
                 noteTweenAlpha("o3",2,0,0.5,"quartInOut");
                 noteTweenAlpha("o4",3,0,0.5,"quartInOut");
-                noteTweenX("x1",0,defaultOpponentStrumX0+75,value2,"cubeInOut");
-                noteTweenX("x2",1,defaultOpponentStrumX1+75,value2,"cubeInOut");
-                noteTweenX("x3",2,defaultPlayerStrumX2-79,value2,"cubeInOut");
-                noteTweenX("x4",3,defaultPlayerStrumX3-79,value2,"cubeInOut");
+                noteTweenX("x1",0,dosx0+75,value2,"cubeInOut");
+                noteTweenX("x2",1,dosx1+75,value2,"cubeInOut");
+                noteTweenX("x3",2,dpsx2-79,value2,"cubeInOut");
+                noteTweenX("x4",3,dpsx3-79,value2,"cubeInOut");
 
-                noteTweenX("x5",4,defaultPlayerStrumX0-323,value2,"cubeInOut");
-                noteTweenX("x6",5,defaultPlayerStrumX1-323,value2,"cubeInOut");
-                noteTweenX("x7",6,defaultPlayerStrumX2-323,value2,"cubeInOut");
-                noteTweenX("x8",7,defaultPlayerStrumX3-323,value2,"cubeInOut");
-                defaultPlayerStrumX0 = defaultPlayerStrumX0-323
-                defaultPlayerStrumX1 = defaultPlayerStrumX1-323
-                defaultPlayerStrumX2 = defaultPlayerStrumX2-323
-                defaultPlayerStrumX3 = defaultPlayerStrumX3-323
-                defaultOpponentStrumX0 = defaultOpponentStrumX0+75
-                defaultOpponentStrumX1 = defaultOpponentStrumX1+75
-                defaultOpponentStrumX2 = defaultPlayerStrumX2-79
-                defaultOpponentStrumX3 = defaultPlayerStrumX3-79
+                noteTweenX("x5",4,dpsx0-323,value2,"cubeInOut");
+                noteTweenX("x6",5,dpsx1-323,value2,"cubeInOut");
+                noteTweenX("x7",6,dpsx2-323,value2,"cubeInOut");
+                noteTweenX("x8",7,dpsx3-323,value2,"cubeInOut");
+                defaultPlayerStrumX0 = dpsx0-323
+                defaultPlayerStrumX1 = dpsx1-323
+                defaultPlayerStrumX2 = dpsx2-323
+                defaultPlayerStrumX3 = dpsx3-323
+                defaultOpponentStrumX0 = dosx0+75
+                defaultOpponentStrumX1 = dosx1+75
+                defaultOpponentStrumX2 = dpsx2-79
+                defaultOpponentStrumX3 = dpsx3-79
                 ls = false
                 mdsc = true
             elseif value1 == 0 then

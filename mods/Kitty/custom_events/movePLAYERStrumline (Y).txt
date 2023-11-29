@@ -1,0 +1,5 @@
+v1: 
+Current + Your Value
+if 0 then go back to original
+
+v2: Time to move
