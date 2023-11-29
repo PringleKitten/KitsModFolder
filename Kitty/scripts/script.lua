@@ -56,39 +56,11 @@ function onCreate()
     noteTweenAlpha("o4",3,0.5,0.001,"quartInOut")
 end
 
-function goodNoteHit()
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
-        if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
-            setProperty('health', getProperty('health') + 0.01)
-        elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
-            setProperty('health', getProperty('health') + 0.02)
-        elseif getProperty('ratingPercent') < 0.8 and getProperty('ratingPercent') > 0.75 then
-            setProperty('health', getProperty('health') + 0.03)
-        elseif getProperty('ratingPercent') < 0.7 and getProperty('ratingPercent') > 0.65 then
-            setProperty('health', getProperty('health') + 0.04)
-        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0 then
-            setProperty('health', getProperty('health') + 0.05)
-        end
-    end
-end
-
-function noteMiss()
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
-        if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
-            setProperty('health', getProperty('health') - 0.1)
-        elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
-            setProperty('health', getProperty('health') - 0.12)
-        elseif getProperty('ratingPercent') < 0.67 and getProperty('ratingPercent') > 0.63 then
-            setProperty('health', getProperty('health') - 0.16)
-        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0.55 then
-            setProperty('health', getProperty('health') - 0.2)
-        elseif getProperty('ratingPercent') < 0.53 and getProperty('ratingPercent') > 0 then
-            setProperty('health', getProperty('health') - 0.23)
-        end
-    end
-end
-
 function onSongStart()
+    dpsx0 = getPropertyFromGroup('playerStrums', 0, 'x')
+    dpsx1 = getPropertyFromGroup('playerStrums', 1, 'x')
+    dpsx2 = getPropertyFromGroup('playerStrums', 2, 'x')
+    dpsx3 = getPropertyFromGroup('playerStrums', 3, 'x')
     setProperty('bars.alpha', 1);
     doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
     setObjectCamera('bars', 'other')
@@ -107,6 +79,36 @@ end
 local customzoom = false
 
 function onEvent(name, value1, value2)
+    if name == 'newArrowToggler' then
+        value1 = tonumber(value1)
+        value2 = tonumber(value2)
+        if value1 == 3 then
+            mdsc = true
+        elseif value1 == 2 then
+            mdsc = false
+            ls = true
+        end
+    end
+    if name == 'movePLAYERStrumline (X)' then
+        value1 = tonumber(value1)
+        value2 = tonumber(value2)
+        if value1 == 0 and mdsc then
+            noteTweenX("pX",4,dpsx0-323,value2,"cubeInOut");
+            noteTweenX("pX1",5,dpsx1-323,value2,"cubeInOut");
+            noteTweenX("pX2",6,dpsx2-323,value2,"cubeInOut");
+            noteTweenX("pX3",7,dpsx3-323,value2,"cubeInOut");
+        elseif value1 == 0 and not mdsc then
+            noteTweenX("pX",4,dpsx0,value2,"cubeInOut");
+            noteTweenX("pX1",5,dpsx1,value2,"cubeInOut");
+            noteTweenX("pX2",6,dpsx2,value2,"cubeInOut");
+            noteTweenX("pX3",7,dpsx3,value2,"cubeInOut");
+        elseif value1 == 0 and ls then
+            noteTweenX("pX",4,defaultOpponentStrumX0,value2,"cubeInOut");
+            noteTweenX("pX1",5,defaultOpponentStrumX1,value2,"cubeInOut");
+            noteTweenX("pX2",6,defaultOpponentStrumX2,value2,"cubeInOut");
+            noteTweenX("pX3",7,defaultOpponentStrumX3,value2,"cubeInOut");
+        end
+    end
     if name == "customzoomtoggle" then
         value1 = tonumber(value1)
         if value1 == 1 then
