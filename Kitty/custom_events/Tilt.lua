@@ -80,7 +80,6 @@ function onEvent(name, value1, value2)
     end
 end
 
-
 function onBeatHit()
 
         if v2 then

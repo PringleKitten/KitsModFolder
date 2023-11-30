@@ -61,6 +61,18 @@ function onSongStart()
     dpsx1 = getPropertyFromGroup('playerStrums', 1, 'x')
     dpsx2 = getPropertyFromGroup('playerStrums', 2, 'x')
     dpsx3 = getPropertyFromGroup('playerStrums', 3, 'x')
+    dosx0 = getPropertyFromGroup('opponentStrums', 0, 'x')
+    dosx1 = getPropertyFromGroup('opponentStrums', 1, 'x')
+    dosx2 = getPropertyFromGroup('opponentStrums', 2, 'x')
+    dosx3 = getPropertyFromGroup('opponentStrums', 3, 'x')
+    dpsy0 = getPropertyFromGroup('playerStrums', 0, 'y')
+    dpsy1 = getPropertyFromGroup('playerStrums', 1, 'y')
+    dpsy2 = getPropertyFromGroup('playerStrums', 2, 'y')
+    dpsy3 = getPropertyFromGroup('playerStrums', 3, 'y')
+    dosy0 = getPropertyFromGroup('opponentStrums', 0, 'y')
+    dosy1 = getPropertyFromGroup('opponentStrums', 1, 'y')
+    dosy2 = getPropertyFromGroup('opponentStrums', 2, 'y')
+    dosy3 = getPropertyFromGroup('opponentStrums', 3, 'y')
     setProperty('bars.alpha', 1);
     doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
     setObjectCamera('bars', 'other')
@@ -107,6 +119,46 @@ function onEvent(name, value1, value2)
             noteTweenX("pX1",5,defaultOpponentStrumX1,value2,"cubeInOut");
             noteTweenX("pX2",6,defaultOpponentStrumX2,value2,"cubeInOut");
             noteTweenX("pX3",7,defaultOpponentStrumX3,value2,"cubeInOut");
+        end
+    end
+    if name == 'movePLAYERStrumline (Y)' then
+        value1 = tonumber(value1)
+        value2 = tonumber(value2)
+        if value1 == 0 then
+            noteTweenY("pY",4,dpsy0,value2,"cubeInOut");
+            noteTweenY("pY1",5,dpsy1,value2,"cubeInOut");
+            noteTweenY("pY2",6,dpsy2,value2,"cubeInOut");
+            noteTweenY("pY3",7,dpsy3,value2,"cubeInOut");
+        end
+    end
+    if name == 'moveOPPONENTStrumline (Y)' then
+        value1 = tonumber(value1)
+        value2 = tonumber(value2)
+        if value1 == 0 then
+            noteTweenY("oY",4,dosy0,value2,"cubeInOut");
+            noteTweenY("oY1",5,dosy1,value2,"cubeInOut");
+            noteTweenY("oY2",6,dosy2,value2,"cubeInOut");
+            noteTweenY("oY3",7,dosy3,value2,"cubeInOut");
+        end
+    end
+    if name == 'moveOPPONENTStrumline (X)' then
+        value1 = tonumber(value1)
+        value2 = tonumber(value2)
+        if value1 == 0 and mdsc then
+            noteTweenX("oX",0,dosx0+75,value2,"cubeInOut");
+            noteTweenX("oX1",1,dosx1+75,value2,"cubeInOut");
+            noteTweenX("oX2",2,dpsx2-79,value2,"cubeInOut");
+            noteTweenX("oX3",3,dpsx3-79,value2,"cubeInOut");
+        elseif value1 == 0 and not mdsc then
+            noteTweenX("oX",0,dosx0,value2,"cubeInOut");
+            noteTweenX("oX1",1,dosx1,value2,"cubeInOut");
+            noteTweenX("oX2",2,dosx2,value2,"cubeInOut");
+            noteTweenX("oX3",3,dosx3,value2,"cubeInOut");
+        elseif value1 == 0 and ls then
+            noteTweenX("oX",0,defaultPlayerStrumX0,value2,"cubeInOut");
+            noteTweenX("oX1",1,defaultPlayerStrumX1,value2,"cubeInOut");
+            noteTweenX("oX2",2,defaultPlayerStrumX2,value2,"cubeInOut");
+            noteTweenX("oX3",3,defaultPlayerStrumX3,value2,"cubeInOut");
         end
     end
     if name == "customzoomtoggle" then

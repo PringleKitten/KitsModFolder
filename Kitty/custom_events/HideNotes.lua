@@ -21,7 +21,7 @@ function onEvent(name, value1, value2)
                 ran = true
                 
             end
-        elseif value1 == '1+' then
+        elseif value1 == 11 then
             if ran then
                 noteTweenAlpha("o1",0,1,0.5,"quartInOut");
                 noteTweenAlpha("o2",1,1,0.5,"quartInOut");
@@ -53,7 +53,7 @@ function onEvent(name, value1, value2)
                 ran = true
                 
             end
-        elseif value1 == '2+' then
+        elseif value1 == 22 then
             if ran then
                 noteTweenAlpha("o5",4,0.5,0.5,"quartInOut");
                 noteTweenAlpha("o6",5,0.5,0.5,"quartInOut");
@@ -81,7 +81,7 @@ function onEvent(name, value1, value2)
             
             
             ran = false
-        elseif value1 == '0+' then
+        elseif value1 == 100 then
             noteTweenAlpha("o5",4,1,0.5,"quartInOut");
             noteTweenAlpha("o6",5,1,0.5,"quartInOut");
             noteTweenAlpha("o7",6,1,0.5,"quartInOut");
@@ -106,7 +106,7 @@ function onEvent(name, value1, value2)
             
             
             ran = false
-        elseif value2 == '0+' then
+        elseif value2 == 100 then
             noteTweenAlpha("o5",4,1,0.5,"quartInOut");
             noteTweenAlpha("o6",5,1,0.5,"quartInOut");
             noteTweenAlpha("o7",6,1,0.5,"quartInOut");
@@ -134,7 +134,7 @@ function onEvent(name, value1, value2)
                 ran = true
                 
             end
-        elseif value2 == '1+' then
+        elseif value2 == 11 then
             if ran then
                 noteTweenAlpha("oo1",0,1,0.5,"quartInOut");
                 noteTweenAlpha("oo2",1,1,0.5,"quartInOut");
@@ -166,7 +166,7 @@ function onEvent(name, value1, value2)
                 ran = true
                 
             end
-        elseif value2 == '2+' then
+        elseif value2 == 22 then
             if ran then
                 noteTweenAlpha("oo5",4,0.5,0.5,"quartInOut");
                 noteTweenAlpha("oo6",5,0.5,0.5,"quartInOut");
