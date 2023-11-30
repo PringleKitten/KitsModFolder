@@ -120,6 +120,20 @@ function onEvent(name, value1, value2)
                         ran = true
                     end
                 end
+            elseif value1 == 11 then
+                if ranm then
+                    for i=0,7 do
+                        setPropertyFromGroup('opponentStrums',i,'downScroll',false);
+                        setPropertyFromGroup('playerStrums',i,'downScroll',false);
+                        ranm = false
+                    end
+                else
+                    for i=0,7 do
+                        setPropertyFromGroup('opponentStrums',i,'downScroll',true);
+                        setPropertyFromGroup('playerStrums',i,'downScroll',true);
+                        ranm = true
+                    end
+                end
             elseif value1 == 2 then --Swap Sides with Opponent
                 if ran1 then
                     noteTweenX("x1",0,defaultOpponentStrumX0,value2,"cubeInOut");
@@ -130,14 +144,14 @@ function onEvent(name, value1, value2)
                     noteTweenX("x6",5,defaultPlayerStrumX1,value2,"cubeInOut");
                     noteTweenX("x7",6,defaultPlayerStrumX2,value2,"cubeInOut");
                     noteTweenX("x8",7,defaultPlayerStrumX3,value2,"cubeInOut");
-                    defaultOpponentStrumX0 = dpsx0
-                    defaultOpponentStrumX1 = dpsx1
-                    defaultOpponentStrumX2 = dpsx2
-                    defaultOpponentStrumX3 = dpsx3
-                    defaultPlayerStrumX0 = dosx0
-                    defaultPlayerStrumX1 = dosx1
-                    defaultPlayerStrumX2 = dosx2
-                    defaultPlayerStrumX3 = dosx3
+                    defaultOpponentStrumX0 = dosx0
+                    defaultOpponentStrumX1 = dosx1
+                    defaultOpponentStrumX2 = dosx2
+                    defaultOpponentStrumX3 = dosx3
+                    defaultPlayerStrumX0 = dpsx0
+                    defaultPlayerStrumX1 = dpsx1
+                    defaultPlayerStrumX2 = dpsx2
+                    defaultPlayerStrumX3 = dpsx3
                     ls = false
                     mdsc = false
                     ran1 = false
@@ -189,6 +203,33 @@ function onEvent(name, value1, value2)
                 mdsc = true
             elseif value1 == 0 then
                     for i=0,7 do
+                    cancelTween('x1');
+                    cancelTween('x2');
+                    cancelTween('x3');
+                    cancelTween('x4');
+                    cancelTween('x5');
+                    cancelTween('x6');
+                    cancelTween('x7');
+                    cancelTween('x8');
+                    cancelTween('y1');
+                    cancelTween('y2');
+                    cancelTween('y3');
+                    cancelTween('y4');
+                    cancelTween('y5');
+                    cancelTween('y6');
+                    cancelTween('y7');
+                    cancelTween('y8');
+                    cancelTween('hp');
+                    cancelTween('hpI1');
+                    cancelTween('hpI2');
+                    cancelTween('o1');
+                    cancelTween('o2');
+                    cancelTween('o3');
+                    cancelTween('o4');
+                    cancelTween('o5');
+                    cancelTween('o6');
+                    cancelTween('o7');
+                    cancelTween('o8');
                     setPropertyFromGroup('opponentStrums',i,'downScroll',false);
                     setPropertyFromGroup('playerStrums',i,'downScroll',false);
                     noteTweenY("y1",0,dosy0,value2,"cubeInOut");
@@ -199,9 +240,6 @@ function onEvent(name, value1, value2)
                     noteTweenY("y6",5,dpsy1,value2,"cubeInOut");
                     noteTweenY("y7",6,dpsy2,value2,"cubeInOut");
                     noteTweenY("y8",7,dpsy3,value2,"cubeInOut");
-                    doTweenY('hp', 'healthBar', 640, value2, 'cubeInOut');
-                    doTweenY('hpI1', 'iconP1', 570, value2, 'cubeInOut');
-                    doTweenY('hpI2', 'iconP2', 570, value2, 'cubeInOut');
                     noteTweenX("x1",0,defaultOpponentStrumX0,value2,"cubeInOut");
                     noteTweenX("x2",1,defaultOpponentStrumX1,value2,"cubeInOut");
                     noteTweenX("x3",2,defaultOpponentStrumX2,value2,"cubeInOut");
@@ -210,6 +248,9 @@ function onEvent(name, value1, value2)
                     noteTweenX("x6",5,defaultPlayerStrumX1,value2,"cubeInOut");
                     noteTweenX("x7",6,defaultPlayerStrumX2,value2,"cubeInOut");
                     noteTweenX("x8",7,defaultPlayerStrumX3,value2,"cubeInOut");
+                    doTweenY('hp', 'healthBar', 640, value2, 'cubeInOut');
+                    doTweenY('hpI1', 'iconP1', 570, value2, 'cubeInOut');
+                    doTweenY('hpI2', 'iconP2', 570, value2, 'cubeInOut');
                     defaultPlayerStrumX0 = dpsx0
                     defaultPlayerStrumX1 = dpsx1
                     defaultPlayerStrumX2 = dpsx2
@@ -231,6 +272,7 @@ function onEvent(name, value1, value2)
                     mdsc = false
                     ran1 = false 
                     ran = false
+                    ranm = false
                     end
             elseif value1 == 10 then
                 if xx1 then
@@ -282,80 +324,6 @@ function onEvent(name, value1, value2)
                     defaultPlayerStrumX3 = ALTdpsx0
                     xx3 = true
                 end
-            elseif value1 == 0 then
-                lk = false
-                mdsc = false
-                ran1 = false 
-                defaultOpponentStrumX0 = dosx0
-                defaultOpponentStrumX1 = dosx1
-                defaultOpponentStrumX2 = dosx2
-                defaultOpponentStrumX3 = dosx3
-                defaultPlayerStrumX0 = dpsx0
-                defaultPlayerStrumX1 = dpsx1
-                defaultPlayerStrumX2 = dpsx2
-                defaultPlayerStrumX3 = dpsx3
-                defaultOpponentStrumY0 = dosy0
-                defaultOpponentStrumY1 = dosy1
-                defaultOpponentStrumY2 = dosy2
-                defaultOpponentStrumY3 = dosy3
-                defaultPlayerStrumY0 = dpsy0
-                defaultPlayerStrumY1 = dpsy1
-                defaultPlayerStrumY2 = dpsy2
-                defaultPlayerStrumY3 = dpsy3
-                cancelTween('x1');
-                cancelTween('x2');
-                cancelTween('x3');
-                cancelTween('x4');
-                cancelTween('x5');
-                cancelTween('x6');
-                cancelTween('x7');
-                cancelTween('x8');
-                cancelTween('y1');
-                cancelTween('y2');
-                cancelTween('y3');
-                cancelTween('y4');
-                cancelTween('y5');
-                cancelTween('y6');
-                cancelTween('y7');
-                cancelTween('y8');
-                cancelTween('hp');
-                cancelTween('hpI1');
-                cancelTween('hpI2');
-                cancelTween('o1');
-                cancelTween('o2');
-                cancelTween('o3');
-                cancelTween('o4');
-                cancelTween('o5');
-                cancelTween('o6');
-                cancelTween('o7');
-                cancelTween('o8');
-                noteTweenX("x1",0,defaultOpponentStrumX0,value2,"cubeInOut");
-                noteTweenX("x2",1,defaultOpponentStrumX1,value2,"cubeInOut");
-                noteTweenX("x3",2,defaultOpponentStrumX2,value2,"cubeInOut");
-                noteTweenX("x4",3,defaultOpponentStrumX3,value2,"cubeInOut");
-                noteTweenX("x5",4,defaultPlayerStrumX0,value2,"cubeInOut");
-                noteTweenX("x6",5,defaultPlayerStrumX1,value2,"cubeInOut");
-                noteTweenX("x7",6,defaultPlayerStrumX2,value2,"cubeInOut");
-                noteTweenX("x8",7,defaultPlayerStrumX3,value2,"cubeInOut");
-                noteTweenY("y1",0,defaultOpponentStrumY0,value2,"cubeInOut");
-                noteTweenY("y2",1,defaultOpponentStrumY1,value2,"cubeInOut");
-                noteTweenY("y3",2,defaultOpponentStrumY2,value2,"cubeInOut");
-                noteTweenY("y4",3,defaultOpponentStrumY3,value2,"cubeInOut");
-                noteTweenY("y5",4,defaultPlayerStrumY0,value2,"cubeInOut");
-                noteTweenY("y6",5,defaultPlayerStrumY1,value2,"cubeInOut");
-                noteTweenY("y7",6,defaultPlayerStrumY2,value2,"cubeInOut");
-                noteTweenY("y8",7,defaultPlayerStrumY3,value2,"cubeInOut");
-                noteTweenAlpha("o1",0,1,value2,"quartInOut");
-                noteTweenAlpha("o2",1,1,value2,"quartInOut");
-                noteTweenAlpha("o3",2,1,value2,"quartInOut");
-                noteTweenAlpha("o4",3,1,value2,"quartInOut");
-                noteTweenAlpha("o5",4,1,value2,"quartInOut");
-                noteTweenAlpha("o6",5,1,value2,"quartInOut");
-                noteTweenAlpha("o7",6,1,value2,"quartInOut");
-                noteTweenAlpha("o8",7,1,value2,"quartInOut");
-                doTweenY('hp', 'healthBar', 640, value2, 'cubeInOut');
-                doTweenY('hpI1', 'iconP1', 570, value2, 'cubeInOut');
-                doTweenY('hpI2', 'iconP2', 570, value2, 'cubeInOut');
             elseif value1 == 90 then
                 lk = true
             elseif value1 == 91 then

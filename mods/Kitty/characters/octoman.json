@@ -194,10 +194,10 @@
 		0
 	],
 	"healthicon": "octoman",
-	"flip_x": false,
+	"flip_x": true,
 	"healthbar_colors": [
-		235,
-		0,
+		13,
+		180,
 		0
 	],
 	"camera_position": [

@@ -24,9 +24,7 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o6",5,0,0.5,"quartInOut");
             noteTweenAlpha("o7",6,0,0.5,"quartInOut");
             noteTweenAlpha("o8",7,0,0.5,"quartInOut");
-		end
-	
-		if value1 == '2' then
+		elseif value1 == '2' then
 			setProperty('timeBar.visible', true)
 			setProperty('timeBarBG.visible', true)
 			setProperty('timeTxt.visible', true)
@@ -49,8 +47,7 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o6",5,1,0.5,"quartInOut");
             noteTweenAlpha("o7",6,1,0.5,"quartInOut");
             noteTweenAlpha("o8",7,1,0.5,"quartInOut");
-		end
-		if value1 == '0' then
+		elseif value1 == '0' then
 			setProperty('timeBar.visible', true)
 			setProperty('timeBarBG.visible', true)
 			setProperty('timeTxt.visible', true)
@@ -97,8 +94,7 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o2",1,1,0.5,"quartInOut");
             noteTweenAlpha("o3",2,1,0.5,"quartInOut");
             noteTweenAlpha("o4",3,1,0.5,"quartInOut");
-		end
-		if value2 == '1+' then
+		elseif value2 == '11' then
 			setProperty('timeBar.visible', true)
 			setProperty('timeBarBG.visible', true)
 			setProperty('timeTxt.visible', true)
@@ -121,8 +117,7 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o2",1,1,0.5,"quartInOut");
             noteTweenAlpha("o3",2,1,0.5,"quartInOut");
             noteTweenAlpha("o4",3,1,0.5,"quartInOut");
-		end
-		if value2 == '2' then
+		elseif value2 == '2' then
 			setProperty('timeBar.visible', false)
 			setProperty('timeBarBG.visible', false)
 			setProperty('timeTxt.visible', false)
@@ -145,8 +140,7 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o2",1,1,0.5,"quartInOut");
             noteTweenAlpha("o3",2,1,0.5,"quartInOut");
             noteTweenAlpha("o4",3,1,0.5,"quartInOut");
-		end
-		if value2 == '3' then
+		elseif value2 == '3' then
 			setProperty('timeBar.visible', false)
 			setProperty('timeBarBG.visible', false)
 			setProperty('timeTxt.visible', false)
@@ -169,14 +163,13 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("ot6",5,0,0.5,"quartInOut");
             noteTweenAlpha("ot7",6,0,0.5,"quartInOut");
             noteTweenAlpha("ot8",7,0,0.5,"quartInOut");
-		end
-		if value2 == 4 then
+		elseif value2 == '4' then
 			hidecbo = true
-		elseif value2 == '4+' then
+		elseif value2 == '44' then
 			hidecbo = true
 			setProperty('showRating', true);
 			setProperty('showComboNum', true);
-		elseif value2 == '4++' then
+		elseif value2 == '444' then
 			hidecbo = false
 		end
 	end	
