@@ -38,7 +38,7 @@ function onEvent(name, value1, value2)
             value2 = 0
             doTweenAngle('GUI2tween', 'camHUD', 0, value2, 'bounceOut');
         elseif ran then
-                doTweenAngle('GUI3tween', 'camHUD', value1, value2, 'bounceOut');
+                doTweenAngle('GUI3tween', 'camHUD', 0+value1, value2, 'bounceOut');
                 ran = false
             else
                 doTweenAngle('GUI3tween', 'camHUD', -value1, value2, 'bounceOut');

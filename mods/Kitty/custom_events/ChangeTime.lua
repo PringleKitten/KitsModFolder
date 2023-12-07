@@ -6,7 +6,7 @@ function onUpdate()
         loop = 3
     end
 end
-
+local newV1 = 0
 function onEvent(name,value1,value2)
     if name == 'ChangeTime' then
         newV1 = (tonumber(value1)*1000)
