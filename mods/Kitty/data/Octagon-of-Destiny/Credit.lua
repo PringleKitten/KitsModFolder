@@ -6,7 +6,7 @@ local musicB = true
 local roleCredits =
 {
 	{
-	song = 'Octagon-of-Destiny',
+	song = 'Octagon of Destiny',
 	coders = {'pringlekitten', nil, {0,0}},--name,icon,iconOffset
 	artists = {'N/A', nil, {0,0}},--name,icon,iconOffset
 	composers = {'OctagonCollaboration', nil, {0,0}},--name,icon,iconOffset
