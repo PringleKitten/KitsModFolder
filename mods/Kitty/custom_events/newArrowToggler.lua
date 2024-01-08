@@ -1,4 +1,57 @@
+function onCreatePost()
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+    if downscroll then
+        noteTweenY('0', 0, 50,0.001)
+        noteTweenY('1', 1, 50,0.001)
+        noteTweenY('2', 2, 50,0.001)
+        noteTweenY('3', 3, 50,0.001)
+        noteTweenY('4', 4, 50,0.001)
+        noteTweenY('5', 5, 50,0.001)
+        noteTweenY('6', 6, 50,0.001)
+        noteTweenY('7', 7, 50,0.001)
+        doTweenY('hp', 'healthBar', 640, 0.001, curtwm);
+        doTweenY('hpI1', 'iconP1', 570, 0.001, curtwm);
+        doTweenY('hpI2', 'iconP2', 570, 0.001, curtwm);
+        doTweenY('scoretxt', 'scoreTxt', 680, 0.001, curtwm);
+        setProperty('timeTxt.y', 19);
+        setProperty('timeBar.y', 31.25);
+        setProperty('timeBarBG.y', 27.25);
+    end
+    for i=0,3 do
+    setPropertyFromGroup('opponentStrums',i,'downScroll',false);
+    setPropertyFromGroup('playerStrums',i,'downScroll',false);
+    end
+    if middlescroll then
+        noteTweenX('defaultOpponentStrumX0', 0, defaultPlayerStrumX0-323, 0.001);
+        noteTweenX('defaultOpponentStrumX1', 1, defaultPlayerStrumX1-323, 0.001);
+        noteTweenX('defaultOpponentStrumX2', 2, defaultPlayerStrumX2-323, 0.001);
+        noteTweenX('defaultOpponentStrumX3', 3, defaultPlayerStrumX3-323, 0.001);
+
+        noteTweenX('defaultPlayerStrumX0', 4, defaultPlayerStrumX0+323, 0.001);
+        noteTweenX('defaultPlayerStrumX1', 5, defaultPlayerStrumX1+323, 0.001);
+        noteTweenX('defaultPlayerStrumX2', 6, defaultPlayerStrumX2+323, 0.001);
+        noteTweenX('defaultPlayerStrumX3', 7, defaultPlayerStrumX3+323, 0.001);
+    end
+end
+end
+
 function onSongStart()
+    defaultOpponentStrumX0 = defaultPlayerStrumX0-323
+    defaultOpponentStrumX1 = defaultPlayerStrumX1-323
+    defaultOpponentStrumX2 = defaultPlayerStrumX2-323
+    defaultOpponentStrumX3 = defaultPlayerStrumX3-323
+    defaultPlayerStrumX0 = defaultPlayerStrumX0+323
+    defaultPlayerStrumX1 = defaultPlayerStrumX1+323
+    defaultPlayerStrumX2 = defaultPlayerStrumX2+323
+    defaultPlayerStrumX3 = defaultPlayerStrumX3+323
+    defaultOpponentStrumY0 = 50
+    defaultOpponentStrumY1 = 50
+    defaultOpponentStrumY2 = 50
+    defaultOpponentStrumY3 = 50
+    defaultPlayerStrumY0 = 50
+    defaultPlayerStrumY1 = 50
+    defaultPlayerStrumY2 = 50
+    defaultPlayerStrumY3 = 50
     dosx0 = defaultOpponentStrumX0
     dosx1 = defaultOpponentStrumX1
     dosx2 = defaultOpponentStrumX2
@@ -98,6 +151,10 @@ function onEvent(name, value1, value2)
                         doTweenY('hp', 'healthBar', 640, value2, curtwm);
                         doTweenY('hpI1', 'iconP1', 570, value2, curtwm);
                         doTweenY('hpI2', 'iconP2', 570, value2, curtwm);
+                        doTweenY('scoretxt', 'scoreTxt', 680, 0.001, curtwm);
+                        setProperty('timeTxt.y', 19);
+                        setProperty('timeBar.y', 31.25);
+                        setProperty('timeBarBG.y', 27.25);
                         ran = false
                     end
                 else
@@ -120,9 +177,13 @@ function onEvent(name, value1, value2)
                         defaultPlayerStrumY1 = 550
                         defaultPlayerStrumY2 = 550
                         defaultPlayerStrumY3 = 550
-                        doTweenY('hp', 'healthBar', 110, value2, curtwm);
-                        doTweenY('hpI1', 'iconP1', 40, value2, curtwm);
-                        doTweenY('hpI2', 'iconP2', 40, value2, curtwm);
+                        doTweenY('hp', 'healthBar', 80, value2, curtwm);
+                        doTweenY('hpI1', 'iconP1', 10, value2, curtwm);
+                        doTweenY('hpI2', 'iconP2', 10, value2, curtwm);
+                        doTweenY('scoretxt', 'scoreTxt',120, 0.001, curtwm);
+                        setProperty('timeTxt.y', 680);
+                        setProperty('timeBar.y', 692.25);
+                        setProperty('timeBarBG.y', 688.25);
                         ran = true
                     end
                 end
