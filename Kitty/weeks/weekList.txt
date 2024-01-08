@@ -1,5 +1,6 @@
 tutorial
 hard
 hard-oneplayer
+hard-harder
 dumb
 -----------------------------------------------------
