@@ -1,0 +1,1 @@
+v1 = strength(default = 1)v2 = size(default = 0.25, use numbers between 0-1)
