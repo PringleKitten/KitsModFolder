@@ -28,7 +28,7 @@ function onUpdatePost()
             if (game.getLuaObject("]]..__..[[") != null)
             {
             game.getLuaObject("]]..__..[[").loadGraphic(]]..__..[[.bitmapData);
-            ]]..__..[[.volume = FlxG.sound.volume + 0.4;
+            ]]..__..[[.volume = 0;
             }
         ]])
     end

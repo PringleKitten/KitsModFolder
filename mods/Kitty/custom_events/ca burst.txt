@@ -1,0 +1,2 @@
+v1 = chromatic aberration strength (use small values, < 0.01)
+v2 = max number to limit it
