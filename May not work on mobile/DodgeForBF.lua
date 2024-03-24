@@ -12,7 +12,7 @@ end
 
 function onEvent(name, value1, value2)
     if name == "DodgeForBF" then
-
+        if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
             --Get Dodge time
             DodgeTime = (value1)
             Dodged = false
@@ -28,12 +28,12 @@ function onEvent(name, value1, value2)
             canDodge = true
             runTimer('Died', DodgeTime)
             twice = twice+1
-
+        end
 	end
 end
 
 function onUpdate()
-
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
         if getProperty('ssl.animation.curAnim.finished') then
             removeLuaSprite('ssl')
         end
@@ -61,13 +61,13 @@ function onUpdate()
             count = count + 1
             go = true
         end
-
+    end
 end
 
 
 
 function onTimerCompleted(tag, loops, loopsLeft)
-
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
         if tag == 'bfff' then
             triggerEvent('Change Character', 'bf', 'bfghost')
         end
@@ -90,7 +90,7 @@ function onTimerCompleted(tag, loops, loopsLeft)
             twice = 0
 
         end
-
+    end
 end
 
 function onUpdatePost()
