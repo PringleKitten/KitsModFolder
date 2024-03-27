@@ -1,5 +1,5 @@
 {
-	"storyName": "",
+	"storyName": "Songs with ONLY hard mode",
 	"difficulties": "Hard",
 	"hideFreeplay": false,
 	"weekBackground": "",
@@ -17,42 +17,6 @@
 		""
 	],
 	"songs": [
-		[
-			"sonicwave",
-			"bf",
-			[
-				146,
-				113,
-				253
-			]
-		],
-		[
-			"crystallized",
-			"bf",
-			[
-				146,
-				113,
-				253
-			]
-		],
-		[
-			"m1llion-pp",
-			"bf",
-			[
-				146,
-				113,
-				253
-			]
-		],
-		[
-			"classical-vip",
-			"bf",
-			[
-				146,
-				113,
-				253
-			]
-		],
 		[
 			"final-rush",
 			"dad",
@@ -117,53 +81,89 @@
 			]
 		],
 		[
+			"sonicwave",
+			"bf",
+			[
+				0,
+				170,
+				255
+			]
+		],
+		[
+			"crystallized",
+			"bf",
+			[
+				161,
+				29,
+				204
+			]
+		],
+		[
+			"m1llion-pp",
+			"bf",
+			[
+				220,
+				82,
+				40
+			]
+		],
+		[
+			"classical-vip",
+			"bf",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
 		    "nekozuna-adhdmusic",
 		    "bf",
 		    [
-		        146,
-		        113,
-		        253
+		        255,
+		        255,
+		        0
 		    ]
 		],
 		[
 			"run-run",
-			"bf",
+			"suitedAftonPanic",
 			[
-				146,
-				113,
-				253
+				245,
+				123,
+				2
 			]
 		],
 		[
 			"revenge",
 			"dad",
 			[
-				146,
-				113,
-				253
+				2,
+				63,
+				124
 			]
 		],
 		[
 			"Octagon of Destiny",
 			"octoman",
 			[
-				146,
-				113,
-				253
+				255,
+				136,
+				0
 			]
 		],
 		[
 			"TON GD Level",
 			"bf",
 			[
-				146,
-				113,
-				253
+				0,
+				229,
+				255
 			]
 		],
 		[
 			"xmas in the hood",
-			"dad",
+			"bf",
 			[
 				146,
 				113,
@@ -172,13 +172,22 @@
 		],
 		[
 			"platypus",
-			"dad",
+			"bf",
 			[
-				146,
-				113,
-				253
+				255,
+				81,
+				0
+			]
+		],
+		[
+			"homiecough",
+			"bf",
+			[
+				150,
+				150,
+				150
 			]
 		]
 	],
-	"weekName": "hard"
+	"weekName": "only-hard"
 }

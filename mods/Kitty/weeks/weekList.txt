@@ -2,5 +2,5 @@ tutorial
 hard
 hard-oneplayer
 hard-harder
-dumb
+multiplayer-mod-testing
 -----------------------------------------------------
