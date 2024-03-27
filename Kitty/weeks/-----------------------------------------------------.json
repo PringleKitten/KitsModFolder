@@ -1,15 +1,15 @@
 {
 	"storyName": "-------------------------------------------------------",
-	"difficulties": "Easy",
+	"difficulties": "Normal",
 	"hideFreeplay": false,
 	"weekBackground": "",
 	"freeplayColor": [
-		146,
-		113,
-		253
+		0,
+		0,
+		0
 	],
 	"weekBefore": "tutorial",
-	"startUnlocked": true,
+	"startUnlocked": false,
 	"hideStoryMode": true,
 	"weekCharacters": [
 		"",
@@ -21,9 +21,9 @@
 			"-------------------------------------------------------",
 			"",
 			[
-				146,
-				113,
-				253
+				0,
+				0,
+				0
 			]
 		]
 	],

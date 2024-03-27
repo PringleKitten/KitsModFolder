@@ -1,5 +1,5 @@
 {
-	"storyName": "",
+	"storyName": "Songs with Hard and Oneplayer",
 	"difficulties": "Hard, Oneplayer",
 	"hideFreeplay": false,
 	"weekBackground": "",
@@ -10,7 +10,7 @@
 	],
 	"weekBefore": "tutorial",
 	"startUnlocked": true,
-	"hideStoryMode": true,
+	"hideStoryMode": false,
 	"weekCharacters": [
 		"",
 		"",
@@ -21,29 +21,29 @@
 			"africa",
 			"monster",
 			[
-				146,
-				113,
-				253
+				201,
+				130,
+				54
 			]
 		],
 		[
 			"how-bad-can-i-be",
 			"monster",
 			[
-				146,
-				113,
-				253
+				255,
+				156,
+				49
 			]
 		],
 		[
 			"say-it-(cover)",
-			"dad",
+			"bf",
 			[
-				146,
-				113,
-				253
+				22,
+				165,
+				221
 			]
 		]
 	],
-	"weekName": "hard"
+	"weekName": "hard-and-oneplayer"
 }

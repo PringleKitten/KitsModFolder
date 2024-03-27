@@ -1,5 +1,5 @@
 {
-	"storyName": "",
+	"storyName": "Snogs with Hard AND Harder modes",
 	"difficulties": "Hard, Harder",
 	"hideFreeplay": false,
 	"weekBackground": "",
@@ -21,11 +21,11 @@
 			"TLTstone FNaF1",
 			"bf",
 			[
-				146,
-				113,
-				253
+				125,
+				0,
+				0
 			]
 		]
 	],
-	"weekName": "hard"
+	"weekName": "hard-and-harder"
 }
