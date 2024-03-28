@@ -1,5 +1,5 @@
 function onCreatePost()
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+
     --if downscroll then
     --    noteTweenY('0', 0, 50,0.001)
     --    noteTweenY('1', 1, 50,0.001)
@@ -34,7 +34,7 @@ function onCreatePost()
     --    noteTweenX('defaultPlayerStrumX3', 7, defaultPlayerStrumX3+323, 0.001);
     --    setPropertyFromClass('ClientPrefs','midScroll', false)
     --end
-end
+
 end
 
 function onSongStart()
@@ -96,7 +96,7 @@ function onUpdate()
 end
 function onEvent(name, value1, value2)
     if name == "newArrowToggler" then
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+        
             value1 = tonumber(value1);
             ALTdosx0 = defaultOpponentStrumX0
             ALTdosx1 = defaultOpponentStrumX1
@@ -441,6 +441,5 @@ function onEvent(name, value1, value2)
                 noteTweenY("defaultPlayerStrumY2",6,defaultPlayerStrumY2,value2,curtwm);
                 noteTweenY("defaultPlayerStrumY3",7,defaultPlayerStrumY3,value2,curtwm);
             end
-        end
     end
 end
