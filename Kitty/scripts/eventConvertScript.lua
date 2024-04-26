@@ -10,7 +10,7 @@ function onEvent(name, value1, value2)
     value1 = tonumber(value1);
     value2 = tonumber(value2);
    if name == "ArrowToggling" then
-
+       if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
            --Change downscroll/upscroll
            if value1 == 1 then
                if ran then
@@ -204,7 +204,7 @@ function onEvent(name, value1, value2)
                ls = false
                mdsc = true
          end
-
+      end
    end
    if value2 == 90 then
        lk = true
@@ -327,3 +327,5 @@ function onUpdate()
        noteTweenX('defaultOpponentStrumX3', 7, defaultOpponentStrumX3 - 50*math.sin((currentBeat+7*0.25)*math.pi), 0.5)
    end
 end
+
+--@PringleKitten

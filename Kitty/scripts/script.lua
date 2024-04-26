@@ -56,6 +56,38 @@ function onCreate()
     noteTweenAlpha("o4",3,0.5,0.001,"quartInOut")
 end
 
+function goodNoteHit()
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
+        if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
+            setProperty('health', getProperty('health') + 0.01)
+        elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
+            setProperty('health', getProperty('health') + 0.02)
+        elseif getProperty('ratingPercent') < 0.8 and getProperty('ratingPercent') > 0.75 then
+            setProperty('health', getProperty('health') + 0.03)
+        elseif getProperty('ratingPercent') < 0.7 and getProperty('ratingPercent') > 0.65 then
+            setProperty('health', getProperty('health') + 0.04)
+        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0 then
+            setProperty('health', getProperty('health') + 0.05)
+        end
+    end
+end
+
+function noteMiss()
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
+        if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
+            setProperty('health', getProperty('health') - 0.1)
+        elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
+            setProperty('health', getProperty('health') - 0.12)
+        elseif getProperty('ratingPercent') < 0.67 and getProperty('ratingPercent') > 0.63 then
+            setProperty('health', getProperty('health') - 0.16)
+        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0.55 then
+            setProperty('health', getProperty('health') - 0.2)
+        elseif getProperty('ratingPercent') < 0.53 and getProperty('ratingPercent') > 0 then
+            setProperty('health', getProperty('health') - 0.23)
+        end
+    end
+end
+
 function onSongStart()
     dpsx0 = getPropertyFromGroup('playerStrums', 0, 'x')
     dpsx1 = getPropertyFromGroup('playerStrums', 1, 'x')
@@ -194,18 +226,6 @@ function onEvent(name, value1, value2)
     end
 end
 
-
-function onSectionHit()
-    if customzoom then
-        if stopui == false then
-            --doTweenZoom('tweeningZoom', 'camHUD', 1.25, 0.07, 'quadOut')
-        end
-        if stopcam == false then
-            --doTweenZoom('tweeningZoomin', 'camGame', 1.25, 0.07, 'quadOut')
-        end
-    end
-end
-
 function onDestroy()
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
 end
@@ -240,3 +260,5 @@ end
 function remap(v, str1, stp1, str2, stp2)
 	return str2 + (v - str1) * ((stp2 - str2) / (stp1 - str1));
 end
+
+--@PringleKitten

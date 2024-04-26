@@ -8,7 +8,7 @@ local roleCredits =
 	{
 	song = 'run-run',
 	coders = {'pringlekitten', nil, {0,0}},--name,icon,iconOffset
-	artists = {'FUNKIN AT FREDDYS', nil, {0,0}},--name,icon,iconOffset
+	artists = {'CK9C', nil, {0,0}},--name,icon,iconOffset
 	composers = {'N/A', nil, {0,0}},--name,icon,iconOffset
 	charters = {'pringlekitten', nil, {0,0}},--name,icon,iconOffset
 	barFG = {'ff00a2', '000000', '000000', 'ff00a2'}, --coder,artist,composer,charter
