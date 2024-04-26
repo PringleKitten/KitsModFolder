@@ -1,0 +1,67 @@
+{
+	"storyName": "vs Animation",
+	"difficulties": "Se, Easy, Normal, Hard, Insane, Expert, Expert+",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": false,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"adobe",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"victim",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"end-process",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"alan",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"diva",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"weekName": "vs Animation"
+}

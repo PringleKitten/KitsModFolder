@@ -1,0 +1,31 @@
+{
+	"storyName": "",
+	"difficulties": "Easy, Normal, Hard",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"ghostleft",
+			"gf",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"weekName": "ghost"
+}

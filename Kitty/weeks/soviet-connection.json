@@ -1,0 +1,31 @@
+{
+    "storyName": "soviet-connection",
+	"difficulties": "Se, Normal",
+	"hideFreeplay": false,
+	"weekBackground": "stage",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"weekCharacters": [
+		"",
+		"bf",
+		"gf"
+	],
+	"songs": [	
+		[
+			"soviet-connection",
+			"bf",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"hideStoryMode": true,
+	"weekName": "soviet-connection"
+}

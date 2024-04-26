@@ -1,0 +1,31 @@
+{
+	"storyName": "--OLD SONGS BELOW--",
+	"difficulties": "--",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		0,
+		0,
+		0
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": false,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"--OLD SONGS BELOW--",
+			"",
+			[
+				0,
+				0,
+				0
+			]
+		]
+	],
+	"weekName": "--OLD SONGS BELOW--"
+}

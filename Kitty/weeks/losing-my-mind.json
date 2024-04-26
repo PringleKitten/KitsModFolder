@@ -1,0 +1,31 @@
+{
+    "storyName": "losing-my-mind",
+	"difficulties": "Se, Normal, Expert, Expert+",
+	"hideFreeplay": false,
+	"weekBackground": "stage",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"weekCharacters": [
+		"",
+		"bf",
+		"gf"
+	],
+	"songs": [	
+	    [
+			"losing-my-mind",
+			"bf",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"hideStoryMode": true,
+	"weekName": "losing-my-mind"
+}
