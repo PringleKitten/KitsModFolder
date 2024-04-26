@@ -4,13 +4,13 @@ hard-harder
 hard-oneplayer
 geometrydash
 wtti
+wtf
 soviet-connection
 cyber
 multiplayer-mod-testing
 separator1
 my-charts
 alldifficult
-wtf
 secret
 secret-b
 ghost
