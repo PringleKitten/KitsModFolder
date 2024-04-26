@@ -1,5 +1,5 @@
 {
-	"storyName": "--OLD SONGS BELOW--",
+	"storyName": "Separator2",
 	"difficulties": "Meow",
 	"hideFreeplay": false,
 	"weekBackground": "",
@@ -18,7 +18,7 @@
 	],
 	"songs": [
 		[
-			"--OLD SONGS BELOW--",
+			"--OTHER-MODS--",
 			"",
 			[
 				0,
@@ -27,5 +27,5 @@
 			]
 		]
 	],
-	"weekName": "--OLD SONGS BELOW--"
+	"weekName": "Separator2"
 }

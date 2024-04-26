@@ -1,5 +1,5 @@
 {
-	"storyName": "--OTHER MODS--",
+	"storyName": "Separator1",
 	"difficulties": "Meow",
 	"hideFreeplay": false,
 	"weekBackground": "",
@@ -18,7 +18,7 @@
 	],
 	"songs": [
 		[
-			"--OTHER MODS--",
+			"--OLD-SONGS-BELOW--",
 			"",
 			[
 				0,
@@ -27,5 +27,5 @@
 			]
 		]
 	],
-	"weekName": "--OTHER MODS--"
+	"weekName": "Separator1"
 }
