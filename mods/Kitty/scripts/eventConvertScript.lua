@@ -327,3 +327,5 @@ function onUpdate()
        noteTweenX('defaultOpponentStrumX3', 7, defaultOpponentStrumX3 - 50*math.sin((currentBeat+7*0.25)*math.pi), 0.5)
    end
 end
+
+--@PringleKitten

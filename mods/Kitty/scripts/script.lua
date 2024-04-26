@@ -226,18 +226,6 @@ function onEvent(name, value1, value2)
     end
 end
 
-
-function onSectionHit()
-    if customzoom then
-        if stopui == false then
-            --doTweenZoom('tweeningZoom', 'camHUD', 1.25, 0.07, 'quadOut')
-        end
-        if stopcam == false then
-            --doTweenZoom('tweeningZoomin', 'camGame', 1.25, 0.07, 'quadOut')
-        end
-    end
-end
-
 function onDestroy()
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
 end
@@ -272,3 +260,5 @@ end
 function remap(v, str1, stp1, str2, stp2)
 	return str2 + (v - str1) * ((stp2 - str2) / (stp1 - str1));
 end
+
+--@PringleKitten
