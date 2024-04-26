@@ -3,7 +3,7 @@ hard
 hard-harder
 hard-oneplayer
 multiplayer-mod-testing
---OLD SONGS BELOW--
+--OLD-SONGS-BELOW--
 geometrydash
 losing-my-mind
 soviet-connection
@@ -17,3 +17,4 @@ secret-b
 ghost
 ghostleft
 stickfigurething
+--OTHER-MODS--
