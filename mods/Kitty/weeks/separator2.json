@@ -1,6 +1,6 @@
 {
-	"storyName": "--OTHER MODS--",
-	"difficulties": "Normal",
+	"storyName": "Separator2",
+	"difficulties": "Meow",
 	"hideFreeplay": false,
 	"weekBackground": "",
 	"freeplayColor": [
@@ -18,8 +18,8 @@
 	],
 	"songs": [
 		[
-			"--OTHER MODS--",
-			"",
+			"----OTHER_MODS----",
+			"gf-invis",
 			[
 				0,
 				0,
@@ -27,5 +27,5 @@
 			]
 		]
 	],
-	"weekName": "--OTHER MODS--"
+	"weekName": "Separator2"
 }
