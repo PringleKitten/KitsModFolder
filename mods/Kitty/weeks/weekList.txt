@@ -2,5 +2,6 @@ tutorial
 hard
 hard-oneplayer
 hard-harder
+ogsongchartsbyme
 multiplayer-mod-testing
 separator2

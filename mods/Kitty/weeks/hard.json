@@ -18,75 +18,30 @@
 	],
 	"songs": [
 		[
-			"final-rush",
-			"dad",
-			[
-				146,
-				113,
-				253
-			]
-		],
-				[
-			"my-crown",
-			"t1nman",
-			[
-				146,
-				113,
-				253
-			]
-		],
-				[
-			"crown-jewel",
-			"t1nman",
-			[
-				146,
-				113,
-				253
-			]
-		],
-				[
-			"hello-im-tinny",
-			"t1nman",
-			[
-				146,
-				113,
-				253
-			]
-		],
-		[
-			"bofa-us",
-			"t1nsen",
-			[
-				146,
-				113,
-				253
-			]
-		],
-		[
-			"one-shot-wonder",
-			"t1nman",
-			[
-				146,
-				113,
-				253
-			]
-		],
-		[
-			"going-off",
-			"senpai-pixel",
-			[
-				146,
-				113,
-				253
-			]
-		],
-		[
-			"sonicwave",
+			"xmas in the hood",
 			"bf",
 			[
-				0,
-				170,
-				255
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"revenge",
+			"dad",
+			[
+				2,
+				63,
+				124
+			]
+		],
+		[
+			"run-run",
+			"suitedAftonPanic",
+			[
+				245,
+				123,
+				2
 			]
 		],
 		[
@@ -126,30 +81,21 @@
 		    ]
 		],
 		[
-			"run-run",
-			"suitedAftonPanic",
+			"sonicwave",
+			"bf",
 			[
-				245,
-				123,
-				2
+				0,
+				170,
+				255
 			]
 		],
 		[
-			"revenge",
-			"dad",
+			"sandstorm",
+			"bf",
 			[
-				2,
-				63,
-				124
-			]
-		],
-		[
-			"Octagon of Destiny",
-			"octoman",
-			[
-				255,
-				136,
-				0
+				205,
+				189,
+				68
 			]
 		],
 		[
@@ -159,15 +105,6 @@
 				0,
 				229,
 				255
-			]
-		],
-		[
-			"xmas in the hood",
-			"bf",
-			[
-				146,
-				113,
-				253
 			]
 		],
 		[
@@ -186,6 +123,15 @@
 				150,
 				150,
 				150
+			]
+		],
+		[
+			"Octagon of Destiny",
+			"octoman",
+			[
+				255,
+				136,
+				0
 			]
 		]
 	],
