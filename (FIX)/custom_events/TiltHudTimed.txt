@@ -1,0 +1,7 @@
+Value1: HUD Tilt
+00=Reset
+1=HUD Default TILT | 2=HUD Big Tilt
+1234=Tilt Dance | 1111=Stops and goes to Default
+*Anything other than 1-2 is YOUR custom angle*
+
+Value2: time to move in seconds

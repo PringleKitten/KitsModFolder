@@ -1,0 +1,61 @@
+local ran = false
+local ran1 = false
+local thing = 1
+local thing2 = 1
+local event = 0
+local v1 = false
+local v2 = false
+function onEvent(name, value1, value2)
+    if name == "TiltHudTimed" then
+
+        event = "TiltHudTimed"
+        value1 = tonumber(value1) or 0;
+        value2 = tonumber(value2) or 0;
+        if value1 == 00 then
+            doTweenAngle('GUItween', 'camHUD', 0, value2, 'bounceOut');
+            ran = false
+        elseif value1 == 1 then
+            if ran then
+                doTweenAngle('GUI1tween', 'camHUD', 10, value2, 'bounceOut');
+                ran = false
+            else
+                doTweenAngle('GUI1tween', 'camHUD', -10, value2, 'bounceOut');
+                ran = true
+            end
+        elseif value1 == 2 then
+            if ran then
+                doTweenAngle('GUI2tween', 'camHUD', 30, value2, 'bounceOut');
+                ran = false
+            else
+                doTweenAngle('GUI2tween', 'camHUD', -30, value2, 'bounceOut');
+                ran = true
+            end
+        elseif value1 == 1234 then
+            v1 = true
+        elseif value1 == 1111 then
+            v1 = false
+            value1 = 0
+            value2 = 0
+            doTweenAngle('GUI2tween', 'camHUD', 0, value2, 'bounceOut');
+        elseif ran then
+                doTweenAngle('GUI3tween', 'camHUD', 0+value1, value2, 'bounceOut');
+                ran = false
+            else
+                doTweenAngle('GUI3tween', 'camHUD', -value1, value2, 'bounceOut');
+                ran = true
+        end
+    end
+
+end
+
+function onBeatHit()
+
+        if v1 then
+            thing2 = thing2 * -1
+            doTweenAngle('rotate', 'camHUD', thing2 * 5, crochet / 1000, 'quadInOut')
+        end
+
+end
+
+
+

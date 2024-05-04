@@ -1,0 +1,5 @@
+	      V1:
+1=ON  |  AnythingElse/EmptyValue=OFF
+
+	      V2:
+Speed of window movement(4 is normal)

@@ -1,0 +1,2 @@
+Value1 is how much time you have to dodge.
+Value2, 1 makes you dodge every beat, anthing else turns off

@@ -1,0 +1,3 @@
+If you're using this for a mobile version or something that doesn't use my engine:
+1. Delete the SCRIPTS and CUSTOM EVENTS folders
+2. Copy those folders from the (FIX) folder to the mods folder

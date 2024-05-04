@@ -1,0 +1,94 @@
+{
+	"storyName": "OG Charts I made for other mods",
+	"difficulties": "Hard",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"final-rush",
+			"dad",
+			[
+				146,
+				113,
+				253
+			]
+		],
+				[
+			"my-crown",
+			"t1nman",
+			[
+				146,
+				113,
+				253
+			]
+		],
+				[
+			"crown-jewel",
+			"t1nman",
+			[
+				146,
+				113,
+				253
+			]
+		],
+				[
+			"hello-im-tinny",
+			"t1nman",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"bofa-us",
+			"t1nsen",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"one-shot-wonder",
+			"t1nman",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"going-off",
+			"senpai-pixel",
+			[
+				146,
+				113,
+				253
+			]
+		],
+		[
+			"manifest-metal",
+			"sky-mani",
+			[
+				0,
+				0,
+				0
+			]
+		]
+	],
+	"weekName": "OG Charts I made for other mods"
+}

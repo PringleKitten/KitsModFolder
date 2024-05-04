@@ -1,0 +1,8 @@
+This is a toggle so just place the event AGAIN to
+disable it, and again to re-enable it.
+
+Value1 - CamZoom Amount
+DEF: 0.015
+
+Value2 - UIZoom Amount
+DEF: 0.03

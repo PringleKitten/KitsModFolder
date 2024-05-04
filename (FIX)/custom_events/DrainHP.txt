@@ -1,0 +1,8 @@
+Drain Player Health
+
+Value 1: Drain Value, can be a negative for regeneration.
+Health drainage is in percentage.
+
+Value 2: Limit to where it will stop health from draining that far.
+If value is 0 or a negative it will kill player.
+value is used in percentage.s

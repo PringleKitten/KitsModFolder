@@ -1,0 +1,9 @@
+V1 - Time to change the song time to.
+ex: 200(In Seconds) = 3:20
+
+Below is Experimental
+Psych doesn't handle rewinds well.
+Many things may break but song will still play.
+V2: (This is if you're going backwards in time)
+1 = Loop
+0 = Run event ONCE and never again.

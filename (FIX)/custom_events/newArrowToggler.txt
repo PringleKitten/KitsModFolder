@@ -1,0 +1,9 @@
+L+R = Left + Right | U+D = Up + Down
+**Value 1:
+0: PANIC
+1: Flips ScrollMode | 2: Swap Sides | 3: Middle Scroll
+11 is same as 1 but arrows WONT move down.
+(Player note swap) 10: L+R | 11: U+D | 12: L+R + U+D
+90: Arrow Dance ON | 91: Arrow Dance OFF and FIX
+**Value2: Time to Move
+if blank, moves normal setting
