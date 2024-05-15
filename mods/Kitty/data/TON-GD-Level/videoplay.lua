@@ -1,5 +1,14 @@
+local offset = 0
 function onSongStart()
+    offset = getPropertyFromClass('ClientPrefs','noteOffset')
     setProperty('showComboNum', false)
     setProperty('showRating', false)
-    callScript('scripts/videoSprite', 'makeVideoSprite', {'vides12', 'tongd', 382, -11.2, 'camGame', 1.111, 1.1105})
+    runTimer('vid',offset/1000)
+    debugPrint('Current Offset: ','(',offset,')')
+end
+
+function onTimerCompleted(tag)
+    if tag == 'vid' then
+        callScript('scripts/videoSprite', 'makeVideoSprite', {'tgd', 'tongd', 382, -11.2, 'camGame', 1.111, 1.1105})
+    end
 end

@@ -1,38 +1,9 @@
-local stopcam = false
+local kadezoom = false
 local stopui = false
-function onUpdate()
-    if runHaxeCode("return FlxG.keys.firstJustPressed();") then
-        if songName ~= 'listen' then
-            f = runHaxeCode("return FlxG.keys.firstJustPressed();")
-
-            if getPropertyFromClass('flixel.FlxG', 'keys.justPressed.R') then
-                uhoh = 1
-            elseif uhoh == 1 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.E') then
-                uhoh = 2
-            
-            elseif uhoh == 2 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.B') then
-                uhoh = 3
-            
-            elseif uhoh == 3 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.E') then
-                uhoh = 4
-            
-            elseif uhoh == 4 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.C') then
-                uhoh = 5
-            
-            elseif uhoh == 5 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.C') then
-                uhoh = 6
-            
-            elseif uhoh == 6 and getPropertyFromClass('flixel.FlxG', 'keys.justPressed.A') then
-                loadSong('listen', 1);
-            elseif f > 0 then
-                    if f ~= 82 and f ~= 69 and f ~= 66 and f ~= 67 and f ~= 65 then
-                        uhoh = 0
-                    end
-                end
-        end
-    end
-end
-
+local stopcam = false
+local czm = 1
+local czmu = 1
+local czmc = 1
 function onCreate()
     precacheImage('me/popup/bars')
     setProperty('skipArrowStartTween', true)
@@ -49,11 +20,38 @@ function onCreate()
     setProperty('bars.scale.x', 2)
     setProperty('bars.scale.y', 2)
     setProperty('bars.alpha', 0)
-    setProperty('skipArrowStartTween', true)
-    noteTweenAlpha("o1",0,0.5,0.001,"quartInOut")
-    noteTweenAlpha("o2",1,0.5,0.001,"quartInOut")
-    noteTweenAlpha("o3",2,0.5,0.001,"quartInOut")
-    noteTweenAlpha("o4",3,0.5,0.001,"quartInOut")
+    setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
+    setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
+end
+
+function onSongStart()
+    dpsx0 = getPropertyFromGroup('playerStrums', 0, 'x')
+    dpsx1 = getPropertyFromGroup('playerStrums', 1, 'x')
+    dpsx2 = getPropertyFromGroup('playerStrums', 2, 'x')
+    dpsx3 = getPropertyFromGroup('playerStrums', 3, 'x')
+    dosx0 = getPropertyFromGroup('opponentStrums', 0, 'x')
+    dosx1 = getPropertyFromGroup('opponentStrums', 1, 'x')
+    dosx2 = getPropertyFromGroup('opponentStrums', 2, 'x')
+    dosx3 = getPropertyFromGroup('opponentStrums', 3, 'x')
+    dpsy0 = getPropertyFromGroup('playerStrums', 0, 'y')
+    dpsy1 = getPropertyFromGroup('playerStrums', 1, 'y')
+    dpsy2 = getPropertyFromGroup('playerStrums', 2, 'y')
+    dpsy3 = getPropertyFromGroup('playerStrums', 3, 'y')
+    dosy0 = getPropertyFromGroup('opponentStrums', 0, 'y')
+    dosy1 = getPropertyFromGroup('opponentStrums', 1, 'y')
+    dosy2 = getPropertyFromGroup('opponentStrums', 2, 'y')
+    dosy3 = getPropertyFromGroup('opponentStrums', 3, 'y')
+    setProperty('bars.alpha', 1);
+    doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
+    setObjectCamera('bars', 'other')
+    setObjectCamera('bars', 'hud')
+    screenCenter('bars')
+    setProperty('bars.alpha', 0)
+    doTweenY('ba', 'bars.scale', 3, 0.1, 'quadInOut')
+    doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
+    setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
+    setPropertyFromClass("openfl.Lib", "application.window.title", songName)
+    czm = getProperty('camZoomingMult')
 end
 
 function goodNoteHit()
@@ -87,40 +85,6 @@ function noteMiss()
         end
     end
 end
-
-function onSongStart()
-    dpsx0 = getPropertyFromGroup('playerStrums', 0, 'x')
-    dpsx1 = getPropertyFromGroup('playerStrums', 1, 'x')
-    dpsx2 = getPropertyFromGroup('playerStrums', 2, 'x')
-    dpsx3 = getPropertyFromGroup('playerStrums', 3, 'x')
-    dosx0 = getPropertyFromGroup('opponentStrums', 0, 'x')
-    dosx1 = getPropertyFromGroup('opponentStrums', 1, 'x')
-    dosx2 = getPropertyFromGroup('opponentStrums', 2, 'x')
-    dosx3 = getPropertyFromGroup('opponentStrums', 3, 'x')
-    dpsy0 = getPropertyFromGroup('playerStrums', 0, 'y')
-    dpsy1 = getPropertyFromGroup('playerStrums', 1, 'y')
-    dpsy2 = getPropertyFromGroup('playerStrums', 2, 'y')
-    dpsy3 = getPropertyFromGroup('playerStrums', 3, 'y')
-    dosy0 = getPropertyFromGroup('opponentStrums', 0, 'y')
-    dosy1 = getPropertyFromGroup('opponentStrums', 1, 'y')
-    dosy2 = getPropertyFromGroup('opponentStrums', 2, 'y')
-    dosy3 = getPropertyFromGroup('opponentStrums', 3, 'y')
-    setProperty('bars.alpha', 1);
-    doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
-    setObjectCamera('bars', 'other')
-    setObjectCamera('bars', 'hud')
-    screenCenter('bars')
-    setProperty('bars.alpha', 0)
-    doTweenY('ba', 'bars.scale', 3, 0.1, 'quadInOut')
-    doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
-    setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
-    setPropertyFromClass("openfl.Lib", "application.window.title", songName)
-    setPropertyFromClass('ClientPrefs', 'hudZoomSections', true)
-    setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)
-    setProperty('camZooms', true)
-end
-
-local customzoom = false
 
 function onEvent(name, value1, value2)
     if name == 'newArrowToggler' then
@@ -193,35 +157,63 @@ function onEvent(name, value1, value2)
             noteTweenX("oX3",3,defaultPlayerStrumX3,value2,"cubeInOut");
         end
     end
-    if name == "customzoomtoggle" then
+    if name == "kadezoomtoggle" then
         value1 = tonumber(value1)
+        value2 = tonumber(value2)
         if value1 == 1 then
-            customzoom = true
+            czm = 0
+            kadezoom = true
         else
-            customzoom = false
+            kadezoom = false
+            czm = 1
         end
+        setProperty('camZoomingMult', czm)
     end
-
     if name == "nozoom" then
         value1 = tonumber(value1)
         value2 = tonumber(value2)
         if value1 == 1 then
             stopcam = true
-        else
+            czmc = 0
+            --setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)--WHY ARENT THESE WORKING?!!?
+            --debugPrint('czm = 0 due to event')
+        elseif value1 == 0 then
             stopcam = false
-            setProperty('camZoomingMult', 1)
+            czmc = 1
+            --setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
         end
         if value2 == 1 then
             stopui = true
-        else
+            czmu = 0
+            --setPropertyFromClass('ClientPrefs', 'hudZoomSections', false) --WHY ARENT THESE WORKING?!!?
+        elseif value2 == 0 then
             stopui = false
-            setProperty('camZoomingMult', 1)
+            czmu = 1
+            --setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
         end
-        if stopui then
-            setProperty('camZoomingMult', 0)
+    end
+end
+
+function onUpdate(elapsed)
+    el = elapsed
+    --debugPrint('onupdate','|',czm)
+    if kadezoom == true then
+        if stopui == false then
+            doTweenZoom('tweeningZoom', 'camHUD', getProperty('defaultCamUIZoom'), 0.15, 'quadOut')
         end
-        if stopcam then
-            setProperty('camZoomingMult', 0)
+        if stopcam == false then
+            doTweenZoom('tweeningZoomin', 'camGame', getProperty('defaultCamUIZoom'), 0.15, 'quadOut')
+        end
+    end
+end
+
+function onSectionHit()
+    if kadezoom == true then
+        if stopui == false then
+            doTweenZoom('tweeningZoom', 'camHUD', czmu+0.08, 0.06, 'quadOut')
+        end
+        if stopcam == false then
+            doTweenZoom('tweeningZoomin', 'camGame', czmc+0.08, 0.06, 'quadOut')
         end
     end
 end
@@ -230,35 +222,35 @@ function onDestroy()
     setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
 end
 
-function onCreatePost()
-    setProperty('healthBar.numDivisions', 10000)
-end
-
-local flip = false
-local percent = 50
-function onUpdatePost(e)
-    flip = getProperty('healthBar.flipX') or getProperty('healthBar.angle') == 180 or getProperty('healthBar.scale.x') == -1
-
-    percent = math.lerp(percent, math.max((getProperty('health') * 50), 0), (e * 10))
-    setProperty('healthBar.percent', percent)
-    if percent > 100 then percent = 100 end
-
-    local usePer = (flip and percent or remap(percent, 0, 100, 100, 0)) * 0.01
-    local part1 = getProperty('healthBar.x') + ((getProperty('healthBar.width')) * usePer)
-    local iconParts = {part1 + (150 * getProperty('iconP1.scale.x') - 150) / 2 - 26, part1 - (150 * getProperty('iconP2.scale.x')) / 2 - 26 * 2}
-
-    for i = 1, 2 do
-        setProperty('iconP'..i..'.x', iconParts[flip and ((i % 2) + 1) or i])
-        setProperty('iconP'..i..'.flipX', flip)
+--This below makes the Health Bar move Smoothly
+    function onCreatePost()
+        setProperty('healthBar.numDivisions', 10000)
     end
-end
+    local flip = false
+    local percent = 50
+    function onUpdatePost(e)
+        flip = getProperty('healthBar.flipX') or getProperty('healthBar.angle') == 180 or getProperty('healthBar.scale.x') == -1
 
-function math.lerp(a, b, t)
-    return (b - a) * t + a;
-end
+        percent = math.lerp(percent, math.max((getProperty('health') * 50), 0), (e * 10))
+        setProperty('healthBar.percent', percent)
+        if percent > 100 then percent = 100 end
 
-function remap(v, str1, stp1, str2, stp2)
-	return str2 + (v - str1) * ((stp2 - str2) / (stp1 - str1));
-end
+        local usePer = (flip and percent or remap(percent, 0, 100, 100, 0)) * 0.01
+        local part1 = getProperty('healthBar.x') + ((getProperty('healthBar.width')) * usePer)
+        local iconParts = {part1 + (150 * getProperty('iconP1.scale.x') - 150) / 2 - 26, part1 - (150 * getProperty('iconP2.scale.x')) / 2 - 26 * 2}
+
+        for i = 1, 2 do
+            setProperty('iconP'..i..'.x', iconParts[flip and ((i % 2) + 1) or i])
+            setProperty('iconP'..i..'.flipX', flip)
+        end
+    end
+
+    function math.lerp(a, b, t)
+        return (b - a) * t + a;
+    end
+
+    function remap(v, str1, stp1, str2, stp2)
+    	return str2 + (v - str1) * ((stp2 - str2) / (stp1 - str1));
+    end
 
 --@PringleKitten
