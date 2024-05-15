@@ -51,6 +51,8 @@ function onSongStart()
     doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
     setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)
+    dcuiz = getProperty('defaultCamUIZoom')
+    dcgz = getProperty('defaultCamZoom')
     czm = getProperty('camZoomingMult')
 end
 
@@ -157,6 +159,15 @@ function onEvent(name, value1, value2)
             noteTweenX("oX3",3,defaultPlayerStrumX3,value2,"cubeInOut");
         end
     end
+    if name == "hudzoom" then 
+        value1 = tonumber(value1)
+        value2 = tonumber(value2)       
+        if value2 == '' then
+			doTweenZoom('camzz','camHUD',tonumber(value1),0.01,'sineInOut')
+	    else
+            doTweenZoom('camzz','camHUD',tonumber(value1),tonumber(value2),'sineInOut')
+	    end
+    end
     if name == "kadezoomtoggle" then
         value1 = tonumber(value1)
         value2 = tonumber(value2)
@@ -199,10 +210,10 @@ function onUpdate(elapsed)
     --debugPrint('onupdate','|',czm)
     if kadezoom == true then
         if stopui == false then
-            doTweenZoom('tweeningZoom', 'camHUD', getProperty('defaultCamUIZoom'), 0.15, 'quadOut')
+            doTweenZoom('tweeningZoom', 'camHUD', dcuiz, 0.15, 'quadOut')
         end
         if stopcam == false then
-            doTweenZoom('tweeningZoomin', 'camGame', getProperty('defaultCamUIZoom'), 0.15, 'quadOut')
+            doTweenZoom('tweeningZoomin', 'camGame', dcgz, 0.15, 'quadOut')
         end
     end
 end
@@ -215,6 +226,12 @@ function onSectionHit()
         if stopcam == false then
             doTweenZoom('tweeningZoomin', 'camGame', czmc+0.08, 0.06, 'quadOut')
         end
+    end
+end
+
+function onTweenCompleted(name)
+    if name == 'camzz' then
+        setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
     end
 end
 
