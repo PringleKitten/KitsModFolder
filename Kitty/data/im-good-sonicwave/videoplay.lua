@@ -8,5 +8,5 @@ end
 function onSongStart()
     removeLuaSprite('dod')
     setPropertyFromClass('GameOverSubstate', 'deathSoundName', 'ded')
-    callScript('scripts/videoSprite', 'makeVideoSprite', {'videoer1', 'sonicwave', -320, -180, 'camHUD', 0.667, 0.667})
+    callScript('scripts/videoSprite', 'makeVideoSprite', {'sonwave', 'sonicwave', -320, -180, 'camHUD', 0.667, 0.667})
 end
