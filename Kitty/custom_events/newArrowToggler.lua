@@ -96,7 +96,7 @@ function onUpdate()
 end
 function onEvent(name, value1, value2)
     if name == "newArrowToggler" then
-        
+
             value1 = tonumber(value1);
             ALTdosx0 = defaultOpponentStrumX0
             ALTdosx1 = defaultOpponentStrumX1
@@ -441,5 +441,6 @@ function onEvent(name, value1, value2)
                 noteTweenY("defaultPlayerStrumY2",6,defaultPlayerStrumY2,value2,curtwm);
                 noteTweenY("defaultPlayerStrumY3",7,defaultPlayerStrumY3,value2,curtwm);
             end
+
     end
 end

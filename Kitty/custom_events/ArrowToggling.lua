@@ -67,7 +67,7 @@ function onUpdate()
 end
 function onEvent(name, value1, value2)
     if name == "ArrowToggling" then
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+
             value1 = tonumber(value1);
             value2 = tonumber(value2);
 
@@ -264,7 +264,7 @@ function onEvent(name, value1, value2)
                 ls = false
                 mdsc = true
             end
-        end
+
     end
     if value2 == 90 then
         lk = true
