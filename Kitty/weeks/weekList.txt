@@ -3,5 +3,6 @@ hard
 hard-oneplayer
 hard-harder
 ogsongchartsbyme
+band
 multiplayer-mod-testing
 separator2
