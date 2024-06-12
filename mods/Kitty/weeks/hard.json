@@ -124,6 +124,24 @@
 				136,
 				0
 			]
+		],
+		[
+			"ab-sea-shanty",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"ab-sea-shanty-edit",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
 		]
 	],
 	"weekName": "only-hard"
