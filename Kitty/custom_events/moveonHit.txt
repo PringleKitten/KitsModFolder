@@ -1,4 +1,5 @@
       V1:
-1 = ON | 2 = OFF
-
-Kinda buggy idfk why
+1 = on player
+2 = on opponent
+3 = on both
+4 = off

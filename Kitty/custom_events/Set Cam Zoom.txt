@@ -1,0 +1,5 @@
+Sets Camera Zoom
+
+Value 1: Cam zoom
+
+Value 2: time it takes to zoom in seconds

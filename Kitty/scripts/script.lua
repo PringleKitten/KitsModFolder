@@ -92,7 +92,7 @@ function onEvent(name, value1, value2)
     if name == 'newArrowToggler' then
         value1 = tonumber(value1)
         value2 = tonumber(value2)
-        if value1 == 3 then
+        if value1 == 3 or value1 == 33 then
             mdsc = true
         elseif value1 == 2 then
             mdsc = false
@@ -207,10 +207,10 @@ end
 
 function onUpdate(elapsed)
     el = elapsed
-    --debugPrint('onupdate','|',dcuiz)
+    --debugPrint('onupdate','|',czm)
     if kadezoom == true then
         if stopui == false then
-            doTweenZoom('tweeningZoom', 'camHUD', czmu, 0.15, 'quadOut')
+            doTweenZoom('tweeningZoom', 'camHUD', dcuiz, 0.15, 'quadOut')
         end
         if stopcam == false then
             doTweenZoom('tweeningZoomin', 'camGame', dcgz, 0.15, 'quadOut')

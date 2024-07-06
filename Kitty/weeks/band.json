@@ -9,7 +9,7 @@
 		0
 	],
 	"weekBefore": "tutorial",
-	"startUnlocked": false,
+	"startUnlocked": true,
 	"hideStoryMode": true,
 	"weekCharacters": [
 		"",

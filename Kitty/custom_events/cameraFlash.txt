@@ -1,0 +1,4 @@
+value1: color 0xFFFFFF is white
+how: 0x"your color in hex"
+
+value2: time
