@@ -11,6 +11,7 @@ function onEvent(name, value1, value2)
         event = "TiltBGTimed"
         value1 = tonumber(value1) or 0;
         value2 = tonumber(value2) or 0;
+        if value2 > 0.012 then
         if value1 == 00 then
             doTweenAngle('GUI4tween', 'camGame', 0, value2, 'bounceOut');
             ran1 = false
@@ -43,6 +44,13 @@ function onEvent(name, value1, value2)
                 doTweenAngle('GUI7tween', 'camGame', -value1, value2, 'bounceOut');
                 ran1 = true
         end
+    elseif ran then
+        setProperty('camGame.angle',value1)
+        ran = false
+    else
+        setProperty('camHUD.angle',-value1)
+        ran = true
+    end
     end
 end
 end

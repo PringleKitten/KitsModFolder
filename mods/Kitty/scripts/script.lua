@@ -92,7 +92,7 @@ function onEvent(name, value1, value2)
     if name == 'newArrowToggler' then
         value1 = tonumber(value1)
         value2 = tonumber(value2)
-        if value1 == 3 then
+        if value1 == 3 or value1 == 33 then
             mdsc = true
         elseif value1 == 2 then
             mdsc = false
