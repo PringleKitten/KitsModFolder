@@ -1,10 +1,11 @@
 function onEvent(name,value1,value2)
-    if name == "Set_Cam_Zoom" then        
-        if value2 == '' then
+    if name == "Set_Cam_Zoom" then     
+		value1 = tonumber(value1)
+		value2 = tonumber(value2)   
+        if value2 == '' or value2 < 0.012 then
       	  	setProperty("defaultCamZoom",value1)
-			debugPrint(value2 )
 		else
-            doTweenZoom('camz','camGame',tonumber(value1),tonumber(value2),'sineInOut')
+            doTweenZoom('camz','camGame',value1,value2,'sineInOut')
 		end
     end
 end

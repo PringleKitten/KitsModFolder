@@ -45,18 +45,18 @@ local l = 0
 local d = 0
 local u = 0
 local r = 0
-function goodNoteHit()
+function goodNoteHit(id, noteData, noteType, isSustainNote)
     if k then
-        if keyJustPressed('left') then
+        if noteData == 0 then
             l = 1
         end
-        if keyJustPressed('down') then
+        if noteData == 1 then
             d = 1
         end
-        if keyJustPressed('up') then
+        if noteData == 2 then
             u = 1
         end
-        if keyJustPressed('right') then
+        if noteData == 3 then
             r = 1
         end
     end

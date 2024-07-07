@@ -186,20 +186,24 @@ function onEvent(name, value1, value2)
         if value1 == 1 then
             stopcam = true
             czmc = 0
+            setProperty('camZoomingMult', 0)
             --setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)--WHY ARENT THESE WORKING?!!?
             --debugPrint('czm = 0 due to event')
         elseif value1 == 0 then
             stopcam = false
             czmc = 1
+            setProperty('camZoomingMult', 1)
             --setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
         end
         if value2 == 1 then
             stopui = true
             czmu = 0
+            setProperty('camZoomingMult', 0)
             --setPropertyFromClass('ClientPrefs', 'hudZoomSections', false) --WHY ARENT THESE WORKING?!!?
         elseif value2 == 0 then
             stopui = false
             czmu = 1
+            setProperty('camZoomingMult', 1)
             --setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
         end
     end
