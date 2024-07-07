@@ -1,6 +1,6 @@
 function onEvent(name, value1, value2)
     if name == 'moveStrumline' then
-        
+
         oX1 = getPropertyFromGroup('opponentStrums', 0, 'x')
         oX2 = getPropertyFromGroup('opponentStrums', 1, 'x')
         oX3 = getPropertyFromGroup('opponentStrums', 2, 'x')

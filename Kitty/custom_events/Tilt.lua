@@ -7,7 +7,7 @@ local v1 = false
 local v2 = false
 function onEvent(name, value1, value2)
     if name == "Tilt" then
-        
+
             event = "Tilt"
             value1 = tonumber(value1) or 0;
             value2 = tonumber(value2) or 0;
@@ -81,7 +81,7 @@ function onEvent(name, value1, value2)
 end
 
 function onBeatHit()
-   
+
         if v2 then
             thing = thing * -1
             doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')

@@ -7,7 +7,7 @@ local v1 = false
 local v2 = false
 function onEvent(name, value1, value2)
     if name == "TiltHudTimed" then
-        
+
         event = "TiltHudTimed"
         value1 = tonumber(value1);
         value2 = tonumber(value2);
@@ -57,10 +57,11 @@ end
 end
 
 function onBeatHit()
-   
+
         if v1 then
             thing2 = thing2 * -1
             doTweenAngle('rotate', 'camHUD', thing2 * 5, crochet / 1000, 'quadInOut')
+        end
 
 end
 

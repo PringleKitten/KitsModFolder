@@ -56,38 +56,6 @@ function onSongStart()
     czm = getProperty('camZoomingMult')
 end
 
-function goodNoteHit()
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
-        if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
-            setProperty('health', getProperty('health') + 0.01)
-        elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
-            setProperty('health', getProperty('health') + 0.02)
-        elseif getProperty('ratingPercent') < 0.8 and getProperty('ratingPercent') > 0.75 then
-            setProperty('health', getProperty('health') + 0.03)
-        elseif getProperty('ratingPercent') < 0.7 and getProperty('ratingPercent') > 0.65 then
-            setProperty('health', getProperty('health') + 0.04)
-        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0 then
-            setProperty('health', getProperty('health') + 0.05)
-        end
-    end
-end
-
-function noteMiss()
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
-        if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
-            setProperty('health', getProperty('health') - 0.1)
-        elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
-            setProperty('health', getProperty('health') - 0.12)
-        elseif getProperty('ratingPercent') < 0.67 and getProperty('ratingPercent') > 0.63 then
-            setProperty('health', getProperty('health') - 0.16)
-        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0.55 then
-            setProperty('health', getProperty('health') - 0.2)
-        elseif getProperty('ratingPercent') < 0.53 and getProperty('ratingPercent') > 0 then
-            setProperty('health', getProperty('health') - 0.23)
-        end
-    end
-end
-
 function onEvent(name, value1, value2)
     if name == 'newArrowToggler' then
         value1 = tonumber(value1)
@@ -186,20 +154,24 @@ function onEvent(name, value1, value2)
         if value1 == 1 then
             stopcam = true
             czmc = 0
+            setProperty('camZoomingMult', 0)
             --setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)--WHY ARENT THESE WORKING?!!?
             --debugPrint('czm = 0 due to event')
         elseif value1 == 0 then
             stopcam = false
             czmc = 1
+            setProperty('camZoomingMult', 1)
             --setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
         end
         if value2 == 1 then
             stopui = true
             czmu = 0
+            setProperty('camZoomingMult', 0)
             --setPropertyFromClass('ClientPrefs', 'hudZoomSections', false) --WHY ARENT THESE WORKING?!!?
         elseif value2 == 0 then
             stopui = false
             czmu = 1
+            setProperty('camZoomingMult', 1)
             --setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
         end
     end

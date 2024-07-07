@@ -10,7 +10,7 @@ function onEvent(name, value1, value2)
     value1 = tonumber(value1);
     value2 = tonumber(value2);
    if name == "ArrowToggling" then
-       if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+
            --Change downscroll/upscroll
            if value1 == 1 then
                if ran then
@@ -205,7 +205,6 @@ function onEvent(name, value1, value2)
                mdsc = true
          end
       end
-   end
    if value2 == 90 then
        lk = true
    elseif value2 == 91 then

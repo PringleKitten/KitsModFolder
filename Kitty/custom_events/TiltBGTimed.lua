@@ -7,7 +7,7 @@ local v1 = false
 local v2 = false
 function onEvent(name, value1, value2)
     if name == "TiltBGTimed" then
-        
+
         event = "TiltBGTimed"
         value1 = tonumber(value1) or 0;
         value2 = tonumber(value2) or 0;
@@ -56,7 +56,7 @@ end
 end
 
 function onBeatHit()
-    
+
         if v2 then
             thing = thing * -1
             doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')

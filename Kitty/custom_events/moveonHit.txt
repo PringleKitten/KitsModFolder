@@ -2,4 +2,4 @@
 1 = on player
 2 = on opponent
 3 = on both
-4 = off
+0 = off

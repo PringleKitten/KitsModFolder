@@ -1,6 +1,6 @@
 function onCreatePost()
     script = false
-    
+
         dscrolm = getPropertyFromClass('ClientPrefs', 'downScroll')
         mscrolm = getPropertyFromClass('ClientPrefs', 'middleScroll')
         dscrol = getPropertyFromClass('ClientPrefs', 'downScroll')
