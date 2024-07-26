@@ -1,12 +1,15 @@
-local fps = 60
-function onSongStart()
-  fps = getPropertyFromClass('flixel.FlxG', 'updateFramerate')
-  setPropertyFromClass('flixel.FlxG', 'updateFramerate', 60)
-  setPropertyFromClass('flixel.FlxG', 'drawFramerate', 60)
+local limit = 165
+
+--Edit limit variable to whatever you want
+
+function onCreate()
+  fps = getPropertyFromClass('ClientPrefs', 'framerate')
+  if fps > limit then
+    setPropertyFromClass('ClientPrefs', 'framerate', limit)
+  end
 end
 
 function onDestroy()
-  setPropertyFromClass('flixel.FlxG', 'updateFramerate', fps)
-  setPropertyFromClass('flixel.FlxG', 'drawFramerate', fps)
+  setPropertyFromClass('ClientPrefs', 'framerate', fps)
 end
 --This is set based off my performance, change it if you don't want to limit fps
