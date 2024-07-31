@@ -1,22 +1,21 @@
 {
 	"animations": [],
 	"no_antialiasing": true,
-	"image": "characters/gf-invis",
 	"position": [
 		0,
 		0
 	],
-	"healthicon": "gf-invis",
+	"healthicon": "terry",
 	"flip_x": false,
 	"healthbar_colors": [
-		235,
-		0,
-		0
+		49,
+		176,
+		209
 	],
 	"camera_position": [
 		0,
 		0
 	],
-	"sing_duration": 4,
+	"sing_duration": 1,
 	"scale": 1
 }

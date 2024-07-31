@@ -1,0 +1,31 @@
+{
+	"storyName": "Power of Terry",
+	"difficulties": "Normal",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": false,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"Power of Terry",
+			"terry",
+			[
+				255,
+				136,
+				0
+			]
+		]
+	],
+	"weekName": "Terry"
+}
