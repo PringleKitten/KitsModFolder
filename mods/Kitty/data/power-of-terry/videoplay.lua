@@ -34,6 +34,7 @@ function onCreate()
     addLuaText("ret1")
     addLuaText("ret2")
     addLuaText("why")
+    triggerEvent("newArrowToggler", 3, 3)
 end
 function onStartCountdown()
 	if not allowCountdown then
@@ -111,6 +112,24 @@ function onUpdate()
         removeLuaSprite('hide')
         allowCountdown = true
         startCountdown()
+        setPropertyFromGroup('playerStrums',0,'alpha',0);
+        setPropertyFromGroup('playerStrums',1,'alpha',0);
+        setPropertyFromGroup('playerStrums',2,'alpha',0);
+        setPropertyFromGroup('playerStrums',3,'alpha',0);
+        setPropertyFromGroup('opponentStrums',0,'alpha',0);
+        setPropertyFromGroup('opponentStrums',1,'alpha',0);
+        setPropertyFromGroup('opponentStrums',2,'alpha',0);
+        setPropertyFromGroup('opponentStrums',3,'alpha',0);
+        setProperty('healthBar.alpha', 0);
+		setProperty('healthBarBG.alpha', 0);
+		setProperty('iconP1.alpha', 0);
+		setProperty('iconP2.alpha', 0);
+		setProperty('scoreTxt.alpha', 0);
+		setProperty('timeBar.alpha', 0);
+		setProperty('timeTxt.alpha', 0);
+		setProperty('timeBar.visible', false)
+		setProperty('timeBarBG.visible', false)
+		setProperty('timeTxt.visible', false)
         if not playvideo then
             vde = 'No Video'
             playvideo = false

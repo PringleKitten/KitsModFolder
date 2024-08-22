@@ -78,6 +78,29 @@ function onSongStart()
     dpsy2 = defaultPlayerStrumY2
     dpsy3 = defaultPlayerStrumY3
     curtwm = curtwm
+    setPropertyFromGroup('opponentStrums',0,'x',dosx0+75);
+    setPropertyFromGroup('opponentStrums',1,'x',dosx1+75);
+    setPropertyFromGroup('opponentStrums',2,'x',dpsx2-79);
+    setPropertyFromGroup('opponentStrums',3,'x',dpsx3-79);
+    setPropertyFromGroup('playerStrums',0,'x',dpsx0-323);
+    setPropertyFromGroup('playerStrums',1,'x',dpsx1-323);
+    setPropertyFromGroup('playerStrums',2,'x',dpsx2-323);
+    setPropertyFromGroup('playerStrums',3,'x',dpsx3-323);
+    noteTweenAlpha("o1",0,0,0.5,"quartInOut");
+    noteTweenAlpha("o2",1,0,0.5,"quartInOut");
+    noteTweenAlpha("o3",2,0,0.5,"quartInOut");
+    noteTweenAlpha("o4",3,0,0.5,"quartInOut");
+    defaultPlayerStrumX0 = dpsx0-323
+    defaultPlayerStrumX1 = dpsx1-323
+    defaultPlayerStrumX2 = dpsx2-323
+    defaultPlayerStrumX3 = dpsx3-323
+    defaultOpponentStrumX0 = dosx0+75
+    defaultOpponentStrumX1 = dosx1+75
+    defaultOpponentStrumX2 = dpsx2-79
+    defaultOpponentStrumX3 = dpsx3-79
+    ls = false
+    mdsc = true
+    ran2 = true
 end
 function onUpdate()
     if lk then
