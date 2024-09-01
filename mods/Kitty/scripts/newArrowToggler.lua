@@ -61,6 +61,36 @@ function onSongStart()
    --defaultPlayerStrumY1 = 50
    --defaultPlayerStrumY2 = 50
    --defaultPlayerStrumY3 = 50
+   setPropertyFromGroup('opponentStrums',0,'x',167);
+   setPropertyFromGroup('opponentStrums',1,'x',279);
+   setPropertyFromGroup('opponentStrums',2,'x',237);
+   setPropertyFromGroup('opponentStrums',3,'x',349);
+   setPropertyFromGroup('playerStrums',0,'x',409);
+   setPropertyFromGroup('playerStrums',1,'x',521);
+   setPropertyFromGroup('playerStrums',2,'x',633);
+   setPropertyFromGroup('playerStrums',3,'x',745);
+   for i = 0,3 do
+    setPropertyFromGroup('opponentStrums',i,'downScroll',false);
+    setPropertyFromGroup('playerStrums',i,'downScroll',false);
+    setPropertyFromGroup('playerStrums',i,'y',50);
+    setPropertyFromGroup('opponentStrums',i,'y',50);
+   end
+    defaultPlayerStrumX0 = 409
+    defaultPlayerStrumX1 = 521
+    defaultPlayerStrumX2 = 633
+    defaultPlayerStrumX3 = 745
+    defaultPlayerStrumY0 = 50
+    defaultPlayerStrumY1 = 50
+    defaultPlayerStrumY2 = 50
+    defaultPlayerStrumY3 = 50
+    defaultOpponentStrumX0 = 167
+    defaultOpponentStrumX1 = 279
+    defaultOpponentStrumX2 = 237
+    defaultOpponentStrumX3 = 349
+    defaultOpponentStrumY0 = 50
+    defaultOpponentStrumY1 = 50
+    defaultOpponentStrumY2 = 50
+    defaultOpponentStrumY3 = 50
     dosx0 = defaultOpponentStrumX0
     dosx1 = defaultOpponentStrumX1
     dosx2 = defaultOpponentStrumX2
@@ -78,26 +108,6 @@ function onSongStart()
     dpsy2 = defaultPlayerStrumY2
     dpsy3 = defaultPlayerStrumY3
     curtwm = curtwm
-    setPropertyFromGroup('opponentStrums',0,'x',dosx0+75);
-    setPropertyFromGroup('opponentStrums',1,'x',dosx1+75);
-    setPropertyFromGroup('opponentStrums',2,'x',dpsx2-79);
-    setPropertyFromGroup('opponentStrums',3,'x',dpsx3-79);
-    setPropertyFromGroup('playerStrums',0,'x',dpsx0-323);
-    setPropertyFromGroup('playerStrums',1,'x',dpsx1-323);
-    setPropertyFromGroup('playerStrums',2,'x',dpsx2-323);
-    setPropertyFromGroup('playerStrums',3,'x',dpsx3-323);
-    noteTweenAlpha("o1",0,0,0.5,"quartInOut");
-    noteTweenAlpha("o2",1,0,0.5,"quartInOut");
-    noteTweenAlpha("o3",2,0,0.5,"quartInOut");
-    noteTweenAlpha("o4",3,0,0.5,"quartInOut");
-    defaultPlayerStrumX0 = dpsx0-323
-    defaultPlayerStrumX1 = dpsx1-323
-    defaultPlayerStrumX2 = dpsx2-323
-    defaultPlayerStrumX3 = dpsx3-323
-    defaultOpponentStrumX0 = dosx0+75
-    defaultOpponentStrumX1 = dosx1+75
-    defaultOpponentStrumX2 = dpsx2-79
-    defaultOpponentStrumX3 = dpsx3-79
     ls = false
     mdsc = true
     ran2 = true

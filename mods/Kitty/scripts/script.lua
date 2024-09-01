@@ -4,24 +4,9 @@ local stopcam = false
 local czm = 1
 local czmu = 1
 local czmc = 1
+
 function onCreate()
-    precacheImage('me/popup/bars')
     setProperty('skipArrowStartTween', true)
-    makeLuaText('st', 'l', '800', 400,450)
-    addLuaText('st')
-    setTextSize('st', 50)
-    setTextAlignment('st', 'center')
-    setProperty('st.x', (screenWidth/2)-(getProperty('st.width')/2))
-    setObjectCamera('st', 'other')
-    setProperty('st.alpha', 0)
-    makeLuaSprite('bars', 'me/popup/bars', 0,0)
-    setObjectCamera('bars', 'hud')
-    addLuaSprite('bars')
-    setProperty('bars.scale.x', 2)
-    setProperty('bars.scale.y', 2)
-    setProperty('bars.alpha', 0)
-    setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
-    setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
 end
 
 function onSongStart()
@@ -41,15 +26,9 @@ function onSongStart()
     dosy1 = getPropertyFromGroup('opponentStrums', 1, 'y')
     dosy2 = getPropertyFromGroup('opponentStrums', 2, 'y')
     dosy3 = getPropertyFromGroup('opponentStrums', 3, 'y')
-    setProperty('bars.alpha', 1);
-    doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
-    setObjectCamera('bars', 'other')
-    setObjectCamera('bars', 'hud')
-    screenCenter('bars')
-    setProperty('bars.alpha', 0)
-    doTweenY('ba', 'bars.scale', 3, 0.1, 'quadInOut')
-    doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
-    setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
+
+    setProperty('camHUD.zoom', 1)
+    setProperty("defaultCamUIZoom",1) 
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)
     dcuiz = getProperty('defaultCamUIZoom')
     dcgz = getProperty('defaultCamZoom')
@@ -206,36 +185,6 @@ function onEvent(name, value1, value2)
             setProperty('camZoomingMult', 1)
             --setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
         end
-    end
-end
-
-function onUpdate(elapsed)
-    el = elapsed
-    --debugPrint('onupdate','|',czm)
-    if kadezoom == true then
-        if stopui == false then
-            doTweenZoom('tweeningZoom', 'camHUD', dcuiz, 0.15, 'quadOut')
-        end
-        if stopcam == false then
-            doTweenZoom('tweeningZoomin', 'camGame', dcgz, 0.15, 'quadOut')
-        end
-    end
-end
-
-function onSectionHit()
-    if kadezoom == true then
-        if stopui == false then
-            doTweenZoom('tweeningZoom', 'camHUD', czmu+0.08, 0.06, 'quadOut')
-        end
-        if stopcam == false then
-            doTweenZoom('tweeningZoomin', 'camGame', czmc+0.08, 0.06, 'quadOut')
-        end
-    end
-end
-
-function onTweenCompleted(name)
-    if name == 'camzz' then
-        setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
     end
 end
 
