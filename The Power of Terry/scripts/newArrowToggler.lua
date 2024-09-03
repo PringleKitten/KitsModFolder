@@ -69,6 +69,7 @@ function onSongStart()
    setPropertyFromGroup('playerStrums',1,'x',521);
    setPropertyFromGroup('playerStrums',2,'x',633);
    setPropertyFromGroup('playerStrums',3,'x',745);
+
    for i = 0,3 do
     setPropertyFromGroup('opponentStrums',i,'downScroll',false);
     setPropertyFromGroup('playerStrums',i,'downScroll',false);

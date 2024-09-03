@@ -14,7 +14,7 @@ function onCreate()
     addLuaSprite('hide', true)
 
     makeLuaText("ret", ("Video Quality: "..vde..'p'), screenWidth, 0.0, 0.0)
-    makeLuaText("ret1", "Press 1-6 to choose Quality", screenWidth, 0.0, screenHeight/1.75)
+    makeLuaText("ret1", "Press 1-4 to choose Quality", screenWidth, 0.0, screenHeight/1.75)
     makeLuaText("ret2", "Press Spacebar to Confirm", screenWidth, 0.0, screenHeight/2.5)
     makeLuaText("why", "Laggy? Press N for no video", screenWidth, 0.0, screenHeight/5)
     makeLuaText("coolguy", "Song Suggestion by StupidBlanalba08", screenWidth, 0.0, screenHeight-screenHeight/1.1)
@@ -85,22 +85,6 @@ function onUpdate()
             s2 = 0.741
             p1 = -284.7
             p2 = -534.3
-        elseif keyboardJustPressed('FIVE') then
-            vde = 1440
-            vden = 'e'
-            f = true
-            s1 = 0.7404
-            s2 = 0.7408
-            p1 = -119
-            p2 = -441
-        elseif keyboardJustPressed('SIX') then
-            vde = 2160
-            vden = 'f'
-            f = true
-            s1 = 0.7404
-            s2 = 0.7408
-            p1 = -119
-            p2 = -441
         end
         if not keyboardJustPressed('N') and f then
             setTextString("ret", "Video Resolution: "..vde..'p')

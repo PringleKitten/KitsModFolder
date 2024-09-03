@@ -1,24 +1,13 @@
-local defx = 0
-local defy = 0
-local newy = 0
-local newx = 0
-local ang = 0
-local s = 0
-
-local mdc = 'Enabled'
 local modchart = true
 
----------------------------------------------------------------------------------------------
---Go to bottom of script and read the comment I made to know how to use my custom function!--
----------------------------------------------------------------------------------------------
-
------------------------------------------------------
--- T H E  W H O L E   E N T I R E   M O D C H A R T--
------------------------------------------------------
+-----------
+--Example--
+-----------
 function onStepHit()
     if modchart then
-        setTextString("step", "curStep: "..curStep)
-        if curStep > 1 and curStep < 4 then
+
+        --This grabs the variable so we can change it based on if its a different scroll type
+        if curStep >= 1 and curStep <= 2 then
             ox0 = getPropertyFromGroup('opponentStrums',0,'x')
             ox1 = getPropertyFromGroup('opponentStrums',1,'x')
             ox2 = getPropertyFromGroup('opponentStrums',2,'x')
@@ -38,114 +27,15 @@ function onStepHit()
             pY1 = getPropertyFromGroup('playerStrums', 1, 'y')
             pY2 = getPropertyFromGroup('playerStrums', 2, 'y')
             pY3 = getPropertyFromGroup('playerStrums', 3, 'y')
-
-            ang = getProperty('camHUD.angle')
-            setProperty('camZoomingMult', 0)
-        elseif curStep == 44 then 
-            myTween('player','x',0.9,'expoIn',500)
-            myTween('player','y',0.9,'expoIn',300)
-
-            zm = 0.2
-            doTweenZoom("ss", "camHUD", zm, 0.9, "expoIn")
-        elseif curStep == 68 then
-            cancelTween('ss')
-            setProperty('camHUD.angle', 0)
-            setProperty('camHUD.zoom', 3)
-            myTween('player','rx',0)
-
-            myTween('player','y',0,'linear',(screenHeight*1.25))
-            myTween('player','ry',0.6)
-
-            zm = 1
-            doTweenZoom("ss", "camHUD", zm, 0.1, "expoIn")
-        elseif curStep == 97 then
-            noteSkin('BlackWhiteNote')
-            myTween('player','x',0,'linear',screenWidth)
-            myTween('player','x',0.2,'linear',ox0-(ox0-(ox0/2))-pX0)
-        elseif curStep == 105 then
-            myTween('player','rx',0)
-            myTween('player','x',0.2,'linear',ox0-(ox0-(ox0/2))-pX0)
-        end
-    end
-end
-
-function onTweenCompleted(tag)
-    if tag == 'ss' then
-        setProperty("defaultCamUIZoom",zm)
-        s = s+1
-        if s == 1 then
-            ang = -25
-            setProperty('camHUD.angle', ang)
-            doTweenAngle("a", "camHUD", ang-50, 1, "linear")
-
-            zm = 3
-            doTweenZoom("ss", 'camHUD', zm, 1, 'linear')
-        end
-    end
-
-    if tag == 'ea' then
-        removeLuaText('e')
-    end
-end
-
----------------------------------------
---All setup and stuff to make it work--
----------------------------------------
-function onCreate()
-    makeLuaText("mc", ("ModChart: "..mdc), screenWidth, 0.0, screenHeight/1.25)
-    setObjectCamera("mc", 'other')
-    setTextColor("mc", "FF0000")
-    setTextSize("mc", 60)
-    screenCenter("mc", 'x')
-    addLuaText("mc")
-
-    makeLuaText("mct", "<Press T or F to choose>", screenWidth, 0.0, screenHeight/1.35)
-    setObjectCamera("mct", 'other')
-    setTextColor("mct", "00FF00")
-    setTextSize("mct", 40)
-    screenCenter("mct", 'x')
-    addLuaText("mct")
-
-    --Debugging for ModChart Help
-    makeLuaText("step", "curStep: "..curStep, 0, 0.0, 0.0)
-    addLuaText("step")
-    setTextSize("step", 30)
-    setObjectCamera("step", 'other')
-end
-
-function onUpdate()
-    if not allowCountdown then
-        if keyboardJustPressed('T') then
-            modchart = true
-            mdc = 'Enabled'
-            setTextString("mc", ("ModChart: "..mdc))
-            setTextColor("mc", "FF0000")
-        elseif keyboardJustPressed("F") then
-            modchart = false
-            mdc = 'Disabled'
-            setTextString("mc", ("ModChart: "..mdc))
-            setTextColor("mc", "00FFFF")
-        end
-        if keyboardJustPressed('SPACE') then
-            removeLuaText("mc")
-            removeLuaText("mct")
-        end
-    end
-
-    for i = 0,3 do        
-        if getPropertyFromGroup('playerStrums', i, 'y') < screenHeight/2.15 then
-            setPropertyFromGroup('playerStrums',i,'downScroll',false);
         end
 
-        if getPropertyFromGroup('playerStrums', 0, 'y') > screenHeight/2.15 then
-            setPropertyFromGroup('playerStrums',i,'downScroll',true);
+        --ModCharting Starts Here:
+        if curStep == 17 then
+            myTween('player','y',3,'expoIn',200)
+        elseif curStep == 33 then
+            myTween('player','ry',3,'expoIn')
+            -- YOU CANNOT DO myTween('player','y',3,200) for changing position and (trying) to leaving the ease blank, it will break.
         end
-    end
-end
-
-function onTimerCompleted(tag)
-    if tag == 'et' then
-        doTweenAlpha("ea", "e", 0, 3, "linear")
     end
 end
 
@@ -153,7 +43,7 @@ end
 --Custom Functions I made--
 ---------------------------
 
---This changes the note skin duh
+--This changes the note skin duh--
 function noteSkin(name,mh)
     for i = 0, getProperty('unspawnNotes.length')-1 do
         if mh == '' then
@@ -166,6 +56,23 @@ function noteSkin(name,mh)
         setPropertyFromGroup('unspawnNotes', i, 'missHealth', mh); --Change amount of health to take when you miss
     end
 end
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+--                                !!!!!!!!!!!READ THIS IF YOU DO NOT KNOW HOW TO USE THE 'myTween' FUNCTION!!!!!!!!!!!!                                   --
+--                                                                                                                                                        --
+--                                                  This is what YOU will use to make your modcharts!                                                     --
+--                                                                                                                                                        --
+--      HOW IT WORKS: (These are all variables)                                                                                                           --
+--                                                                                                                                                        --
+--      Variables have to be in THIS order btw when using myTween()                                                                                       --
+--                                                                                                                                                        --
+--      w = who('opponent' or 'player')                                                                                                                   --
+--      a = axis('x' or 'rx' or 'y' or 'ry') NOTE: if you type the r before your axis, it will set position to what the notes were when the song started. --
+--      t = time to move(integer) NOTE: If you set this to 0, you can leave the (EASE AND POSITION BLANK)                                                 --
+--      e = ease(Text String like so: 'linear') NOTE: This is optional depending on the TIME INTEGER. You can leave blank if needed.                      --
+--      p = position(integer), NOTE: If you have this, you will need the tween. Sorry in advance!                                                         --
+--                                                                                                                                                        --
+------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function myTween(w,a,t,e,p)
     if t == 0 and e == '' or e == nil then
