@@ -4,9 +4,7 @@ local newy = 0
 local newx = 0
 local ang = 0
 local s = 0
-local okm = true
 
-local mdc = 'Enabled'
 local modchart = true
 
 ---------------------------------------------------------------------------------------------
@@ -83,97 +81,31 @@ function onTweenCompleted(tag)
             doTweenZoom("ss", 'camHUD', zm, 1, 'linear')
         end
     end
-
-    if tag == 'ea' then
-        removeLuaText('e')
-    end
 end
 
 ---------------------------------------
 --All setup and stuff to make it work--
 ---------------------------------------
+function modchart(mc)
+    modchart = mc
+end
+
 function onCreate()
-    makeLuaText("mc", ("ModChart: "..mdc), screenWidth, 0.0, screenHeight/1.25)
-    setObjectCamera("mc", 'other')
-    setTextColor("mc", "FF0000")
-    setTextSize("mc", 60)
-    screenCenter("mc", 'x')
-    addLuaText("mc")
-
-    makeLuaText("mct", "<Press T or F to choose>", screenWidth, 0.0, screenHeight/1.35)
-    setObjectCamera("mct", 'other')
-    setTextColor("mct", "00FF00")
-    setTextSize("mct", 40)
-    screenCenter("mct", 'x')
-    addLuaText("mct")
-
     --Debugging for ModChart Help
     makeLuaText("step", "curStep: "..curStep, 0, 0.0, 0.0)
     addLuaText("step")
     setTextSize("step", 30)
     setObjectCamera("step", 'other')
-
-
-    
-    makeLuaSprite('buttonm', 'me/buttons/button',screenWidth/8,screenHeight/1.35)
-    setObjectCamera("buttonm", 'other')
-    scaleObject("buttonm", 0.5, 0.5)
-    addLuaSprite("buttonm",true)
-    makeLuaText('bm', 'Mod', 0, screenWidth-screenWidth/1.1625,screenHeight/1.275)
-    setTextSize('bm', screenWidth/40)
-    setObjectCamera("bm", 'other')
-    addLuaText("bm")
-end
-
-function mouseOverlaps(tag, camera)
-    x = getMouseX(camera or 'camHUD')
-    y = getMouseY(camera or 'camHUD')
-    return (x > getProperty(tag..'.x') and y > getProperty(tag..'.y') and x < (getProperty(tag..'.x') + getProperty(tag..'.width')) and y < (getProperty(tag..'.y') + getProperty(tag..'.height')))
 end
 
 function onUpdate()
-    if mouseOverlaps('buttonm', 'camOther') and mouseClicked("left") and okm == false then
-        okm = true
-    elseif mouseOverlaps('buttonm', 'camOther') and mouseClicked("left") and okm == true then
-        okm = false
-    end
-    if not allowCountdown then
-        if keyboardJustPressed('T') or okm then
-            modchart = true
-            okm = true
-            mdc = 'Enabled'
-            setTextString("mc", ("ModChart: "..mdc))
-            setTextColor("mc", "FF0000")
-        end
-        if keyboardJustPressed("F") or not okm then
-            modchart = false
-            okm = false
-            mdc = 'Disabled'
-            setTextString("mc", ("ModChart: "..mdc))
-            setTextColor("mc", "00FFFF")
-        end
-        if keyboardJustPressed('SPACE') then
-            removeLuaText("mc")
-            removeLuaText("mct")
-            removeLuaText('bm')
-            removeLuaSprite('buttonm')
-        end
-    end
-
     for i = 0,3 do        
         if getPropertyFromGroup('playerStrums', i, 'y') < screenHeight/2.15 then
             setPropertyFromGroup('playerStrums',i,'downScroll',false);
         end
-
         if getPropertyFromGroup('playerStrums', 0, 'y') > screenHeight/2.15 then
             setPropertyFromGroup('playerStrums',i,'downScroll',true);
         end
-    end
-end
-
-function onTimerCompleted(tag)
-    if tag == 'et' then
-        doTweenAlpha("ea", "e", 0, 3, "linear")
     end
 end
 

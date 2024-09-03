@@ -3,6 +3,9 @@ local vde = "No Video"
 local s1 = 0
 local s2 = 0
 local f = false
+local okm = true
+local mdc = 'Enabled'
+local modchart = true
 local playvideo = false
 allowCountdown = false
 
@@ -38,11 +41,11 @@ function onCreate()
     setTextColor('why', '00FFFF')
     setTextColor("coolguy", "00FF00")
     
-    addLuaText("ret")
-    addLuaText("ret1")
-    addLuaText("ret2")
-    addLuaText("why")
-    addLuaText("coolguy")
+    addLuaText("ret",true)
+    addLuaText("ret1",true)
+    addLuaText("ret2",true)
+    addLuaText("why",true)
+    addLuaText("coolguy",true)
 
     --buttons
     bx = getProperty('coolguy.x')
@@ -77,23 +80,66 @@ function onCreate()
     makeLuaText('b1', '1', 0, screenWidth-screenWidth/1.0225,screenHeight/3.65)
     setTextSize('b1', screenWidth/20)
     setObjectCamera("b1", 'other')
-    addLuaText("b1")
+    addLuaText("b1",true)
     makeLuaText('b2', '2', 0, screenWidth-screenWidth/1.1275,screenHeight/3.65)
     setTextSize('b2', screenWidth/20)
     setObjectCamera("b2", 'other')
-    addLuaText("b2")
+    addLuaText("b2",true)
     makeLuaText('b3', '3', 0, screenWidth-screenWidth/1.0225,screenHeight/2.35)
     setTextSize('b3', screenWidth/20)
     setObjectCamera("b3", 'other')
-    addLuaText("b3")
+    addLuaText("b3",true)
     makeLuaText('b4', '4', 0, screenWidth-screenWidth/1.1275,screenHeight/2.35)
     setTextSize('b4', screenWidth/20)
     setObjectCamera("b4", 'other')
-    addLuaText("b4")
+    addLuaText("b4",true)
     makeLuaText('bn', 'N', 0, screenWidth-screenWidth/1.286,screenHeight/2.175)
     setTextSize('bn', screenWidth/20)
     setObjectCamera("bn", 'other')
-    addLuaText("bn")
+    addLuaText("bn",true)
+
+    makeLuaSprite('buttonc', 'me/buttons/button',screenWidth/1.05,screenHeight/1.05)
+    setObjectCamera("buttonc", 'other')
+    scaleObject("buttonc", 0.5, 0.5)
+    addLuaSprite("buttonc",true)
+    makeLuaText('bc', 'Done', 0, screenWidth/1.125,screenHeight/1.125)
+    setTextSize('bc', screenWidth/39)
+    setObjectCamera("bc", 'other')
+    addLuaText("bc",true)
+    setProperty('buttonc.alpha',0)
+    setProperty('bc.alpha',0)
+    
+    makeLuaSprite('buttonm', 'me/buttons/button',screenWidth/8,screenHeight/1.35)
+    setObjectCamera("buttonm", 'other')
+    scaleObject("buttonm", 0.5, 0.5)
+    addLuaSprite("buttonm",true)
+    makeLuaText('bm', 'Mod', 0, screenWidth-screenWidth/1.1625,screenHeight/1.275)
+    setTextSize('bm', screenWidth/40)
+    setObjectCamera("bm", 'other')
+    addLuaText("bm",true)
+    
+    makeLuaSprite('buttonc', 'me/buttons/button',screenWidth/1.085,screenHeight/1.1625)
+    setObjectCamera("buttonc", 'other')
+    scaleObject("buttonc", 0.5, 0.5)
+    addLuaSprite("buttonc",true)
+    makeLuaText('bc', 'Done', 0, screenWidth/1.075,screenHeight/1.105)
+    setTextSize('bc', screenWidth/39)
+    setObjectCamera("bc", 'other')
+    addLuaText("bc",true)
+    
+    makeLuaText("mc", ("ModChart: "..mdc), screenWidth, 0.0, screenHeight/1.25)
+    setObjectCamera("mc", 'other')
+    setTextColor("mc", "FF0000")
+    setTextSize("mc", 60)
+    screenCenter("mc", 'x')
+    addLuaText("mc",true)
+    
+    makeLuaText("mct", "<Press T or F to choose>", screenWidth, 0.0, screenHeight/1.35)
+    setObjectCamera("mct", 'other')
+    setTextColor("mct", "00FF00")
+    setTextSize("mct", 40)
+    screenCenter("mct", 'x')
+    addLuaText("mct",true)
 end
 
 function mouseOverlaps(tag, camera)
@@ -109,7 +155,12 @@ function onStartCountdown()
 		return Function_Continue
 	end
 end
-function onUpdate()
+
+local al = false
+function buttonStuff()
+    if mouseOverlaps('buttonc', 'camOther') and mouseClicked("left") then
+        okc = true
+    end
     if mouseOverlaps('button', 'camOther') and mouseClicked("left") then
         okn = false
         ok4 = false
@@ -141,8 +192,27 @@ function onUpdate()
         ok2 = false
         ok1 = false
     end
+    if mouseOverlaps('buttonm', 'camOther') and mouseClicked("left") and okm == false then
+        okm = true
+    elseif mouseOverlaps('buttonm', 'camOther') and mouseClicked("left") and okm == true then
+        okm = false
+    end
 
     if not allowCountdown then
+        if keyboardJustPressed('T') or okm then
+            modchart = true
+            okm = true
+            mdc = 'Enabled'
+            setTextString("mc", ("ModChart: "..mdc))
+            setTextColor("mc", "FF0000")
+        end
+        if keyboardJustPressed("F") or not okm then
+            modchart = false
+            okm = false
+            mdc = 'Disabled'
+            setTextString("mc", ("ModChart: "..mdc))
+            setTextColor("mc", "00FFFF")
+        end
         if keyboardJustPressed('ONE') or ok1 then
             vde = 360
             vden = 'a'
@@ -214,7 +284,8 @@ function onUpdate()
             ok1 = false
         end
     end
-    if keyboardJustPressed('SPACE') then
+    if keyboardJustPressed('SPACE') or okc then
+        callScript("data/power-of-terry/videoplay", "modchart",modchart)
         removeLuaText("ret")
         removeLuaText("ret1")
         removeLuaText("ret2")
@@ -226,13 +297,15 @@ function onUpdate()
         removeLuaSprite('button2')
         removeLuaSprite('button3')
         removeLuaSprite('buttonn')
+        removeLuaSprite('buttonc')
+        allowCountdown = true
+        startCountdown()
         removeLuaText('b1')
         removeLuaText('b2')
         removeLuaText('b3')
         removeLuaText('b4')
         removeLuaText('bn')
-        allowCountdown = true
-        startCountdown()
+        removeLuaText('bc')
         setPropertyFromGroup('playerStrums',0,'alpha',0);
         setPropertyFromGroup('playerStrums',1,'alpha',0);
         setPropertyFromGroup('playerStrums',2,'alpha',0);
@@ -251,11 +324,23 @@ function onUpdate()
 		setProperty('timeBar.visible', false)
 		setProperty('timeBarBG.visible', false)
 		setProperty('timeTxt.visible', false)
+        removeLuaText("mc")
+        removeLuaText("mct")
+        removeLuaText('bm')
+        removeLuaSprite('buttonc')
+        removeLuaText('bc')
+        removeLuaSprite('buttonm')
         if not playvideo then
             vde = 'No Video'
             playvideo = false
             f = false
         end
+    end
+end
+
+function onUpdate()
+    if not allowCountdown then
+        buttonStuff()
     end
 end
 
@@ -267,19 +352,19 @@ function onSongStart()
         setProperty('showComboNum', false);
         runTimer('vid',(offset)/1000)
     end
+    setProperty('camZoomingMult', 0)
+    if botPlay then
+        setTextString('botplayTxt', 'You could have tried you know')
+        setTextSize("botplayTxt", 15)
+        setProperty('botplayTxt.x', 0)
+        setProperty('botplayTxt.y', screenHeight/1.025)
+        setTextWidth("botplayTxt", screenWidth)
+        setTextAlignment("botplayTxt", 'right')
+    end
 end
 
 function onTimerCompleted(tag)
     if tag == 'vid' and playvideo then
         callScript('scripts/videoSprite', 'makeVideoSprite', {vden, vden, p1, p2, 'camGame', s1, s2})
-        setProperty('camZoomingMult', 0)
-        if botPlay then
-            setTextString('botplayTxt', 'You could have tried you know')
-            setTextSize("botplayTxt", 15)
-            setProperty('botplayTxt.x', 0)
-            setProperty('botplayTxt.y', screenHeight/1.025)
-            setTextWidth("botplayTxt", screenWidth)
-            setTextAlignment("botplayTxt", 'right')
-        end
     end
 end
