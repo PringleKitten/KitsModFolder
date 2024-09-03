@@ -4,6 +4,7 @@ local newy = 0
 local newx = 0
 local ang = 0
 local s = 0
+local okm = true
 
 local mdc = 'Enabled'
 local modchart = true
@@ -40,7 +41,6 @@ function onStepHit()
             pY3 = getPropertyFromGroup('playerStrums', 3, 'y')
 
             ang = getProperty('camHUD.angle')
-            setProperty('camZoomingMult', 0)
         elseif curStep == 44 then 
             myTween('player','x',0.9,'expoIn',500)
             myTween('player','y',0.9,'expoIn',300)
@@ -63,8 +63,9 @@ function onStepHit()
             myTween('player','x',0,'linear',screenWidth)
             myTween('player','x',0.2,'linear',ox0-(ox0-(ox0/2))-pX0)
         elseif curStep == 105 then
-            myTween('player','rx',0)
-            myTween('player','x',0.2,'linear',ox0-(ox0-(ox0/2))-pX0)
+            myTween('player','rx',0.1)
+        elseif curStep == 107 then
+            noteSkin('Default')
         end
     end
 end
@@ -111,17 +112,42 @@ function onCreate()
     addLuaText("step")
     setTextSize("step", 30)
     setObjectCamera("step", 'other')
+
+
+    
+    makeLuaSprite('buttonm', 'me/buttons/button',screenWidth/8,screenHeight/1.35)
+    setObjectCamera("buttonm", 'other')
+    scaleObject("buttonm", 0.5, 0.5)
+    addLuaSprite("buttonm",true)
+    makeLuaText('bm', 'Mod', 0, screenWidth-screenWidth/1.1625,screenHeight/1.275)
+    setTextSize('bm', screenWidth/40)
+    setObjectCamera("bm", 'other')
+    addLuaText("bm")
+end
+
+function mouseOverlaps(tag, camera)
+    x = getMouseX(camera or 'camHUD')
+    y = getMouseY(camera or 'camHUD')
+    return (x > getProperty(tag..'.x') and y > getProperty(tag..'.y') and x < (getProperty(tag..'.x') + getProperty(tag..'.width')) and y < (getProperty(tag..'.y') + getProperty(tag..'.height')))
 end
 
 function onUpdate()
+    if mouseOverlaps('buttonm', 'camOther') and mouseClicked("left") and okm == false then
+        okm = true
+    elseif mouseOverlaps('buttonm', 'camOther') and mouseClicked("left") and okm == true then
+        okm = false
+    end
     if not allowCountdown then
-        if keyboardJustPressed('T') then
+        if keyboardJustPressed('T') or okm then
             modchart = true
+            okm = true
             mdc = 'Enabled'
             setTextString("mc", ("ModChart: "..mdc))
             setTextColor("mc", "FF0000")
-        elseif keyboardJustPressed("F") then
+        end
+        if keyboardJustPressed("F") or not okm then
             modchart = false
+            okm = false
             mdc = 'Disabled'
             setTextString("mc", ("ModChart: "..mdc))
             setTextColor("mc", "00FFFF")
@@ -129,6 +155,8 @@ function onUpdate()
         if keyboardJustPressed('SPACE') then
             removeLuaText("mc")
             removeLuaText("mct")
+            removeLuaText('bm')
+            removeLuaSprite('buttonm')
         end
     end
 
