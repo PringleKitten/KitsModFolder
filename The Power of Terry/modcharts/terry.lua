@@ -15,55 +15,57 @@ local modchart = true
 -- T H E  W H O L E   E N T I R E   M O D C H A R T--
 -----------------------------------------------------
 function onStepHit()
-    if modchart then
-        setTextString("step", "curStep: "..curStep)
-        if curStep > 1 and curStep < 4 then
-            ox0 = getPropertyFromGroup('opponentStrums',0,'x')
-            ox1 = getPropertyFromGroup('opponentStrums',1,'x')
-            ox2 = getPropertyFromGroup('opponentStrums',2,'x')
-            ox3 = getPropertyFromGroup('opponentStrums',3,'x')
+    if songName == 'power-of-terry' then
+        if modchart then
+            setTextString("step", "curStep: "..curStep)
+            if curStep > 1 and curStep < 4 then
+                ox0 = getPropertyFromGroup('opponentStrums',0,'x')
+                ox1 = getPropertyFromGroup('opponentStrums',1,'x')
+                ox2 = getPropertyFromGroup('opponentStrums',2,'x')
+                ox3 = getPropertyFromGroup('opponentStrums',3,'x')
 
-            oy0 = getPropertyFromGroup('opponentStrums',0,'y')
-            oy1 = getPropertyFromGroup('opponentStrums',1,'y')
-            oy2 = getPropertyFromGroup('opponentStrums',2,'y')
-            oy3 = getPropertyFromGroup('opponentStrums',3,'y')
+                oy0 = getPropertyFromGroup('opponentStrums',0,'y')
+                oy1 = getPropertyFromGroup('opponentStrums',1,'y')
+                oy2 = getPropertyFromGroup('opponentStrums',2,'y')
+                oy3 = getPropertyFromGroup('opponentStrums',3,'y')
 
-            pX0 = getPropertyFromGroup('playerStrums', 0, 'x')
-            pX1 = getPropertyFromGroup('playerStrums', 1, 'x')
-            pX2 = getPropertyFromGroup('playerStrums', 2, 'x')
-            pX3 = getPropertyFromGroup('playerStrums', 3, 'x')
+                pX0 = getPropertyFromGroup('playerStrums', 0, 'x')
+                pX1 = getPropertyFromGroup('playerStrums', 1, 'x')
+                pX2 = getPropertyFromGroup('playerStrums', 2, 'x')
+                pX3 = getPropertyFromGroup('playerStrums', 3, 'x')
 
-            pY0 = getPropertyFromGroup('playerStrums', 0, 'y')
-            pY1 = getPropertyFromGroup('playerStrums', 1, 'y')
-            pY2 = getPropertyFromGroup('playerStrums', 2, 'y')
-            pY3 = getPropertyFromGroup('playerStrums', 3, 'y')
+                pY0 = getPropertyFromGroup('playerStrums', 0, 'y')
+                pY1 = getPropertyFromGroup('playerStrums', 1, 'y')
+                pY2 = getPropertyFromGroup('playerStrums', 2, 'y')
+                pY3 = getPropertyFromGroup('playerStrums', 3, 'y')
 
-            ang = getProperty('camHUD.angle')
-        elseif curStep == 44 then 
-            myTween('player','x',0.9,'expoIn',500)
-            myTween('player','y',0.9,'expoIn',300)
+                ang = getProperty('camHUD.angle')
+            elseif curStep == 44 then 
+                myTween('player','x',0.9,'expoIn',500)
+                myTween('player','y',0.9,'expoIn',300)
 
-            zm = 0.2
-            doTweenZoom("ss", "camHUD", zm, 0.9, "expoIn")
-        elseif curStep == 68 then
-            cancelTween('ss')
-            setProperty('camHUD.angle', 0)
-            setProperty('camHUD.zoom', 3)
-            myTween('player','rx',0)
+                zm = 0.2
+                doTweenZoom("ss", "camHUD", zm, 0.9, "expoIn")
+            elseif curStep == 68 then
+                cancelTween('ss')
+                setProperty('camHUD.angle', 0)
+                setProperty('camHUD.zoom', 3)
+                myTween('player','rx',0)
 
-            myTween('player','y',0,'linear',(screenHeight*1.25))
-            myTween('player','ry',0.6)
+                myTween('player','y',0,'linear',(screenHeight*1.25))
+                myTween('player','ry',0.6)
 
-            zm = 1
-            doTweenZoom("ss", "camHUD", zm, 0.1, "expoIn")
-        elseif curStep == 97 then
-            noteSkin('BlackWhiteNote')
-            myTween('player','x',0,'linear',screenWidth)
-            myTween('player','x',0.2,'linear',ox0-(ox0-(ox0/2))-pX0)
-        elseif curStep == 105 then
-            myTween('player','rx',0.1)
-        elseif curStep == 107 then
-            noteSkin('Default')
+                zm = 1
+                doTweenZoom("ss", "camHUD", zm, 0.1, "expoIn")
+            elseif curStep == 97 then
+                noteSkin('BlackWhiteNote')
+                myTween('player','x',0,'linear',screenWidth)
+                myTween('player','x',0.2,'linear',ox0-(ox0-(ox0/2))-pX0)
+            elseif curStep == 105 then
+                myTween('player','rx',0.1)
+            elseif curStep == 107 then
+                noteSkin('Default')
+            end
         end
     end
 end
@@ -86,7 +88,7 @@ end
 ---------------------------------------
 --All setup and stuff to make it work--
 ---------------------------------------
-function modchart(mc)
+function modccc(mc)
     modchart = mc
 end
 

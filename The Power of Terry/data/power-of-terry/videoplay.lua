@@ -140,6 +140,7 @@ function onCreate()
     setTextSize("mct", 40)
     screenCenter("mct", 'x')
     addLuaText("mct",true)
+    addLuaScript("modcharts/terry")
 end
 
 function mouseOverlaps(tag, camera)
@@ -285,7 +286,7 @@ function buttonStuff()
         end
     end
     if keyboardJustPressed('SPACE') or okc then
-        callScript("data/power-of-terry/videoplay", "modchart",modchart)
+        callScript("modcharts/terry", "modccc",{modchart})
         removeLuaText("ret")
         removeLuaText("ret1")
         removeLuaText("ret2")
