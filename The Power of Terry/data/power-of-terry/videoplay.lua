@@ -361,6 +361,7 @@ function onSongStart()
         setProperty('botplayTxt.y', screenHeight/1.025)
         setTextWidth("botplayTxt", screenWidth)
         setTextAlignment("botplayTxt", 'right')
+        setObjectCamera("botplayTxt",'other')
     end
 end
 
