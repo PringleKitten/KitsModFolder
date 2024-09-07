@@ -99,6 +99,25 @@ function onCreate()
     setTextColor("acc", "FFFFFF")
     setTextColor("sc", "FFFFFF")
     setTextColor("com", "FFFFFF")
+
+    makeLuaSprite('beat', 'me/popup/beatthing',20,y1-70)
+    setObjectCamera("beat", 'other')
+    scaleObject("beat", 0.15, 0.15)
+    addLuaSprite("beat")
+end
+
+function onBeatHit()
+    if raa then
+        doTweenColor("bcst", "beat", "FF0000", 0.1, "linear")
+        raa = false
+    else
+        doTweenColor("bcst", "beat", "FFFFFF", 0.1, "linear")
+        raa = true
+    end
+    setProperty('beat.scale.x',0.3)
+    setProperty('beat.scale.y',0.3)
+    doTweenX('btsx','beat.scale',0.15,0.4,'expoOut')
+    doTweenY('btsy','beat.scale',0.15,0.4,'expoOut')
 end
 
 --This moves the rating text forward based on when the credits text show up, positions vary for the length of the credit names

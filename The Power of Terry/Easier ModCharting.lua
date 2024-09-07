@@ -31,10 +31,10 @@ function onStepHit()
 
         --ModCharting Starts Here:
         if curStep == 17 then
-            myTween('player','y',3,'expoIn',200)
+            myTween('player','y',0,3,'expoIn',200)
         elseif curStep == 33 then
-            myTween('player','ry',3,'expoIn')
-            -- YOU CANNOT DO myTween('player','y',3,200) for changing position and (trying) to leaving the ease blank, it will break.
+            myTween('player','ry',100,3,'expoIn')
+            -- YOU CANNOT DO myTween('player','y',0,3,200) for changing position and (trying) to leaving the ease blank, it will break.
         end
     end
 end

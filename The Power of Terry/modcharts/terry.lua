@@ -65,13 +65,35 @@ function onStepHit()
                 myTween('player','ry',0,0.2)
 
                 zm = 1
-                doTweenZoom("ss", "camHUD", zm, 0.2, "expoIn")
+                doTweenZoom("ssX", "camHUD", zm, 0.2, "expoIn")
+            elseif curStep == 121 then
+                myTween('player','x',0,0.2,'linear',screenWidth-screenWidth*1.4)
+            elseif curStep == 125 then
+                myTween('player','x',0,0,'linear',screenWidth/1.4)
+                myTween('player','rx',0,0,'linear')
+            elseif curStep == 131 then
+                myTween('player','x',0,0.1,'linear',screenWidth-screenWidth/1.5)
+                myTween('player','y',0,0.1,'linear',screenHeight/2)
+                
+                zm = 0.3
+                doTweenZoom("ssX", 'camHUD', zm, 0.1, 'linear')
+            elseif curStep == 134 then
+                zm = 1
+                doTweenZoom("ssX", 'camHUD', zm, 0.2, 'linear')
+                myTween('player','rx',0,0,'linear')
+                myTween('player','y',0,0,'linear',screenHeight/1.05)
+            elseif curStep == 135 then
+                myTween('player','ry',0,0.2,'linear')
             end
         end
     end
 end
 
+local s = 0
 function onTweenCompleted(tag)
+    if tag == 'ssX' then
+        setProperty("defaultCamUIZoom",zm)
+    end
     if tag == 'ss' then
         setProperty("defaultCamUIZoom",zm)
         s = s+1
