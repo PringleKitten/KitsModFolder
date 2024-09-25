@@ -1,0 +1,4 @@
+value1: color FFFFFF is white when left blank
+this uses colors in hex, 6 characters
+
+value2: time

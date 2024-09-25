@@ -47,6 +47,44 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o6",5,1,0.5,"quartInOut");
             noteTweenAlpha("o7",6,1,0.5,"quartInOut");
             noteTweenAlpha("o8",7,1,0.5,"quartInOut");
+		elseif value1 == '22' then
+			setProperty('timeBar.visible', true)
+			setProperty('timeBarBG.visible', true)
+			setProperty('timeTxt.visible', true)
+			setProperty('healthBar.alpha', 1);
+			setProperty('healthBarBG.alpha', 1);
+			setProperty('iconP1.alpha', 1);
+			setProperty('iconP2.alpha', 1);
+			setProperty('scoreTxt.alpha', 1);
+			setProperty('timeBar.alpha', 1);
+			setProperty('timeTxt.alpha', 1);
+			if not hidecbo then
+				setProperty('showRating', false);
+				setProperty('showComboNum', false);
+			end
+			noteTweenAlpha("o5",4,1,0.5,"quartInOut");
+            noteTweenAlpha("o6",5,1,0.5,"quartInOut");
+            noteTweenAlpha("o7",6,1,0.5,"quartInOut");
+            noteTweenAlpha("o8",7,1,0.5,"quartInOut");
+		elseif value1 == '222' then
+			setProperty('timeBar.visible', true)
+			setProperty('timeBarBG.visible', true)
+			setProperty('timeTxt.visible', true)
+			setProperty('healthBar.alpha', 1);
+			setProperty('healthBarBG.alpha', 1);
+			setProperty('iconP1.alpha', 1);
+			setProperty('iconP2.alpha', 1);
+			setProperty('scoreTxt.alpha', 1);
+			setProperty('timeBar.alpha', 1);
+			setProperty('timeTxt.alpha', 1);
+			if not hidecbo then
+				setProperty('showRating', false);
+				setProperty('showComboNum', false);
+			end
+			noteTweenAlpha("o1",0,1,0.5,"quartInOut");
+            noteTweenAlpha("o2",1,1,0.5,"quartInOut");
+            noteTweenAlpha("o3",2,1,0.5,"quartInOut");
+            noteTweenAlpha("o4",3,1,0.5,"quartInOut");
 		elseif value1 == '0' then
 			setProperty('timeBar.visible', true)
 			setProperty('timeBarBG.visible', true)
@@ -94,6 +132,44 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o2",1,1,0.5,"quartInOut");
             noteTweenAlpha("o3",2,1,0.5,"quartInOut");
             noteTweenAlpha("o4",3,1,0.5,"quartInOut");
+		elseif value2 == '12' then
+			setProperty('timeBar.visible', false)
+			setProperty('timeBarBG.visible', false)
+			setProperty('timeTxt.visible', false)
+			setProperty('healthBar.alpha', 0);
+			setProperty('healthBarBG.alpha', 0);
+			setProperty('iconP1.alpha', 0);
+			setProperty('iconP2.alpha', 0);
+			setProperty('scoreTxt.alpha', 0);
+			setProperty('timeBar.alpha', 0);
+			setProperty('timeTxt.alpha', 0);
+			if not hidecbo then
+				setProperty('showRating', false);
+				setProperty('showComboNum', false);
+			end
+			noteTweenAlpha("o5",4,1,0.5,"quartInOut");
+            noteTweenAlpha("o6",5,1,0.5,"quartInOut");
+            noteTweenAlpha("o7",6,1,0.5,"quartInOut");
+            noteTweenAlpha("o8",7,1,0.5,"quartInOut");
+		elseif value2 == '122' then
+			setProperty('timeBar.visible', false)
+			setProperty('timeBarBG.visible', false)
+			setProperty('timeTxt.visible', false)
+			setProperty('healthBar.alpha', 0);
+			setProperty('healthBarBG.alpha', 0);
+			setProperty('iconP1.alpha', 0);
+			setProperty('iconP2.alpha', 0);
+			setProperty('scoreTxt.alpha', 0);
+			setProperty('timeBar.alpha', 0);
+			setProperty('timeTxt.alpha', 0);
+			if not hidecbo then
+				setProperty('showRating', false);
+				setProperty('showComboNum', false);
+			end
+			noteTweenAlpha("o1",0,1,0.5,"quartInOut");
+            noteTweenAlpha("o2",1,1,0.5,"quartInOut");
+            noteTweenAlpha("o3",2,1,0.5,"quartInOut");
+            noteTweenAlpha("o4",3,1,0.5,"quartInOut");
 		elseif value2 == '11' then
 			setProperty('timeBar.visible', true)
 			setProperty('timeBarBG.visible', true)
@@ -136,6 +212,44 @@ function onEvent(name,value1,value2)
             noteTweenAlpha("o6",5,1,0.5,"quartInOut");
             noteTweenAlpha("o7",6,1,0.5,"quartInOut");
             noteTweenAlpha("o8",7,1,0.5,"quartInOut");
+			noteTweenAlpha("o1",0,1,0.5,"quartInOut");
+            noteTweenAlpha("o2",1,1,0.5,"quartInOut");
+            noteTweenAlpha("o3",2,1,0.5,"quartInOut");
+            noteTweenAlpha("o4",3,1,0.5,"quartInOut");
+		elseif value2 == '22' then
+			setProperty('timeBar.visible', false)
+			setProperty('timeBarBG.visible', false)
+			setProperty('timeTxt.visible', false)
+			setProperty('healthBar.alpha', 1);
+			setProperty('healthBarBG.alpha', 1);
+			setProperty('iconP1.alpha', 1);
+			setProperty('iconP2.alpha', 1);
+			setProperty('scoreTxt.alpha', 0);
+			setProperty('timeBar.alpha', 0);
+			setProperty('timeTxt.alpha', 0);
+			if not hidecbo then
+				setProperty('showRating', false);
+				setProperty('showComboNum', false);
+			end
+			noteTweenAlpha("o5",4,1,0.5,"quartInOut");
+            noteTweenAlpha("o6",5,1,0.5,"quartInOut");
+            noteTweenAlpha("o7",6,1,0.5,"quartInOut");
+            noteTweenAlpha("o8",7,1,0.5,"quartInOut");
+		elseif value2 == '222' then
+			setProperty('timeBar.visible', false)
+			setProperty('timeBarBG.visible', false)
+			setProperty('timeTxt.visible', false)
+			setProperty('healthBar.alpha', 1);
+			setProperty('healthBarBG.alpha', 1);
+			setProperty('iconP1.alpha', 1);
+			setProperty('iconP2.alpha', 1);
+			setProperty('scoreTxt.alpha', 0);
+			setProperty('timeBar.alpha', 0);
+			setProperty('timeTxt.alpha', 0);
+			if not hidecbo then
+				setProperty('showRating', false);
+				setProperty('showComboNum', false);
+			end
 			noteTweenAlpha("o1",0,1,0.5,"quartInOut");
             noteTweenAlpha("o2",1,1,0.5,"quartInOut");
             noteTweenAlpha("o3",2,1,0.5,"quartInOut");

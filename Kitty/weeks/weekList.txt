@@ -1,4 +1,5 @@
 tutorial
+band
 hard
 hard-harder
 hard-oneplayer

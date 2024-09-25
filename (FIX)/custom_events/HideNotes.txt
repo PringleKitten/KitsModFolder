@@ -2,8 +2,8 @@ Toggle Note Opacity
 V1 Variables:
 0 SHOW ALL NOTES
 100 SHOW ALL NOTES at full opac
-1 Toggles OPPONENT Notes
-11 Toggle but OPPONENT shows notes at full opacity
-2 Toggles PLAYER Notes
-22 Toggle but shows PLAYER notes at half opacity
+1 Toggles OPPONENT Notes (12 hides)
+11 Toggle but OPPONENT shows notes at full opacity (112 shows)
+2 Toggles PLAYER Notes (22 hides)
+22 Toggle but shows PLAYER notes at half opacity (222 shows)
 **V2 Variables are the same**

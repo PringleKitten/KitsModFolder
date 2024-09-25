@@ -1,6 +1,6 @@
 function onEvent(name, value1, value2)
     if name == 'moveStrumline' then
-
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         oX1 = getPropertyFromGroup('opponentStrums', 0, 'x')
         oX2 = getPropertyFromGroup('opponentStrums', 1, 'x')
         oX3 = getPropertyFromGroup('opponentStrums', 2, 'x')
@@ -57,5 +57,5 @@ function onEvent(name, value1, value2)
             noteTweenY("pY3",7,pY4+value2,0.2,"quartInOut");
         end
     end
-
+end
 end
