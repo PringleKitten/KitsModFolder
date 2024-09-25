@@ -31,7 +31,6 @@ function onEvent(name, value1, value2)
 end
 
 function onUpdate()
-    if curStep > 0 then
     if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
     if twice == 2 then
         twice = 0
@@ -47,7 +46,6 @@ function onUpdate()
     elseif (canDodge == false and keyJustPressed('space')) then
         setProperty('health', getProperty('health')-.3)
     end
-end
 end
 end
 
