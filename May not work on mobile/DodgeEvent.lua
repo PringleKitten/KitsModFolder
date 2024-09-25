@@ -9,7 +9,7 @@ end
 
 function onEvent(name, value1, value2)
     if name == "DodgeEvent" then
-
+        if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
             --Get Dodge time
             DodgeTime = (value1)
             Dodged = false
@@ -26,12 +26,13 @@ function onEvent(name, value1, value2)
             canDodge = true
             runTimer('Died', DodgeTime)
             twice = twice+1
-
+        end
 	end
 end
 
 function onUpdate()
-
+    if curStep > 0 then
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
     if twice == 2 then
         twice = 0
         setProperty('health', getProperty('health')-.8)
@@ -46,13 +47,14 @@ function onUpdate()
     elseif (canDodge == false and keyJustPressed('space')) then
         setProperty('health', getProperty('health')-.3)
     end
-
+end
+end
 end
 
 
 
 function onTimerCompleted(tag, loops, loopsLeft)
-
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
     if tag == 'Died' and Dodged == false then
         setProperty('health', getProperty('health')-.8)
         removeLuaSprite('dodge')
@@ -63,5 +65,5 @@ function onTimerCompleted(tag, loops, loopsLeft)
         twice = 0
 
     end
-
+end
 end
