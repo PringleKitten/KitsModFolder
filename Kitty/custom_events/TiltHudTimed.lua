@@ -1,3 +1,6 @@
+-- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
+local visuals = true
+
 local ran = false
 local ran1 = false
 local thing = 1
@@ -7,7 +10,12 @@ local v1 = false
 local v2 = false
 function onEvent(name, value1, value2)
     if name == "TiltHudTimed" then
-
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == 'assetMovement' then
+            bugged = true
+        else
+            bugged = false
+        end
+            if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
         event = "TiltHudTimed"
         value1 = tonumber(value1);
         value2 = tonumber(value2);
@@ -52,17 +60,17 @@ function onEvent(name, value1, value2)
             setProperty('camHUD.angle',-value1)
             ran = true
         end
-
+    end
 end
 end
 
 function onBeatHit()
-
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
         if v1 then
             thing2 = thing2 * -1
             doTweenAngle('rotate', 'camHUD', thing2 * 5, crochet / 1000, 'quadInOut')
         end
-
+    end
 end
 
 
