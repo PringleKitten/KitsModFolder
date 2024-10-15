@@ -1,3 +1,9 @@
+--CHECK THESE WHEN YOU CAN FOR CUSTOM OPTIONS WITHOUT MY ENGINE
+local penalizeanyway = false -- If you have a bad rating, this will penalize you like in Kade Engine
+local botherme = true
+
+
+local bugged = false
 local kadezoom = false
 local stopui = false
 local stopcam = false
@@ -20,11 +26,33 @@ function onCreate()
     setProperty('bars.scale.x', 2)
     setProperty('bars.scale.y', 2)
     setProperty('bars.alpha', 0)
-    setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
-    setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
 end
 
 function onSongStart()
+        makeLuaText("drawfps", drawf, 0, 0.0, 0.0)
+        setTextSize("drawfps", 20)
+        setObjectCamera("drawfps", 'other')
+        addLuaText("drawfps")
+    offset = getPropertyFromClass('ClientPrefs','noteOffset')
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' and botherme then
+        debugPrint('Different engine recognized? WILL NOT penalize player for bad ratings unless you change the setting to (local penalizeanyway = true) in mods/kitty/scripts/script.lua!')
+        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+    end
+    if getPropertyFromClass('ClientPrefs','assetMovement') == 'assetMovement' and botherme then
+        debugPrint('Different engine recognized? Modcharts will CONTINUE to be used unless you change the setting to (local visuals = false) in...')
+        debugPrint('Modchart Scripts: (scripts/eventConvertScript) (custom_events/  MoveArrow - or moveOPPONENT(or PLAYER)Strumline(X)(Y) - or moveStrumline - or newArrowToggler - or Tilt - or WindowCrap(or Dance)')
+        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+    end
+    if getPropertyFromClass('ClientPrefs','mechanics') == 'mechanics' and botherme then
+        debugPrint('Different engine recognized? Mechanics will CONTINUE to be used unless you change the setting to (local mechanics = false) in...')
+        debugPrint('Mechanic Scripts: (custom_events/  customDodgeKey - or DodgeEvent(or ForBF) - or hitkey')
+        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+    end
+    debugPrint('- - -')
+    debugPrint('Current Offset: ','(',offset,')')
+    debugPrint('- - -')
+    debugPrint(' | ')
+    debugPrint(' | ')
     dpsx0 = getPropertyFromGroup('playerStrums', 0, 'x')
     dpsx1 = getPropertyFromGroup('playerStrums', 1, 'x')
     dpsx2 = getPropertyFromGroup('playerStrums', 2, 'x')
@@ -51,13 +79,19 @@ function onSongStart()
     doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
     setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)
-    dcuiz = getProperty('defaultCamUIZoom')
+    if getProperty('defaultCamUIZoom') ~= 'defaultCamUIZoom' then
+        dcuiz = getProperty('defaultCamUIZoom')
+    end
     dcgz = getProperty('defaultCamZoom')
     czm = getProperty('camZoomingMult')
 end
 
 function goodNoteHit()
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' then
+        penalizeanyway = false
+        bugged = true
+    end
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true and penalizeanyway then
         if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
             setProperty('health', getProperty('health') + 0.01)
         elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
@@ -73,7 +107,11 @@ function goodNoteHit()
 end
 
 function noteMiss()
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' then
+        penalizeanyway = false
+        bugged = true
+    end
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true and penalizeanyway then
         if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
             setProperty('health', getProperty('health') - 0.1)
         elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
@@ -103,15 +141,15 @@ function onEvent(name, value1, value2)
         value1 = tonumber(value1)
         value2 = tonumber(value2)
         if value1 == 0 and mdsc then
-            noteTweenX("pX",4,dpsx0-323,value2,"cubeInOut");
-            noteTweenX("pX1",5,dpsx1-323,value2,"cubeInOut");
-            noteTweenX("pX2",6,dpsx2-323,value2,"cubeInOut");
-            noteTweenX("pX3",7,dpsx3-323,value2,"cubeInOut");
+            noteTweenX("pX",4,dosx0-323,value2,"cubeInOut");
+            noteTweenX("pX1",5,dosx1-323,value2,"cubeInOut");
+            noteTweenX("pX2",6,dosx2-323,value2,"cubeInOut");
+            noteTweenX("pX3",7,dosx3-323,value2,"cubeInOut");
         elseif value1 == 0 and not mdsc then
-            noteTweenX("pX",4,dpsx0,value2,"cubeInOut");
-            noteTweenX("pX1",5,dpsx1,value2,"cubeInOut");
-            noteTweenX("pX2",6,dpsx2,value2,"cubeInOut");
-            noteTweenX("pX3",7,dpsx3,value2,"cubeInOut");
+            noteTweenX("pX",4,dosx0,value2,"cubeInOut");
+            noteTweenX("pX1",5,dosx1,value2,"cubeInOut");
+            noteTweenX("pX2",6,dosx2,value2,"cubeInOut");
+            noteTweenX("pX3",7,dosx3,value2,"cubeInOut");
         elseif value1 == 0 and ls then
             noteTweenX("pX",4,defaultOpponentStrumX0,value2,"cubeInOut");
             noteTweenX("pX1",5,defaultOpponentStrumX1,value2,"cubeInOut");
@@ -123,10 +161,10 @@ function onEvent(name, value1, value2)
         value1 = tonumber(value1)
         value2 = tonumber(value2)
         if value1 == 0 then
-            noteTweenY("pY",4,dpsy0,value2,"cubeInOut");
-            noteTweenY("pY1",5,dpsy1,value2,"cubeInOut");
-            noteTweenY("pY2",6,dpsy2,value2,"cubeInOut");
-            noteTweenY("pY3",7,dpsy3,value2,"cubeInOut");
+            noteTweenY("pY",4,dosy0,value2,"cubeInOut");
+            noteTweenY("pY1",5,dosy1,value2,"cubeInOut");
+            noteTweenY("pY2",6,dosy2,value2,"cubeInOut");
+            noteTweenY("pY3",7,dosy3,value2,"cubeInOut");
         end
     end
     if name == 'moveOPPONENTStrumline (Y)' then
@@ -145,8 +183,8 @@ function onEvent(name, value1, value2)
         if value1 == 0 and mdsc then
             noteTweenX("oX",0,dosx0+75,value2,"cubeInOut");
             noteTweenX("oX1",1,dosx1+75,value2,"cubeInOut");
-            noteTweenX("oX2",2,dpsx2-79,value2,"cubeInOut");
-            noteTweenX("oX3",3,dpsx3-79,value2,"cubeInOut");
+            noteTweenX("oX2",2,dosx2-79,value2,"cubeInOut");
+            noteTweenX("oX3",3,dosx3-79,value2,"cubeInOut");
         elseif value1 == 0 and not mdsc then
             noteTweenX("oX",0,dosx0,value2,"cubeInOut");
             noteTweenX("oX1",1,dosx1,value2,"cubeInOut");
@@ -168,17 +206,19 @@ function onEvent(name, value1, value2)
             doTweenZoom('camzz','camHUD',tonumber(value1),tonumber(value2),'sineInOut')
 	    end
     end
-    if name == "kadezoomtoggle" then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 1 then
-            czm = 0
-            kadezoom = true
-        else
-            kadezoom = false
-            czm = 1
+    if not bugged then
+        if name == "kadezoomtoggle" then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 1 then
+                czm = 0
+                kadezoom = true
+            else
+                kadezoom = false
+                czm = 1
+            end
+            setProperty('camZoomingMult', czm)
         end
-        setProperty('camZoomingMult', czm)
     end
     if name == "nozoom" then
         value1 = tonumber(value1)
@@ -210,6 +250,8 @@ function onEvent(name, value1, value2)
 end
 
 function onUpdate(elapsed)
+    drawf = getPropertyFromClass("Main", "fpsVar.text")
+    setTextString("drawfps", drawf)
     el = elapsed
     --debugPrint('onupdate','|',czm)
     if kadezoom == true then

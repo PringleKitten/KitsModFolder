@@ -1,3 +1,38 @@
+-- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
+local mechanics = true
+
+
+function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to '.' for default or no value
+    makeLuaSprite(tag,path,x,y)
+    setObjectCamera(tag,cam)
+    scaleObject(tag, xs, ys)
+    setScrollFactor(tag, sfx, sfy)
+    if sc ~= '.' then
+        screenCenter(tag, sc)
+    end
+    if f == '.' then
+        f = false
+    end
+    addLuaSprite(tag,f)
+end
+
+function onSongStart()
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
+        bugged = true
+    else
+        bugged = false
+    end
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
+        luasprite('ddgg','me/buttons/sbutton',0,580,'other',0.7,0.7,0,0,'.',true)
+    end
+end
+
+function mouseOverlaps(tag, camera)
+    x = getMouseX(camera or 'camHUD')
+    y = getMouseY(camera or 'camHUD')
+    return (x > getProperty(tag..'.x') and y > getProperty(tag..'.y') and x < (getProperty(tag..'.x') + getProperty(tag..'.width')) and y < (getProperty(tag..'.y') + getProperty(tag..'.height')))
+end
+
 local Dodged = false
 local canDodge = false
 local DodgeTime = 0
@@ -5,6 +40,7 @@ local twice = 0
 local count = 0
 local ran = 0
 local go = false
+
 function onCreate()
     precacheImage('me/anim/slash')
     precacheSound('DODGEbf')
@@ -12,7 +48,12 @@ end
 
 function onEvent(name, value1, value2)
     if name == "DodgeForBF" then
-        if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
+        if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
+            bugged = true
+        else
+            bugged = false
+        end
+        if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
             --Get Dodge time
             DodgeTime = (value1)
             Dodged = false
@@ -33,7 +74,17 @@ function onEvent(name, value1, value2)
 end
 
 function onUpdate()
-    if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
+        bugged = true
+    else
+        bugged = false
+    end
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
+        if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
+            sdgd = true
+        else
+            sdgd = false
+        end
         if getProperty('ssl.animation.curAnim.finished') then
             removeLuaSprite('ssl')
         end
@@ -41,7 +92,7 @@ function onUpdate()
             twice = 0
             setProperty('health', getProperty('health')-.8)
         end
-        if (canDodge == true and keyJustPressed('space')) or (botPlay == true and canDodge == true) then
+        if (canDodge == true and (keyJustPressed('space') or sdgd)) or (botPlay == true and canDodge == true) then
             Dodged = true
             twice = 0
             if song == 'run-run' and count < 3 then
@@ -51,7 +102,7 @@ function onUpdate()
             end
             canDodge = false
             setProperty('health', getProperty('health')+.1)
-        elseif (canDodge == false and keyJustPressed('space')) then
+        elseif (canDodge == false and (keyJustPressed('space') or sdgd)) then
             if songName == 'run-run' and count < 3 then
                 triggerEvent('Play Animation','hurt', 'bf')
             elseif songName ~= 'run-run' then
@@ -67,7 +118,12 @@ end
 
 
 function onTimerCompleted(tag, loops, loopsLeft)
-    if getPropertyFromClass('ClientPrefs', 'mechanics') == true then
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
+        bugged = true
+    else
+        bugged = false
+    end
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
         if tag == 'bfff' then
             triggerEvent('Change Character', 'bf', 'bfghost')
         end

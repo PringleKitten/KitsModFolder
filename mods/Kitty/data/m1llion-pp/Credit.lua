@@ -6,7 +6,7 @@ local musicB = true
 local roleCredits =
 {
 	{
-	song = 'crystallized',
+	song = 'm1llion-pp',
 	coders = {'pringlekitten', nil, {0,0}},--name,icon,iconOffset
 	artists = {'N/A', nil, {0,0}},--name,icon,iconOffset
 	composers = {'Camellia', nil, {0,0}},--name,icon,iconOffset

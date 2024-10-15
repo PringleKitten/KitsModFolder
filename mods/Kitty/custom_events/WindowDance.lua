@@ -1,3 +1,6 @@
+-- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
+local visuals = true
+
 local Elap = 0
 local running = false
 local x = 0
@@ -7,7 +10,12 @@ local v2 = 0
 function onEvent(name, value1, value2)
     if name == "WindowDance" then
         a = true
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == 'assetMovement' then
+            bugged = true
+        else
+            bugged = false
+        end
+            if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
             value1 = tonumber(value1);
             value2 = tonumber(value2);
             v2 = tonumber(value2);

@@ -4,7 +4,7 @@ function onSongStart()
     setProperty('showComboNum', false)
     setProperty('showRating', false)
     runTimer('vid',((offset-75)/1000))
-    debugPrint('Current Offset: ','(',offset,')')
+    
 end
 
 function onTimerCompleted(tag)

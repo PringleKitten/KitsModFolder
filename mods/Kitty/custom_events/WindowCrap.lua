@@ -1,7 +1,15 @@
+-- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
+local visuals = true
+
 local movingX = false
 local movingY = false
 function onEvent(name, value1, value2)
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == 'assetMovement' then
+        bugged = true
+    else
+        bugged = false
+    end
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
     if name == "WindowCrap" then
         value1 = tonumber(value1);
         value2 = tonumber(value2);

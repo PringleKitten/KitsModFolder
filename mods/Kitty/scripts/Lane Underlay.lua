@@ -20,6 +20,37 @@ selectedUnderlaySettings = false
 ------------------------------Beginning of Script Set UP------------------------------
 --------------------------------------------------------------------------------------
 
+function luatxt(tag,txt,w,x,y,cam,ts,tc,sc,f) -- set certain values to '.' for default or no value
+    makeLuaText(tag,txt,w,x,y)
+    setObjectCamera(tag,cam)
+    setTextSize(tag, ts)
+    if tc == '.' then
+        tc = 'FFFFFF'
+    end
+    setTextColor(tag, tc)
+    if sc ~= '.' then
+        screenCenter(tag, sc)
+    end
+    if f == '.' then
+        f = false
+    end
+    addLuaText(tag,f)
+end
+
+function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to '.' for default or no value
+    makeLuaSprite(tag,path,x,y)
+    setObjectCamera(tag,cam)
+    scaleObject(tag, xs, ys)
+    setScrollFactor(tag, sfx, sfy)
+    if sc ~= '.' then
+        screenCenter(tag, sc)
+    end
+    if f == '.' then
+        f = false
+    end
+    addLuaSprite(tag,f)
+end
+
 function simpleishGraphic(tag, xPos, yPos, graphicWidth, graphicHeight, color, camera)
 	makeLuaSprite(tag, '', xPos, yPos)
 	makeGraphic(tag, graphicWidth, graphicHeight, color)
@@ -57,6 +88,28 @@ function onCreatePost()
 
 	simpleishText('NavigationText', 'CONTROLS: "SPACE" to select | "BACKSPACE" to deselect | Arrow Keys to navigate', screenWidth, 0, 680, 25, 'center', 'other')
 
+	--BUTTONS
+
+	luasprite('up','me/buttons/button',(screenWidth/1.085)-120,(screenHeight/1.1625)-210,'other',0.5,0.5,0,0,'.',true)
+	luasprite('down','me/buttons/button',getProperty('up.x'),getProperty('up.y')+110,'other',0.5,0.5,0,0,'.',true)
+	luasprite('left','me/buttons/button',getProperty('up.x')-110,getProperty('up.y')+50,'other',0.5,0.5,0,0,'.',true)
+	luasprite('right','me/buttons/button',getProperty('up.x')+110,getProperty('up.y')+50,'other',0.5,0.5,0,0,'.',true)
+	luasprite('back','me/buttons/button',getProperty('up.x')-100,getProperty('up.y')-300,'other',0.5,0.5,0,0,'.',true)
+	luasprite('space','me/buttons/button',getProperty('up.x')+100,getProperty('up.y')-300,'other',0.5,0.5,0,0,'.',true)
+
+	luatxt('txtup','Up', 0,(screenWidth/1.075)-100,(screenHeight/1.105)-210,'other',screenWidth/39,'.','.',true)
+	luatxt('txtdown','Down', 0,getProperty('txtup.x')-20,getProperty('txtup.y')+110,'other',screenWidth/39,'.','.',true)
+	luatxt('txtleft','Left', 0,getProperty('txtup.x')-130,getProperty('txtup.y')+50,'other',screenWidth/39,'.','.',true)
+	luatxt('txtright','Right', 0,getProperty('txtup.x')+85,getProperty('txtup.y')+50,'other',screenWidth/39,'.','.',true)
+	luatxt('txtback','Back', 0,getProperty('txtup.x')-120,getProperty('txtup.y')-300,'other',screenWidth/39,'.','.',true)
+	luatxt('txtspace','Space', 0,getProperty('txtup.x')+75,getProperty('txtup.y')-300,'other',screenWidth/39,'.','.',true)
+
+end
+
+function mouseOverlaps(tag, camera)
+    x = getMouseX(camera or 'camHUD')
+    y = getMouseY(camera or 'camHUD')
+    return (x > getProperty(tag..'.x') and y > getProperty(tag..'.y') and x < (getProperty(tag..'.x') + getProperty(tag..'.width')) and y < (getProperty(tag..'.y') + getProperty(tag..'.height')))
 end
 
 function onStartCountdown()
@@ -67,79 +120,125 @@ function onStartCountdown()
 	end
 end
 
+function buttonStuff()
+    if mouseOverlaps('space', 'camOther') and mouseClicked("left") then
+        spc = true
+    end
+    if mouseOverlaps('up', 'camOther') and mouseClicked("left") then
+        bbck = false
+        brgh = false
+        blft = false
+        bdwn = false
+        bup = true
+    elseif mouseOverlaps('down', 'camOther') and mouseClicked("left") then
+        bbck = false
+        brgh = false
+        blft = false
+        bdwn = true
+        bup = false
+    elseif mouseOverlaps('left', 'camOther') and mouseClicked("left") then
+        bbck = false
+        brgh = false
+        blft = true
+        bdwn = false
+        bup = false
+    elseif mouseOverlaps('right', 'camOther') and mouseClicked("left") then
+        bbck = false
+        brgh = true
+        blft = false
+        bdwn = false
+        bup = false
+    elseif mouseOverlaps('back', 'camOther') and mouseClicked("left") then
+        bbck = true
+        brgh = false
+        blft = false
+        bdwn = false
+        bup = false
+    end
+end
+
 function onUpdate()
-	if keyPress('SPACE') and selectedBeginSong then
+	if not allowCountdown then
+        buttonStuff()
+    end
+	if (keyPress('SPACE') or spc) and selectedBeginSong then
+		for _, value in pairs({'txtup','txtdown','txtleft','txtright','txtback','txtspace'}) do
+            removeLuaText(value)
+        end
+        for _, value in pairs({'up','down','left','right','back','space'}) do
+            removeLuaSprite(value)
+        end
 		allowCountdown = true
 		startCountdown()
 
-	elseif keyPress('SPACE') and allowVerticalScroll and selectedUnderlaySettings then
+	elseif (keyPress('SPACE') or spc) and allowVerticalScroll and selectedUnderlaySettings then
 		selectedUnderlaySettings = false
 		selectedUnderlayTypeSettings = true
 		allowHorizontalScroll = true
 
-	elseif keyPress('BACKSPACE') and not selectedBeginSong and allowVerticalScroll and selectedUnderlayTypeSettings then
+	elseif (keyPress('BACKSPACE') or bbck) and not selectedBeginSong and allowVerticalScroll and selectedUnderlayTypeSettings then
 		selectedUnderlaySettings = true
 		selectedUnderlayTypeSettings = false
 		allowHorizontalScroll = false
-	elseif keyPress('BACKSPACE') and not selectedBeginSong and allowVerticalScroll and selectedUnderlayOpacitySettings then
+	elseif (keyPress('BACKSPACE') or bbck) and not selectedBeginSong and allowVerticalScroll and selectedUnderlayOpacitySettings then
 		selectedUnderlaySettings = true
 		selectedUnderlayOpacitySettings = false
 		allowHorizontalScroll = false
 	end
 
 
-	if keyPress('UP') and allowVerticalScroll and selectedBeginSong then
+	if (keyPress('UP') or bup) and allowVerticalScroll and selectedBeginSong then
 		selectedBeginSong = false
 		selectedUnderlaySettings = true
-	elseif keyPress('UP') and allowVerticalScroll and selectedUnderlaySettings then
+	elseif (keyPress('UP') or bup) and allowVerticalScroll and selectedUnderlaySettings then
 		selectedBeginSong = true
 		selectedUnderlaySettings = false
 
-		elseif keyPress('UP') and allowVerticalScroll and selectedUnderlayTypeSettings then
+		elseif (keyPress('UP') or bup) and allowVerticalScroll and selectedUnderlayTypeSettings then
 			selectedUnderlayTypeSettings = false
 			selectedUnderlayOpacitySettings = true
-		elseif keyPress('UP') and allowVerticalScroll and selectedUnderlayOpacitySettings then
+		elseif (keyPress('UP') or bup) and allowVerticalScroll and selectedUnderlayOpacitySettings then
 			selectedUnderlayTypeSettings = true
 			selectedUnderlayOpacitySettings = false
 
-	elseif keyPress('DOWN') and allowVerticalScroll and selectedBeginSong then
+	elseif (keyPress('DOWN') or bdwn) and allowVerticalScroll and selectedBeginSong then
 		selectedBeginSong = false
 		selectedUnderlaySettings = true
-	elseif keyPress('DOWN') and allowVerticalScroll and selectedUnderlaySettings then
+	elseif (keyPress('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlaySettings then
 		selectedBeginSong = true
 		selectedUnderlaySettings = false
 
-		elseif keyPress('DOWN') and allowVerticalScroll and selectedUnderlayTypeSettings then
+		elseif (keyPress('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlayTypeSettings then
 			selectedUnderlayTypeSettings = false
 			selectedUnderlayOpacitySettings = true
-		elseif keyPress('DOWN') and allowVerticalScroll and selectedUnderlayOpacitySettings then
+		elseif (keyPress('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlayOpacitySettings then
 			selectedUnderlayTypeSettings = true
 			selectedUnderlayOpacitySettings = false
 
 
-	elseif keyPress('LEFT') and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'None' then
+	elseif (keyPress('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'None' then
 		underlayTypeSettings = 'Player and Opponent'
-	elseif keyPress('LEFT') and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player and Opponent' then
+	elseif (keyPress('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player and Opponent' then
 		underlayTypeSettings = 'Player Only'
-	elseif keyPress('LEFT') and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player Only' then
+	elseif (keyPress('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player Only' then
 		underlayTypeSettings = 'None'
 
-		elseif keyPress('LEFT') and allowHorizontalScroll and selectedUnderlayOpacitySettings then
+		elseif (keyPress('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayOpacitySettings then
 			visualLaneOpacity = (visualLaneOpacity - (0.1 * 100))
 			if visualLaneOpacity < (0.1 * 100) then
 				visualLaneOpacity = 0
 			end
-		elseif keyPress('RIGHT') and allowHorizontalScroll and selectedUnderlayOpacitySettings then
+		elseif (keyPress('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayOpacitySettings then
 			visualLaneOpacity = (visualLaneOpacity + (0.1 * 100))
 			if visualLaneOpacity > (0.9 * 100) then
 				visualLaneOpacity = 100
 			end
 
-	elseif keyPress('RIGHT') and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'None' then
+	elseif (keyPress('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'None' then
 		underlayTypeSettings = 'Player Only'
-	elseif keyPress('RIGHT') and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player Only' then
+	elseif (keyPress('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player Only' then
 		underlayTypeSettings = 'Player and Opponent'
-	elseif keyPress('RIGHT') and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player and Opponent' then
+	elseif (keyPress('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player and Opponent' then
 		underlayTypeSettings = 'None'
 	end
 
@@ -229,5 +328,10 @@ function onUpdate()
 			setProperty('NavigationText.visible', false)
 
 		end
-
+		bup = false
+		bdwn = false
+		brgh = false
+		blft = false
+		spc = false
+		bbck = false
 end
