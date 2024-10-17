@@ -2,10 +2,15 @@
 --Hope you like it! <3
 
 
+local force = false --should mobile support be on no matter what?
+
+local captions = true
+
 allowCountdown = false
 allowVerticalScroll = true
 allowHorizontalScroll = false
 visualLaneOpacity = 1 * 100
+
 
 selectedBeginSong = true
 	beginSongConfirm = 'YES'
@@ -19,6 +24,28 @@ selectedUnderlaySettings = false
 --------------------------------------------------------------------------------------
 ------------------------------Beginning of Script Set UP------------------------------
 --------------------------------------------------------------------------------------
+
+function simpleishGraphic(tag, xPos, yPos, graphicWidth, graphicHeight, color, camera)
+	makeLuaSprite(tag, '', xPos, yPos)
+	makeGraphic(tag, graphicWidth, graphicHeight, color)
+	setObjectCamera(tag, camera)
+	addLuaSprite(tag)
+end
+function simpleishText(tag, text, textWidth, xPos, yPos, size, alignment, camera)
+	makeLuaText(tag, text, textWidth, xPos, yPos)
+	setTextSize(tag, size)
+	setTextBorder(tag, 2, '838383')
+	setTextAlignment(tag, alignment)
+	setObjectCamera(tag, camera)
+	addLuaText(tag)
+end
+function keyPress(key)
+	return getPropertyFromClass('flixel.FlxG', 'keys.justPressed.'..key)
+end
+--------------------------------------------------------------------------------------
+---------------------------------End of Script Set Up---------------------------------
+--------------------------------------------------------------------------------------
+
 
 function luatxt(tag,txt,w,x,y,cam,ts,tc,sc,f) -- set certain values to '.' for default or no value
     makeLuaText(tag,txt,w,x,y)
@@ -51,28 +78,7 @@ function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to
     addLuaSprite(tag,f)
 end
 
-function simpleishGraphic(tag, xPos, yPos, graphicWidth, graphicHeight, color, camera)
-	makeLuaSprite(tag, '', xPos, yPos)
-	makeGraphic(tag, graphicWidth, graphicHeight, color)
-	setObjectCamera(tag, camera)
-	addLuaSprite(tag)
-end
-function simpleishText(tag, text, textWidth, xPos, yPos, size, alignment, camera)
-	makeLuaText(tag, text, textWidth, xPos, yPos)
-	setTextSize(tag, size)
-	setTextBorder(tag, 2, '838383')
-	setTextAlignment(tag, alignment)
-	setObjectCamera(tag, camera)
-	addLuaText(tag)
-end
-function keyPress(key)
-	return getPropertyFromClass('flixel.FlxG', 'keys.justPressed.'..key)
-end
---------------------------------------------------------------------------------------
----------------------------------End of Script Set Up---------------------------------
---------------------------------------------------------------------------------------
-
-function onCreatePost()
+function onCreate()
 
 	simpleishGraphic('BG', 0, 0, screenWidth, screenHeight, '06000e', 'other')
 
@@ -88,28 +94,30 @@ function onCreatePost()
 
 	simpleishText('NavigationText', 'CONTROLS: "SPACE" to select | "BACKSPACE" to deselect | Arrow Keys to navigate', screenWidth, 0, 680, 25, 'center', 'other')
 
-	--BUTTONS
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
+        bugged = true
+    else
+        bugged = false
+    end
+    if bugged or force then
+		luasprite('up','me/buttons/button',(screenWidth/1.085)-120,(screenHeight/1.1625)-210,'other',0.5,0.5,0,0,'.',true)
+		luasprite('down','me/buttons/button',getProperty('up.x'),getProperty('up.y')+110,'other',0.5,0.5,0,0,'.',true)
+		luasprite('left','me/buttons/button',getProperty('up.x')-110,getProperty('up.y')+50,'other',0.5,0.5,0,0,'.',true)
+		luasprite('right','me/buttons/button',getProperty('up.x')+110,getProperty('up.y')+50,'other',0.5,0.5,0,0,'.',true)
+		luasprite('back','me/buttons/button',getProperty('up.x')-100,getProperty('up.y')-300,'other',0.5,0.5,0,0,'.',true)
+		luasprite('space','me/buttons/button',getProperty('up.x')+100,getProperty('up.y')-300,'other',0.5,0.5,0,0,'.',true)
+		luasprite('cc','me/buttons/button',getProperty('up.x')-1000,getProperty('up.y')-150,'other',0.5,0.5,0,0,'.',true)
 
-	luasprite('up','me/buttons/button',(screenWidth/1.085)-120,(screenHeight/1.1625)-210,'other',0.5,0.5,0,0,'.',true)
-	luasprite('down','me/buttons/button',getProperty('up.x'),getProperty('up.y')+110,'other',0.5,0.5,0,0,'.',true)
-	luasprite('left','me/buttons/button',getProperty('up.x')-110,getProperty('up.y')+50,'other',0.5,0.5,0,0,'.',true)
-	luasprite('right','me/buttons/button',getProperty('up.x')+110,getProperty('up.y')+50,'other',0.5,0.5,0,0,'.',true)
-	luasprite('back','me/buttons/button',getProperty('up.x')-100,getProperty('up.y')-300,'other',0.5,0.5,0,0,'.',true)
-	luasprite('space','me/buttons/button',getProperty('up.x')+100,getProperty('up.y')-300,'other',0.5,0.5,0,0,'.',true)
-
-	luatxt('txtup','Up', 0,(screenWidth/1.075)-100,(screenHeight/1.105)-210,'other',screenWidth/39,'.','.',true)
-	luatxt('txtdown','Down', 0,getProperty('txtup.x')-20,getProperty('txtup.y')+110,'other',screenWidth/39,'.','.',true)
-	luatxt('txtleft','Left', 0,getProperty('txtup.x')-130,getProperty('txtup.y')+50,'other',screenWidth/39,'.','.',true)
-	luatxt('txtright','Right', 0,getProperty('txtup.x')+85,getProperty('txtup.y')+50,'other',screenWidth/39,'.','.',true)
-	luatxt('txtback','Back', 0,getProperty('txtup.x')-120,getProperty('txtup.y')-300,'other',screenWidth/39,'.','.',true)
-	luatxt('txtspace','Space', 0,getProperty('txtup.x')+75,getProperty('txtup.y')-300,'other',screenWidth/39,'.','.',true)
-
-end
-
-function mouseOverlaps(tag, camera)
-    x = getMouseX(camera or 'camHUD')
-    y = getMouseY(camera or 'camHUD')
-    return (x > getProperty(tag..'.x') and y > getProperty(tag..'.y') and x < (getProperty(tag..'.x') + getProperty(tag..'.width')) and y < (getProperty(tag..'.y') + getProperty(tag..'.height')))
+		luatxt('txtup','Up', 0,(screenWidth/1.075)-100,(screenHeight/1.105)-210,'other',screenWidth/39,'.','.',true)
+		luatxt('txtdown','Down', 0,getProperty('txtup.x')-20,getProperty('txtup.y')+110,'other',screenWidth/39,'.','.',true)
+		luatxt('txtleft','Left', 0,getProperty('txtup.x')-130,getProperty('txtup.y')+50,'other',screenWidth/39,'.','.',true)
+		luatxt('txtright','Right', 0,getProperty('txtup.x')+85,getProperty('txtup.y')+50,'other',screenWidth/39,'.','.',true)
+		luatxt('txtback','Back', 0,getProperty('txtup.x')-120,getProperty('txtup.y')-300,'other',screenWidth/39,'.','.',true)
+		luatxt('txtspace','Space', 0,getProperty('txtup.x')+75,getProperty('txtup.y')-300,'other',screenWidth/39,'.','.',true)
+		luatxt('txtcc','CC', 0,getProperty('txtup.x')-1003,getProperty('txtup.y')-150,'other',screenWidth/39,'.','.',true)
+	end
+	luatxt('ifso','(If applicable)', 0,((screenWidth/1.075)-100)-1040,((screenHeight/1.105)-210)-20,'other',screenWidth/80,'808080','.',true)
+	luatxt('captiontxt','Captions: true', 0,((screenWidth/1.075)-100)-1080,((screenHeight/1.105)-210)-50,'other',screenWidth/39,'00FF00','.',true)
 end
 
 function onStartCountdown()
@@ -120,54 +128,89 @@ function onStartCountdown()
 	end
 end
 
+function mouseOverlaps(tag, camera)
+    x = getMouseX(camera or 'camHUD')
+    y = getMouseY(camera or 'camHUD')
+    return (x > getProperty(tag..'.x') and y > getProperty(tag..'.y') and x < (getProperty(tag..'.x') + getProperty(tag..'.width')) and y < (getProperty(tag..'.y') + getProperty(tag..'.height')))
+end
+
 function buttonStuff()
-    if mouseOverlaps('space', 'camOther') and mouseClicked("left") then
-        spc = true
+	if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
+        bugged = true
+    else
+        bugged = false
     end
-    if mouseOverlaps('up', 'camOther') and mouseClicked("left") then
-        bbck = false
-        brgh = false
-        blft = false
-        bdwn = false
-        bup = true
-    elseif mouseOverlaps('down', 'camOther') and mouseClicked("left") then
-        bbck = false
-        brgh = false
-        blft = false
-        bdwn = true
-        bup = false
-    elseif mouseOverlaps('left', 'camOther') and mouseClicked("left") then
-        bbck = false
-        brgh = false
-        blft = true
-        bdwn = false
-        bup = false
-    elseif mouseOverlaps('right', 'camOther') and mouseClicked("left") then
-        bbck = false
-        brgh = true
-        blft = false
-        bdwn = false
-        bup = false
-    elseif mouseOverlaps('back', 'camOther') and mouseClicked("left") then
-        bbck = true
-        brgh = false
-        blft = false
-        bdwn = false
-        bup = false
-    end
+    if bugged or force then
+    	if mouseOverlaps('space', 'camOther') and mouseClicked("left") then
+    	    spc = true
+    	end
+    	if mouseOverlaps('up', 'camOther') and mouseClicked("left") then
+    	    bbck = false
+    	    brgh = false
+    	    blft = false
+    	    bdwn = false
+    	    bup = true
+    	elseif mouseOverlaps('down', 'camOther') and mouseClicked("left") then
+    	    bbck = false
+    	    brgh = false
+    	    blft = false
+    	    bdwn = true
+    	    bup = false
+    	elseif mouseOverlaps('left', 'camOther') and mouseClicked("left") then
+    	    bbck = false
+    	    brgh = false
+    	    blft = true
+    	    bdwn = false
+    	    bup = false
+    	elseif mouseOverlaps('right', 'camOther') and mouseClicked("left") then
+    	    bbck = false
+    	    brgh = true
+    	    blft = false
+    	    bdwn = false
+    	    bup = false
+    	elseif mouseOverlaps('back', 'camOther') and mouseClicked("left") then
+    	    bbck = true
+    	    brgh = false
+    	    blft = false
+    	    bdwn = false
+    	    bup = false
+    	end
+	end
+	if bugged or force then
+		if ((mouseOverlaps('cc', 'camOther') and mouseClicked("left")) or keyPress('C')) and not captions then
+			captions = true
+			setTextColor("captiontxt", "00FF00")
+			setTextString('captiontxt','Captions: true')
+		elseif ((mouseOverlaps('cc', 'camOther') and mouseClicked("left")) or keyPress('C')) and captions then
+			captions = false
+			setTextColor("captiontxt", "FF0000")
+			setTextString('captiontxt','Captions: false')
+		end
+	else
+		if keyPress('C') and not captions then
+			captions = true
+			setTextColor("captiontxt", "00FF00")
+			setTextString('captiontxt','Captions: true')
+		elseif keyPress('C') and captions then
+			captions = false
+			setTextColor("captiontxt", "FF0000")
+			setTextString('captiontxt','Captions: false')
+		end
+	end
 end
 
 function onUpdate()
 	if not allowCountdown then
         buttonStuff()
-    end
+
 	if (keyPress('SPACE') or spc) and selectedBeginSong then
-		for _, value in pairs({'txtup','txtdown','txtleft','txtright','txtback','txtspace'}) do
+		for _, value in pairs({'txtup','txtdown','txtleft','txtright','txtback','txtspace','txtcc','captiontxt','ifso'}) do
             removeLuaText(value)
         end
-        for _, value in pairs({'up','down','left','right','back','space'}) do
+        for _, value in pairs({'up','down','left','right','back','space','cc'}) do
             removeLuaSprite(value)
         end
+		callScript("scripts/makeCaption", "captionson",{captions})
 		allowCountdown = true
 		startCountdown()
 
@@ -334,4 +377,5 @@ function onUpdate()
 		blft = false
 		spc = false
 		bbck = false
+	end
 end

@@ -1,3 +1,13 @@
+function onCreate()
+    makeLuaSprite('bars', 'me/popup/bars', 0,0)
+    setObjectCamera('bars', 'hud')
+    addLuaSprite('bars')
+    setProperty('bars.scale.x', 2)
+    setProperty('bars.scale.y', 2)
+    setProperty('bars.alpha', 0)
+    screenCenter('bars')
+end
+
 function onSongStart()
     oY1 = getPropertyFromGroup('opponentStrums', 0, 'y')
     oY2 = getPropertyFromGroup('opponentStrums', 1, 'y')
