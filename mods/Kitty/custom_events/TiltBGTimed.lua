@@ -64,7 +64,12 @@ end
 end
 
 function onBeatHit()
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == 'assetMovement' then
+        bugged = true
+    else
+        bugged = false
+    end
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
         if v2 then
             thing = thing * -1
             doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')

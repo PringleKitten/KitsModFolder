@@ -1,0 +1,4 @@
+v1 = text
+v2 = time
+
+Same stuff as makeText but requires captions variable

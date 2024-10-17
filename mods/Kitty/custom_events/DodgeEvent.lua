@@ -1,5 +1,8 @@
 -- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
 local mechanics = true
+local forcemobilesupport = false --should mobile support be on no matter what?
+
+local bugged = false
 
 
 function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to '.' for default or no value
@@ -22,7 +25,7 @@ function onSongStart()
     else
         bugged = false
     end
-    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) or forcemobilesupport then
         luasprite('ddgg','me/buttons/sbutton',0,580,'other',0.7,0.7,0,0,'.',true)
     end
 end

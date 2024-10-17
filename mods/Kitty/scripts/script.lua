@@ -1,4 +1,5 @@
 --CHECK THESE WHEN YOU CAN FOR CUSTOM OPTIONS WITHOUT MY ENGINE
+local visuals = true
 local penalizeanyway = false -- If you have a bad rating, this will penalize you like in Kade Engine
 local botherme = true
 
@@ -11,21 +12,7 @@ local czm = 1
 local czmu = 1
 local czmc = 1
 function onCreate()
-    precacheImage('me/popup/bars')
     setProperty('skipArrowStartTween', true)
-    makeLuaText('st', 'l', '800', 400,450)
-    addLuaText('st')
-    setTextSize('st', 50)
-    setTextAlignment('st', 'center')
-    setProperty('st.x', (screenWidth/2)-(getProperty('st.width')/2))
-    setObjectCamera('st', 'other')
-    setProperty('st.alpha', 0)
-    makeLuaSprite('bars', 'me/popup/bars', 0,0)
-    setObjectCamera('bars', 'hud')
-    addLuaSprite('bars')
-    setProperty('bars.scale.x', 2)
-    setProperty('bars.scale.y', 2)
-    setProperty('bars.alpha', 0)
 end
 
 function onSongStart()
@@ -35,18 +22,27 @@ function onSongStart()
         addLuaText("drawfps")
     offset = getPropertyFromClass('ClientPrefs','noteOffset')
     if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' and botherme then
-        debugPrint('Different engine recognized? WILL NOT penalize player for bad ratings unless you change the setting to (local penalizeanyway = true) in mods/kitty/scripts/script.lua!')
         debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+        debugPrint('Different engine recognized? WILL NOT penalize player for bad ratings unless you change the setting to (local penalizeanyway = true) in mods/kitty/scripts/script.lua!')
+        bugged = true
+    elseif not botherme and getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' then
+        bugged = true
     end
     if getPropertyFromClass('ClientPrefs','assetMovement') == 'assetMovement' and botherme then
-        debugPrint('Different engine recognized? Modcharts will CONTINUE to be used unless you change the setting to (local visuals = false) in...')
-        debugPrint('Modchart Scripts: (scripts/eventConvertScript) (custom_events/  MoveArrow - or moveOPPONENT(or PLAYER)Strumline(X)(Y) - or moveStrumline - or newArrowToggler - or Tilt - or WindowCrap(or Dance)')
         debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+        debugPrint('Modchart Scripts: (scripts/eventConvertScript) (custom_events/  MoveArrow - or moveOPPONENT(or PLAYER)Strumline(X)(Y) - or moveStrumline - or newArrowToggler - or Tilt - or WindowCrap(or Dance)')
+        debugPrint('Different engine recognized? Modcharts will CONTINUE to be used unless you change the setting to (local visuals = false) in...')        
+        bugged = true
+    elseif not botherme and getPropertyFromClass('ClientPrefs','assetMovement') == 'assetMovement' then
+        bugged = true
     end
     if getPropertyFromClass('ClientPrefs','mechanics') == 'mechanics' and botherme then
-        debugPrint('Different engine recognized? Mechanics will CONTINUE to be used unless you change the setting to (local mechanics = false) in...')
-        debugPrint('Mechanic Scripts: (custom_events/  customDodgeKey - or DodgeEvent(or ForBF) - or hitkey')
         debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+        debugPrint('Mechanic Scripts: (custom_events/  customDodgeKey - or DodgeEvent(or ForBF) - or hitkey')
+        debugPrint('Different engine recognized? Mechanics will CONTINUE to be used unless you change the setting to (local mechanics = false) in...')
+        bugged = true
+    elseif not botherme and getPropertyFromClass('ClientPrefs','mechanics') == 'mechanics' then
+        bugged = true
     end
     debugPrint('- - -')
     debugPrint('Current Offset: ','(',offset,')')
@@ -69,13 +65,6 @@ function onSongStart()
     dosy1 = getPropertyFromGroup('opponentStrums', 1, 'y')
     dosy2 = getPropertyFromGroup('opponentStrums', 2, 'y')
     dosy3 = getPropertyFromGroup('opponentStrums', 3, 'y')
-    setProperty('bars.alpha', 1);
-    doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
-    setObjectCamera('bars', 'other')
-    setObjectCamera('bars', 'hud')
-    screenCenter('bars')
-    setProperty('bars.alpha', 0)
-    doTweenY('ba', 'bars.scale', 3, 0.1, 'quadInOut')
     doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
     setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)
@@ -88,10 +77,11 @@ end
 
 function goodNoteHit()
     if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' then
-        penalizeanyway = false
         bugged = true
+    else
+        bugged = false
     end
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true and penalizeanyway then
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true or (bugged and penalizeanyway) == true then
         if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
             setProperty('health', getProperty('health') + 0.01)
         elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
@@ -108,10 +98,11 @@ end
 
 function noteMiss()
     if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' then
-        penalizeanyway = false
         bugged = true
+    else
+        bugged = false
     end
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true and penalizeanyway then
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true or (bugged and penalizeanyway) == true then
         if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
             setProperty('health', getProperty('health') - 0.1)
         elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
@@ -127,74 +118,81 @@ function noteMiss()
 end
 
 function onEvent(name, value1, value2)
-    if name == 'newArrowToggler' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 3 or value1 == 33 then
-            mdsc = true
-        elseif value1 == 2 then
-            mdsc = false
-            ls = true
-        end
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == 'assetMovement' then
+        bugged = true
+    else
+        bugged = false
     end
-    if name == 'movePLAYERStrumline (X)' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 0 and mdsc then
-            noteTweenX("pX",4,dosx0-323,value2,"cubeInOut");
-            noteTweenX("pX1",5,dosx1-323,value2,"cubeInOut");
-            noteTweenX("pX2",6,dosx2-323,value2,"cubeInOut");
-            noteTweenX("pX3",7,dosx3-323,value2,"cubeInOut");
-        elseif value1 == 0 and not mdsc then
-            noteTweenX("pX",4,dosx0,value2,"cubeInOut");
-            noteTweenX("pX1",5,dosx1,value2,"cubeInOut");
-            noteTweenX("pX2",6,dosx2,value2,"cubeInOut");
-            noteTweenX("pX3",7,dosx3,value2,"cubeInOut");
-        elseif value1 == 0 and ls then
-            noteTweenX("pX",4,defaultOpponentStrumX0,value2,"cubeInOut");
-            noteTweenX("pX1",5,defaultOpponentStrumX1,value2,"cubeInOut");
-            noteTweenX("pX2",6,defaultOpponentStrumX2,value2,"cubeInOut");
-            noteTweenX("pX3",7,defaultOpponentStrumX3,value2,"cubeInOut");
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
+        if name == 'newArrowToggler' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 3 or value1 == 33 then
+                mdsc = true
+            elseif value1 == 2 then
+                mdsc = false
+                ls = true
+            end
         end
-    end
-    if name == 'movePLAYERStrumline (Y)' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 0 then
-            noteTweenY("pY",4,dosy0,value2,"cubeInOut");
-            noteTweenY("pY1",5,dosy1,value2,"cubeInOut");
-            noteTweenY("pY2",6,dosy2,value2,"cubeInOut");
-            noteTweenY("pY3",7,dosy3,value2,"cubeInOut");
+        if name == 'movePLAYERStrumline (X)' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 0 and mdsc then
+                noteTweenX("pX",4,dosx0-323,value2,"cubeInOut");
+                noteTweenX("pX1",5,dosx1-323,value2,"cubeInOut");
+                noteTweenX("pX2",6,dosx2-323,value2,"cubeInOut");
+                noteTweenX("pX3",7,dosx3-323,value2,"cubeInOut");
+            elseif value1 == 0 and not mdsc then
+                noteTweenX("pX",4,dosx0,value2,"cubeInOut");
+                noteTweenX("pX1",5,dosx1,value2,"cubeInOut");
+                noteTweenX("pX2",6,dosx2,value2,"cubeInOut");
+                noteTweenX("pX3",7,dosx3,value2,"cubeInOut");
+            elseif value1 == 0 and ls then
+                noteTweenX("pX",4,defaultOpponentStrumX0,value2,"cubeInOut");
+                noteTweenX("pX1",5,defaultOpponentStrumX1,value2,"cubeInOut");
+                noteTweenX("pX2",6,defaultOpponentStrumX2,value2,"cubeInOut");
+                noteTweenX("pX3",7,defaultOpponentStrumX3,value2,"cubeInOut");
+            end
         end
-    end
-    if name == 'moveOPPONENTStrumline (Y)' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 0 then
-            noteTweenY("oY",4,dosy0,value2,"cubeInOut");
-            noteTweenY("oY1",5,dosy1,value2,"cubeInOut");
-            noteTweenY("oY2",6,dosy2,value2,"cubeInOut");
-            noteTweenY("oY3",7,dosy3,value2,"cubeInOut");
+        if name == 'movePLAYERStrumline (Y)' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 0 then
+                noteTweenY("pY",4,dosy0,value2,"cubeInOut");
+                noteTweenY("pY1",5,dosy1,value2,"cubeInOut");
+                noteTweenY("pY2",6,dosy2,value2,"cubeInOut");
+                noteTweenY("pY3",7,dosy3,value2,"cubeInOut");
+            end
         end
-    end
-    if name == 'moveOPPONENTStrumline (X)' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 0 and mdsc then
-            noteTweenX("oX",0,dosx0+75,value2,"cubeInOut");
-            noteTweenX("oX1",1,dosx1+75,value2,"cubeInOut");
-            noteTweenX("oX2",2,dosx2-79,value2,"cubeInOut");
-            noteTweenX("oX3",3,dosx3-79,value2,"cubeInOut");
-        elseif value1 == 0 and not mdsc then
-            noteTweenX("oX",0,dosx0,value2,"cubeInOut");
-            noteTweenX("oX1",1,dosx1,value2,"cubeInOut");
-            noteTweenX("oX2",2,dosx2,value2,"cubeInOut");
-            noteTweenX("oX3",3,dosx3,value2,"cubeInOut");
-        elseif value1 == 0 and ls then
-            noteTweenX("oX",0,defaultPlayerStrumX0,value2,"cubeInOut");
-            noteTweenX("oX1",1,defaultPlayerStrumX1,value2,"cubeInOut");
-            noteTweenX("oX2",2,defaultPlayerStrumX2,value2,"cubeInOut");
-            noteTweenX("oX3",3,defaultPlayerStrumX3,value2,"cubeInOut");
+        if name == 'moveOPPONENTStrumline (Y)' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 0 then
+                noteTweenY("oY",4,dosy0,value2,"cubeInOut");
+                noteTweenY("oY1",5,dosy1,value2,"cubeInOut");
+                noteTweenY("oY2",6,dosy2,value2,"cubeInOut");
+                noteTweenY("oY3",7,dosy3,value2,"cubeInOut");
+            end
+        end
+        if name == 'moveOPPONENTStrumline (X)' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 0 and mdsc then
+                noteTweenX("oX",0,dosx0+75,value2,"cubeInOut");
+                noteTweenX("oX1",1,dosx1+75,value2,"cubeInOut");
+                noteTweenX("oX2",2,dosx2-79,value2,"cubeInOut");
+                noteTweenX("oX3",3,dosx3-79,value2,"cubeInOut");
+            elseif value1 == 0 and not mdsc then
+                noteTweenX("oX",0,dosx0,value2,"cubeInOut");
+                noteTweenX("oX1",1,dosx1,value2,"cubeInOut");
+                noteTweenX("oX2",2,dosx2,value2,"cubeInOut");
+                noteTweenX("oX3",3,dosx3,value2,"cubeInOut");
+            elseif value1 == 0 and ls then
+                noteTweenX("oX",0,defaultPlayerStrumX0,value2,"cubeInOut");
+                noteTweenX("oX1",1,defaultPlayerStrumX1,value2,"cubeInOut");
+                noteTweenX("oX2",2,defaultPlayerStrumX2,value2,"cubeInOut");
+                noteTweenX("oX3",3,defaultPlayerStrumX3,value2,"cubeInOut");
+            end
         end
     end
     if name == "hudzoom" then 
@@ -227,24 +225,19 @@ function onEvent(name, value1, value2)
             stopcam = true
             czmc = 0
             setProperty('camZoomingMult', 0)
-            --setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)--WHY ARENT THESE WORKING?!!?
-            --debugPrint('czm = 0 due to event')
         elseif value1 == 0 then
             stopcam = false
             czmc = 1
             setProperty('camZoomingMult', 1)
-            --setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
         end
         if value2 == 1 then
             stopui = true
             czmu = 0
             setProperty('camZoomingMult', 0)
-            --setPropertyFromClass('ClientPrefs', 'hudZoomSections', false) --WHY ARENT THESE WORKING?!!?
         elseif value2 == 0 then
             stopui = false
             czmu = 1
             setProperty('camZoomingMult', 1)
-            --setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
         end
     end
 end
@@ -253,7 +246,6 @@ function onUpdate(elapsed)
     drawf = getPropertyFromClass("Main", "fpsVar.text")
     setTextString("drawfps", drawf)
     el = elapsed
-    --debugPrint('onupdate','|',czm)
     if kadezoom == true then
         if stopui == false then
             doTweenZoom('tweeningZoom', 'camHUD', dcuiz, 0.15, 'quadOut')

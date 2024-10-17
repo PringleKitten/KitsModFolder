@@ -8,7 +8,7 @@ function onCreatePost()
     else
         bugged = false
     end
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
         dscrolm = getPropertyFromClass('ClientPrefs', 'downScroll')
         mscrolm = getPropertyFromClass('ClientPrefs', 'middleScroll')
         dscrol = getPropertyFromClass('ClientPrefs', 'downScroll')
@@ -18,74 +18,27 @@ function onCreatePost()
 end
 
 function onSongStart()
-   defaultOpponentStrumX0 = 92
-   defaultOpponentStrumX1 = 204
-   defaultOpponentStrumX2 = 316
-   defaultOpponentStrumX3 = 428
-   defaultPlayerStrumX0 = 732
-   defaultPlayerStrumX1 = 844
-   defaultPlayerStrumX2 = 956
-   defaultPlayerStrumX3 = 1068
-   defaultOpponentStrumY0 = 50
-   defaultOpponentStrumY1 = 50
-   defaultOpponentStrumY2 = 50
-   defaultOpponentStrumY3 = 50
-   defaultPlayerStrumY0 = 50
-   defaultPlayerStrumY1 = 50
-   defaultPlayerStrumY2 = 50
-   defaultPlayerStrumY3 = 50
-
-    dosx0 = 92
-    dosx1 = 204
-    dosx2 = 316
-    dosx3 = 428
-    dpsx0 = 732
-    dpsx1 = 844
-    dpsx2 = 956
-    dpsx3 = 1068
-    dosy0 = 50
-    dosy1 = 50
-    dosy2 = 50
-    dosy3 = 50
-    dpsy0 = 50
-    dpsy1 = 50
-    dpsy2 = 50
-    dpsy3 = 50
-
-
     if getPropertyFromClass("ClientPrefs", "downScroll") == true or getPropertyFromClass("ClientPrefs", "middleScroll") == true then
-        debugPrint('Hey bro, turn off downscroll or middlescroll in clientPrefs so you dont have visual bugs!')
-        debugPrint('Hey bro, turn off downscroll or middlescroll in clientPrefs so you dont have visual bugs!')
-        debugPrint('Hey bro, turn off downscroll or middlescroll in clientPrefs so you dont have visual bugs!')
-        for i = 0,3 do
-            setPropertyFromGroup('opponentStrums',i,'downScroll',false)
-            setPropertyFromGroup('playerStrums',i,'downScroll',false)
-        end
-        setProperty('healthBar.y',640);
-        setProperty('healthBarBG.y',840);
-        setProperty('iconP1.y',570);
-        setProperty('iconP2.y',570);
-        setProperty('scoreTxt.y', 680);
-        setProperty('timeTxt.y', 19);
-        setProperty('timeBar.y', 31.25);
-        setProperty('timeBarBG.y', 27.25);
-        setPropertyFromGroup('opponentStrums',0,'y',dosy0);
-        setPropertyFromGroup('opponentStrums',1,'y',dosy1);
-        setPropertyFromGroup('opponentStrums',2,'y',dosy2);
-        setPropertyFromGroup('opponentStrums',3,'y',dosy3);
-        setPropertyFromGroup('playerStrums',0,'y',dpsy0);
-        setPropertyFromGroup('playerStrums',1,'y',dpsy1);
-        setPropertyFromGroup('playerStrums',2,'y',dpsy2);
-        setPropertyFromGroup('playerStrums',3,'y',dpsy3);
-        setPropertyFromGroup('opponentStrums',0,'x',dosx0);
-        setPropertyFromGroup('opponentStrums',1,'x',dosx1);
-        setPropertyFromGroup('opponentStrums',2,'x',dosx2);
-        setPropertyFromGroup('opponentStrums',3,'x',dosx3);
-        setPropertyFromGroup('playerStrums',0,'x',dpsx0);
-        setPropertyFromGroup('playerStrums',1,'x',dpsx1);
-        setPropertyFromGroup('playerStrums',2,'x',dpsx2);
-        setPropertyFromGroup('playerStrums',3,'x',dpsx3);
+        debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+        debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+        debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
     end
+    dosx0 = defaultOpponentStrumX0
+    dosx1 = defaultOpponentStrumX1
+    dosx2 = defaultOpponentStrumX2
+    dosx3 = defaultOpponentStrumX3
+    dpsx0 = defaultPlayerStrumX0
+    dpsx1 = defaultPlayerStrumX1
+    dpsx2 = defaultPlayerStrumX2
+    dpsx3 = defaultPlayerStrumX3
+    dosy0 = defaultOpponentStrumY0
+    dosy1 = defaultOpponentStrumY1
+    dosy2 = defaultOpponentStrumY2
+    dosy3 = defaultOpponentStrumY3
+    dpsy0 = defaultPlayerStrumY0
+    dpsy1 = defaultPlayerStrumY1
+    dpsy2 = defaultPlayerStrumY2
+    dpsy3 = defaultPlayerStrumY3
     curtwm = curtwm
 end
 function onUpdate()
