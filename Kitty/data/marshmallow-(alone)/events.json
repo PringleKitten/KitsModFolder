@@ -428,6 +428,41 @@
 						"Hide_Hud",
 						"",
 						"12"
+					],
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"3"
+					]
+				]
+			],
+			[
+				36999.5305164319,
+				[
+					[
+						"makeCaption",
+						"Nothing feels like home...",
+						"3.5"
+					]
+				]
+			],
+			[
+				40696.7136150235,
+				[
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"3"
+					]
+				]
+			],
+			[
+				44076.9953051643,
+				[
+					[
+						"makeCaption",
+						"Tying to find.. my way back home to you.",
+						"3"
 					]
 				]
 			],

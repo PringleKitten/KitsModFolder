@@ -1,12 +1,13 @@
--- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
-local mechanics = true
-
 require 'math'
 math.randomseed(os.time())
 
 hitkey = 'False'
 keys = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','S','T','U','V','W','X','Y','Z'}
 keytopress = 'A'
+
+function getVarr(mec2)
+    mechanics = mec2
+end
 
 function onCreate()
 	if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then

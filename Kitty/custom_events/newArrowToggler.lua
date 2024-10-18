@@ -1,5 +1,6 @@
--- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
-local visuals = true
+function getVarr(vis)
+    visuals = vis
+end
 
 function onCreatePost()
     script = false

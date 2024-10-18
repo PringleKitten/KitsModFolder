@@ -1,6 +1,6 @@
--- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
-local healthDrain = true
-
+function getVarr(hpd)
+    healthDrain = hpd
+end
 function onEvent(name, value1, value2)
 	if name == "DrainOnEvent" then
 		if getPropertyFromClass('ClientPrefs', 'healthDrain') == 'healthDrain' then
