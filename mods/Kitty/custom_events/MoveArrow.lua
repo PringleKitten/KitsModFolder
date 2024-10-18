@@ -1,6 +1,6 @@
--- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
-local visuals = true
-
+function getVarr(vis)
+    visuals = vis
+end
 local r1t = true
 function mysplit (inputstr, sep)
     if getPropertyFromClass('ClientPrefs', 'assetMovement') == 'assetMovement' then
@@ -8,7 +8,7 @@ function mysplit (inputstr, sep)
     else
         bugged = false
     end
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) then
     if sep == nil then
         sep = "%s";
     end
@@ -28,7 +28,7 @@ function onEvent(name, value1, value2)
         else
             bugged = false
         end
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
+        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) then
             if r1t then
                 if getPropertyFromClass("ClientPrefs", "downScroll") == true or getPropertyFromClass("ClientPrefs", "middleScroll") == true then
                     debugPrint('Hey bro, turn off downscroll or middlescroll in clientPrefs so you dont have visual bugs!')

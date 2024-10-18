@@ -1,6 +1,11 @@
 local camzoom = false;
 local v1 = 0
 local v2 = 0
+
+function getVarr(bu)
+   bugged = bu
+end
+
 function onEvent(name, value1, value2)
    if name == 'CZoom Custom Toggle' then
       value1 = tonumber(value1)
@@ -11,6 +16,10 @@ function onEvent(name, value1, value2)
          camzoom = true
       elseif camzoom == true then
          camzoom = false
+      end
+      if bugged then
+         v1 = (v1/2)
+         v2 = (v2/2)
       end
    end
 end

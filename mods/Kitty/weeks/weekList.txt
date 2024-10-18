@@ -1,9 +1,6 @@
-tutorial
-hard
-hard-oneplayer
-hard-harder
 ogsongchartsbyme
-enhtheusdiffs
+hard-harder
+hard
 band
 multiplayer-mod-testing
 separator2

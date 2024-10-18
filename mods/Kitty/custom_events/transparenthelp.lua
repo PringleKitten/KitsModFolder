@@ -1,6 +1,7 @@
--- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
-local visuals = false --Change to true to use event
-local botherme = true --Change to false to stop warning
+function getVarr(vis,bm)
+    visuals = vis
+    botherme = bm
+end
 
 function onEvent(name, value1, value2)
     value1 = tonumber(value1)

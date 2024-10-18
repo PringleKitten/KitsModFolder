@@ -1,7 +1,12 @@
 --CHECK THESE WHEN YOU CAN FOR CUSTOM OPTIONS WITHOUT MY ENGINE
-local visuals = true
+local force = false --Should mobile support be enabled at all times?
+local visuals = true --MOST arrow movements?
+local healthDrain = true
+local mechanics = true --Regular Dodge
+local mechanics2 = true -- Set to false if you dont want stuff like hitting custom keys to dodge to work no matter what(mobile user issues without a physical keyboard)
 local penalizeanyway = false -- If you have a bad rating, this will penalize you like in Kade Engine
-local botherme = true
+
+local botherme = true -- Set to false to SHUT UP THE PRINT
 
 
 local bugged = false
@@ -12,43 +17,32 @@ local czm = 1
 local czmu = 1
 local czmc = 1
 function onCreate()
+    callScript("scripts/LaneUnderlay", "getVarr", {force})
+    callScript("custom_events/customDodgeKey", "getVarr", {mechanics2})
+    callScript("custom_events/hitkey", "getVarr", {mechanics2})
+    callScript("custom_events/DodgeEvent", "getVarr", {mechanics,force})
+    callScript("custom_events/DodgeForBF", "getVarr", {mechanics,force})
+    callScript("custom_events/DrainConstant", "getVarr", {healthDrain})
+    callScript("custom_events/DrainHP", "getVarr", {healthDrain})
+    callScript("custom_events/DrainOnBeat", "getVarr", {healthDrain})
+    callScript("custom_events/DrainOnEvent", "getVarr", {healthDrain})
+    callScript("custom_events/DrainOnStep", "getVarr", {healthDrain})
+    callScript("custom_events/MoveArrow", "getVarr", {visuals})
+    callScript("custom_events/MoveOPPONENTStrumline (X)", "getVarr", {visuals})
+    callScript("custom_events/MoveOPPONENTStrumline (Y)", "getVarr", {visuals})
+    callScript("custom_events/MovePLAYERStrumline (X)", "getVarr", {visuals})
+    callScript("custom_events/MovePLAYERStrumline (Y)", "getVarr", {visuals})
+    callScript("custom_events/MoveStrumline", "getVarr", {visuals})
+    callScript("custom_events/newArrowToggler", "getVarr", {visuals})
+    callScript("custom_events/Tilt", "getVarr", {visuals})
+    callScript("custom_events/TiltBGTimed", "getVarr", {visuals})
+    callScript("custom_events/TiltHudTimed", "getVarr", {visuals})
+    callScript("scripts/eventConvertScript", "getVarr", {visuals})
+    callScript("custom_events/transparenthelp", "getVarr", {visuals,botherme})
     setProperty('skipArrowStartTween', true)
 end
 
 function onSongStart()
-        makeLuaText("drawfps", drawf, 0, 0.0, 0.0)
-        setTextSize("drawfps", 20)
-        setObjectCamera("drawfps", 'other')
-        addLuaText("drawfps")
-    offset = getPropertyFromClass('ClientPrefs','noteOffset')
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' and botherme then
-        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
-        debugPrint('Different engine recognized? WILL NOT penalize player for bad ratings unless you change the setting to (local penalizeanyway = true) in mods/kitty/scripts/script.lua!')
-        bugged = true
-    elseif not botherme and getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' then
-        bugged = true
-    end
-    if getPropertyFromClass('ClientPrefs','assetMovement') == 'assetMovement' and botherme then
-        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
-        debugPrint('Modchart Scripts: (scripts/eventConvertScript) (custom_events/  MoveArrow - or moveOPPONENT(or PLAYER)Strumline(X)(Y) - or moveStrumline - or newArrowToggler - or Tilt - or WindowCrap(or Dance)')
-        debugPrint('Different engine recognized? Modcharts will CONTINUE to be used unless you change the setting to (local visuals = false) in...')        
-        bugged = true
-    elseif not botherme and getPropertyFromClass('ClientPrefs','assetMovement') == 'assetMovement' then
-        bugged = true
-    end
-    if getPropertyFromClass('ClientPrefs','mechanics') == 'mechanics' and botherme then
-        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
-        debugPrint('Mechanic Scripts: (custom_events/  customDodgeKey - or DodgeEvent(or ForBF) - or hitkey')
-        debugPrint('Different engine recognized? Mechanics will CONTINUE to be used unless you change the setting to (local mechanics = false) in...')
-        bugged = true
-    elseif not botherme and getPropertyFromClass('ClientPrefs','mechanics') == 'mechanics' then
-        bugged = true
-    end
-    debugPrint('- - -')
-    debugPrint('Current Offset: ','(',offset,')')
-    debugPrint('- - -')
-    debugPrint(' | ')
-    debugPrint(' | ')
     dpsx0 = getPropertyFromGroup('playerStrums', 0, 'x')
     dpsx1 = getPropertyFromGroup('playerStrums', 1, 'x')
     dpsx2 = getPropertyFromGroup('playerStrums', 2, 'x')
@@ -65,6 +59,38 @@ function onSongStart()
     dosy1 = getPropertyFromGroup('opponentStrums', 1, 'y')
     dosy2 = getPropertyFromGroup('opponentStrums', 2, 'y')
     dosy3 = getPropertyFromGroup('opponentStrums', 3, 'y')
+    ls = false
+        makeLuaText("drawfps", drawf, 0, 0.0, 0.0)
+        setTextSize("drawfps", 20)
+        setObjectCamera("drawfps", 'other')
+        addLuaText("drawfps")
+    offset = getPropertyFromClass('ClientPrefs','noteOffset')
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' and botherme then
+        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+        debugPrint('Different engine recognized? WILL NOT penalize player for bad ratings unless you change the setting to (local penalizeanyway = true) in mods/kitty/scripts/script.lua!')
+        bugged = true
+    elseif not botherme and getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' then
+        bugged = true
+    end
+    if getPropertyFromClass('ClientPrefs','assetMovement') == 'assetMovement' and botherme then
+        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+        debugPrint('Different engine recognized? Modcharts will CONTINUE to be used unless you change the setting to (local visuals = false) in mods/kitty/scripts/script.lua!')        
+        bugged = true
+    elseif not botherme and getPropertyFromClass('ClientPrefs','assetMovement') == 'assetMovement' then
+        bugged = true
+    end
+    if getPropertyFromClass('ClientPrefs','mechanics') == 'mechanics' and botherme then
+        debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
+        debugPrint('Different engine recognized? Mechanics will CONTINUE to be used unless you change the setting to (local mechanics = false) in mods/kitty/scripts/script.lua!')
+        bugged = true
+    elseif not botherme and getPropertyFromClass('ClientPrefs','mechanics') == 'mechanics' then
+        bugged = true
+    end
+    debugPrint('- - -')
+    debugPrint('Current Offset: ','(',offset,')')
+    debugPrint('- - -')
+    debugPrint(' | ')
+    debugPrint(' | ')
     doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
     setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)
@@ -73,6 +99,7 @@ function onSongStart()
     end
     dcgz = getProperty('defaultCamZoom')
     czm = getProperty('camZoomingMult')
+    callScript("custom_events/CZoom Custom Toggle", "getVarr", {bugged})
 end
 
 function goodNoteHit()
@@ -81,7 +108,7 @@ function goodNoteHit()
     else
         bugged = false
     end
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true or (bugged and penalizeanyway) == true then
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true or (bugged and penalizeanyway) then
         if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
             setProperty('health', getProperty('health') + 0.01)
         elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
@@ -102,7 +129,7 @@ function noteMiss()
     else
         bugged = false
     end
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true or (bugged and penalizeanyway) == true then
+    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true or (bugged and penalizeanyway) then
         if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
             setProperty('health', getProperty('health') - 0.1)
         elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
@@ -123,30 +150,33 @@ function onEvent(name, value1, value2)
     else
         bugged = false
     end
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
+    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) then
         if name == 'newArrowToggler' then
             value1 = tonumber(value1)
             value2 = tonumber(value2)
             if value1 == 3 or value1 == 33 then
                 mdsc = true
-            elseif value1 == 2 then
+            elseif value1 == 2 and not ls then
                 mdsc = false
                 ls = true
+            elseif value1 == 2 and ls then
+                ls = false
+                mdsc = false
             end
         end
         if name == 'movePLAYERStrumline (X)' then
             value1 = tonumber(value1)
             value2 = tonumber(value2)
             if value1 == 0 and mdsc then
-                noteTweenX("pX",4,dosx0-323,value2,"cubeInOut");
-                noteTweenX("pX1",5,dosx1-323,value2,"cubeInOut");
-                noteTweenX("pX2",6,dosx2-323,value2,"cubeInOut");
-                noteTweenX("pX3",7,dosx3-323,value2,"cubeInOut");
+                noteTweenX("pX",4,dpsx0-323,value2,"cubeInOut");
+                noteTweenX("pX1",5,dpsx1-323,value2,"cubeInOut");
+                noteTweenX("pX2",6,dpsx2-323,value2,"cubeInOut");
+                noteTweenX("pX3",7,dpsx3-323,value2,"cubeInOut");
             elseif value1 == 0 and not mdsc then
-                noteTweenX("pX",4,dosx0,value2,"cubeInOut");
-                noteTweenX("pX1",5,dosx1,value2,"cubeInOut");
-                noteTweenX("pX2",6,dosx2,value2,"cubeInOut");
-                noteTweenX("pX3",7,dosx3,value2,"cubeInOut");
+                noteTweenX("pX",4,dpsx0,value2,"cubeInOut");
+                noteTweenX("pX1",5,dpsx1,value2,"cubeInOut");
+                noteTweenX("pX2",6,dpsx2,value2,"cubeInOut");
+                noteTweenX("pX3",7,dpsx3,value2,"cubeInOut");
             elseif value1 == 0 and ls then
                 noteTweenX("pX",4,defaultOpponentStrumX0,value2,"cubeInOut");
                 noteTweenX("pX1",5,defaultOpponentStrumX1,value2,"cubeInOut");
@@ -158,10 +188,10 @@ function onEvent(name, value1, value2)
             value1 = tonumber(value1)
             value2 = tonumber(value2)
             if value1 == 0 then
-                noteTweenY("pY",4,dosy0,value2,"cubeInOut");
-                noteTweenY("pY1",5,dosy1,value2,"cubeInOut");
-                noteTweenY("pY2",6,dosy2,value2,"cubeInOut");
-                noteTweenY("pY3",7,dosy3,value2,"cubeInOut");
+                noteTweenY("pY",4,dpsy0,value2,"cubeInOut");
+                noteTweenY("pY1",5,dpsy1,value2,"cubeInOut");
+                noteTweenY("pY2",6,dpsy2,value2,"cubeInOut");
+                noteTweenY("pY3",7,dpsy3,value2,"cubeInOut");
             end
         end
         if name == 'moveOPPONENTStrumline (Y)' then

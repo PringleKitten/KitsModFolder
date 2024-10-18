@@ -1,11 +1,6 @@
 --Made by RamenDominoes
 --Hope you like it! <3
 
-
-local force = false --should mobile support be on no matter what?
-
-local captions = true
-
 allowCountdown = false
 allowVerticalScroll = true
 allowHorizontalScroll = false
@@ -42,10 +37,16 @@ end
 function keyPress(key)
 	return getPropertyFromClass('flixel.FlxG', 'keys.justPressed.'..key)
 end
+
 --------------------------------------------------------------------------------------
----------------------------------End of Script Set Up---------------------------------
+---------------------------------Added by PringleKitten-------------------------------
 --------------------------------------------------------------------------------------
 
+function getVarr(fo)
+	force = fo
+end
+
+local captions = true
 
 function luatxt(tag,txt,w,x,y,cam,ts,tc,sc,f) -- set certain values to '.' for default or no value
     makeLuaText(tag,txt,w,x,y)
@@ -78,8 +79,11 @@ function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to
     addLuaSprite(tag,f)
 end
 
-function onCreate()
+--------------------------------------------------------------------------------------
+---------------------------------End of Script Set Up---------------------------------
+--------------------------------------------------------------------------------------
 
+function onCreatePost()
 	simpleishGraphic('BG', 0, 0, screenWidth, screenHeight, '06000e', 'other')
 
 	simpleishText('Song Start', 'Begin Song?', screenWidth, 0, 90, 60, 'center', 'other')
@@ -99,6 +103,7 @@ function onCreate()
     else
         bugged = false
     end
+	
     if bugged or force then
 		luasprite('up','me/buttons/button',(screenWidth/1.085)-120,(screenHeight/1.1625)-210,'other',0.5,0.5,0,0,'.',true)
 		luasprite('down','me/buttons/button',getProperty('up.x'),getProperty('up.y')+110,'other',0.5,0.5,0,0,'.',true)
@@ -116,6 +121,7 @@ function onCreate()
 		luatxt('txtspace','Space', 0,getProperty('txtup.x')+75,getProperty('txtup.y')-300,'other',screenWidth/39,'.','.',true)
 		luatxt('txtcc','CC', 0,getProperty('txtup.x')-1003,getProperty('txtup.y')-150,'other',screenWidth/39,'.','.',true)
 	end
+	luatxt('keyy','PRESS C TO CHANGE', 0,((screenWidth/1.075)-100)-1040,((screenHeight/1.105)-210),'other',screenWidth/80,'0000FF','.',true)
 	luatxt('ifso','(If applicable)', 0,((screenWidth/1.075)-100)-1040,((screenHeight/1.105)-210)-20,'other',screenWidth/80,'808080','.',true)
 	luatxt('captiontxt','Captions: true', 0,((screenWidth/1.075)-100)-1080,((screenHeight/1.105)-210)-50,'other',screenWidth/39,'00FF00','.',true)
 end
@@ -204,7 +210,7 @@ function onUpdate()
         buttonStuff()
 
 	if (keyPress('SPACE') or spc) and selectedBeginSong then
-		for _, value in pairs({'txtup','txtdown','txtleft','txtright','txtback','txtspace','txtcc','captiontxt','ifso'}) do
+		for _, value in pairs({'txtup','txtdown','txtleft','txtright','txtback','txtspace','txtcc','captiontxt','ifso','keyy'}) do
             removeLuaText(value)
         end
         for _, value in pairs({'up','down','left','right','back','space','cc'}) do

@@ -1,8 +1,9 @@
--- CHECK THESE IF YOU"RE PROMPTED TO!!!!!
-local mechanics = false
-
 local youDoge = false
 local Doge = false
+
+function getVarr(mec2,fo2)
+    mechanics = mec2
+end
 
 function onEvent(name,value1,value2)
     if name == 'customDodgeKey' then
@@ -11,7 +12,7 @@ function onEvent(name,value1,value2)
         else
             bugged = false
         end
-            if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
+            if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) then
             myKeyPressed = keyboardPressed(value1)
             --              ^this^ can be changed so it only runs when it is JUST pressed and NOT held down yada yada yada
             -- but gotta change the 'keyboardPressed(value1)' part to what you want, 
