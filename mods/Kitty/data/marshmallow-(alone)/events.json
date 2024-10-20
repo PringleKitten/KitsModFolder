@@ -483,6 +483,41 @@
 						"Hide_Hud",
 						"",
 						"22"
+					],
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"2.9"
+					]
+				]
+			],
+			[
+				50626.2910798122,
+				[
+					[
+						"makeCaption",
+						"Nothing feels like home...",
+						"3.5"
+					]
+				]
+			],
+			[
+				54217.8403755869,
+				[
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"2.9"
+					]
+				]
+			],
+			[
+				57386.8544600939,
+				[
+					[
+						"makeCaption",
+						"Trying to find, my way back home, to you......",
+						"7"
 					]
 				]
 			],
@@ -523,6 +558,26 @@
 						"cameraFlashonstep",
 						"FFFFFF",
 						"0.1"
+					]
+				]
+			],
+			[
+				67738.9671361503,
+				[
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"2.9"
+					]
+				]
+			],
+			[
+				70907.9812206573,
+				[
+					[
+						"makeCaption",
+						"Trying to find, my way back home, to you..",
+						"2.9"
 					]
 				]
 			],
@@ -1647,6 +1702,46 @@
 				]
 			],
 			[
+				128584.037558685,
+				[
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"3"
+					]
+				]
+			],
+			[
+				131753.051643192,
+				[
+					[
+						"makeCaption",
+						"Nothing feels like home...",
+						"3.5"
+					]
+				]
+			],
+			[
+				135344.600938967,
+				[
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"2.9"
+					]
+				]
+			],
+			[
+				138724.882629108,
+				[
+					[
+						"makeCaption",
+						"Tying to find.. my way back home to you.",
+						"3"
+					]
+				]
+			],
+			[
 				142105.164319249,
 				[
 					[
@@ -1663,6 +1758,41 @@
 						"Hide_Hud",
 						"",
 						"22"
+					],
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"2.9"
+					]
+				]
+			],
+			[
+				145274.178403756,
+				[
+					[
+						"makeCaption",
+						"Nothing feels like home...",
+						"3"
+					]
+				]
+			],
+			[
+				148865.72769953,
+				[
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"2.4"
+					]
+				]
+			],
+			[
+				152034.741784037,
+				[
+					[
+						"makeCaption",
+						"Trying to find, my way back home, to you...",
+						"7"
 					]
 				]
 			],
@@ -1703,6 +1833,26 @@
 						"cameraFlashonstep",
 						"FFFFFF",
 						"0.1"
+					]
+				]
+			],
+			[
+				162386.854460094,
+				[
+					[
+						"makeCaption",
+						"I'm so alone...",
+						"2.8"
+					]
+				]
+			],
+			[
+				165555.868544601,
+				[
+					[
+						"makeCaption",
+						"Trying to find, my way back home, to you...",
+						"3.2"
 					]
 				]
 			],

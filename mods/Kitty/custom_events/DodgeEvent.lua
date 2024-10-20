@@ -1,9 +1,10 @@
-
-local bugged = false
-
 function getVarr(mec,fo)
     mechanics = mec
     force = fo
+end
+
+function cdal(al)
+    allowCountdown = al
 end
 
 function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to '.' for default or no value
@@ -77,17 +78,19 @@ function onEvent(name, value1, value2)
 end
 
 function onUpdate()
-    if curStep > 0 then
+    if allowCountdown then
         if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
             bugged = true
         else
             bugged = false
         end
-            if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
-            if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
-                sdgd = true
-            else
-                sdgd = false
+        if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) then
+            if bugged or force then
+                if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
+                    sdgd = true
+                else
+                    sdgd = false
+                end
             end
             if twice == 2 then
                 twice = 0

@@ -6,16 +6,16 @@
 			{
 				"sectionNotes": [],
 				"lengthInSteps": 16,
-				"mustHitSection": true,
 				"changeBPM": true,
-				"bpm": 114
+				"bpm": 114,
+				"mustHitSection": true
 			},
 			{
 				"sectionNotes": [],
 				"lengthInSteps": 16,
-				"changeBPM": true,
 				"mustHitSection": false,
-				"bpm": 120
+				"bpm": 120,
+				"changeBPM": true
 			},
 			{
 				"sectionNotes": [],
@@ -77,9 +77,9 @@
 					]
 				],
 				"lengthInSteps": 16,
-				"bpm": 88,
 				"mustHitSection": false,
-				"changeBPM": false
+				"changeBPM": false,
+				"bpm": 88
 			},
 			{
 				"sectionNotes": [
@@ -110,9 +110,9 @@
 					]
 				],
 				"lengthInSteps": 16,
-				"changeBPM": false,
 				"mustHitSection": false,
-				"bpm": 120
+				"bpm": 120,
+				"changeBPM": false
 			},
 			{
 				"sectionNotes": [
@@ -695,9 +695,9 @@
 					]
 				],
 				"lengthInSteps": 16,
-				"mustHitSection": false,
 				"changeBPM": true,
-				"bpm": 156
+				"bpm": 156,
+				"mustHitSection": false
 			},
 			{
 				"sectionNotes": [
@@ -790,9 +790,9 @@
 					]
 				],
 				"lengthInSteps": 16,
-				"mustHitSection": false,
 				"bpm": 710,
-				"changeBPM": false
+				"changeBPM": false,
+				"mustHitSection": false
 			},
 			{
 				"sectionNotes": [
@@ -7186,6 +7186,46 @@
 				"bpm": 135
 			},
 			{
+				"typeOfSection": 0,
+				"sectionNotes": [],
+				"sectionBeats": 4,
+				"altAnim": false,
+				"gfSection": false,
+				"bpm": 135,
+				"changeBPM": false,
+				"mustHitSection": true
+			},
+			{
+				"sectionBeats": 4,
+				"sectionNotes": [],
+				"typeOfSection": 0,
+				"gfSection": false,
+				"altAnim": false,
+				"mustHitSection": true,
+				"changeBPM": false,
+				"bpm": 135
+			},
+			{
+				"gfSection": false,
+				"altAnim": false,
+				"typeOfSection": 0,
+				"sectionNotes": [],
+				"bpm": 135,
+				"sectionBeats": 4,
+				"changeBPM": false,
+				"mustHitSection": true
+			},
+			{
+				"gfSection": false,
+				"altAnim": false,
+				"typeOfSection": 0,
+				"sectionNotes": [],
+				"bpm": 135,
+				"sectionBeats": 4,
+				"changeBPM": false,
+				"mustHitSection": true
+			},
+			{
 				"gfSection": false,
 				"altAnim": false,
 				"typeOfSection": 0,
@@ -7289,6 +7329,16 @@
 				]
 			],
 			[
+				6105.26315789474,
+				[
+					[
+						"makeCaption",
+						"Welcome to the Five Night at Freddy's experience.",
+						"2.7"
+					]
+				]
+			],
+			[
 				7105.26315789474,
 				[
 					[
@@ -7349,6 +7399,16 @@
 				]
 			],
 			[
+				9730.26315789474,
+				[
+					[
+						"makeCaption",
+						"For your safety",
+						"1"
+					]
+				]
+			],
+			[
 				10105.2631578947,
 				[
 					[
@@ -7375,6 +7435,16 @@
 						"Change Character",
 						"Dad",
 						"suitedAftonPanic"
+					]
+				]
+			],
+			[
+				11230.2631578947,
+				[
+					[
+						"makeCaption",
+						"For the children's safety",
+						"1.5"
 					]
 				]
 			],
@@ -7409,6 +7479,16 @@
 				]
 			],
 			[
+				12980.2631578947,
+				[
+					[
+						"makeCaption",
+						"And for those arr",
+						"1"
+					]
+				]
+			],
+			[
 				13230.2631578947,
 				[
 					[
@@ -7429,12 +7509,292 @@
 				]
 			],
 			[
+				13824.0131578947,
+				[
+					[
+						"makeCaption",
+						")(@#&$)(@",
+						"0.01"
+					]
+				]
+			],
+			[
+				13834.4298245614,
+				[
+					[
+						"makeCaption",
+						"$&$#%&*($(",
+						"0.01"
+					]
+				]
+			],
+			[
+				13844.8464912281,
+				[
+					[
+						"makeCaption",
+						"!@#$%^@#$",
+						"0.01"
+					]
+				]
+			],
+			[
 				13855.2631578947,
 				[
 					[
 						"ca burst",
 						"0.05",
 						""
+					]
+				]
+			],
+			[
+				13865.6798245614,
+				[
+					[
+						"makeCaption",
+						"%$^#$*%",
+						"0.01"
+					]
+				]
+			],
+			[
+				13876.0964912281,
+				[
+					[
+						"makeCaption",
+						"$&*^@!)&^%)@",
+						"0.01"
+					]
+				]
+			],
+			[
+				13886.5131578947,
+				[
+					[
+						"makeCaption",
+						"*()#^(*@&$^#",
+						"0.01"
+					]
+				]
+			],
+			[
+				13896.9298245614,
+				[
+					[
+						"makeCaption",
+						"*&)(%#$!)#%",
+						"0.01"
+					]
+				]
+			],
+			[
+				13907.3464912281,
+				[
+					[
+						"makeCaption",
+						")%(*&#%*)(^&#)$%",
+						"0.01"
+					]
+				]
+			],
+			[
+				13917.7631578947,
+				[
+					[
+						"makeCaption",
+						"%&#*$",
+						"0.01"
+					]
+				]
+			],
+			[
+				13928.1798245614,
+				[
+					[
+						"makeCaption",
+						"%&)(#@%*&)",
+						"0.01"
+					]
+				]
+			],
+			[
+				13938.5964912281,
+				[
+					[
+						"makeCaption",
+						")%%)(*#$%",
+						"0.01"
+					]
+				]
+			],
+			[
+				13944.8464912281,
+				[
+					[
+						"makeCaption",
+						")(*%&#$@",
+						"0.01"
+					]
+				]
+			],
+			[
+				13953.1798245614,
+				[
+					[
+						"makeCaption",
+						"#$%^&(",
+						"0.01"
+					]
+				]
+			],
+			[
+				13969.8464912281,
+				[
+					[
+						"makeCaption",
+						"%#)(%*@&)",
+						"0.01"
+					]
+				]
+			],
+			[
+				13980.2631578947,
+				[
+					[
+						"makeCaption",
+						"#$)%(*&#)%",
+						"0.01"
+					]
+				]
+			],
+			[
+				13990.6798245614,
+				[
+					[
+						"makeCaption",
+						"@#$%)(!&#%)",
+						"0.01"
+					]
+				]
+			],
+			[
+				14001.0964912281,
+				[
+					[
+						"makeCaption",
+						"@@)#(%*&!)",
+						"0.01"
+					]
+				]
+			],
+			[
+				14011.5131578947,
+				[
+					[
+						"makeCaption",
+						")@%#&*^#%@)*",
+						"0.01"
+					]
+				]
+			],
+			[
+				14021.9298245614,
+				[
+					[
+						"makeCaption",
+						"@)&*#(#@Q&%^",
+						"0.01"
+					]
+				]
+			],
+			[
+				14032.3464912281,
+				[
+					[
+						"makeCaption",
+						"?>\"@#)*(",
+						"0.01"
+					]
+				]
+			],
+			[
+				14042.7631578947,
+				[
+					[
+						"makeCaption",
+						"~!}{~:>\"!:$)",
+						"0.01"
+					]
+				]
+			],
+			[
+				14053.1798245614,
+				[
+					[
+						"makeCaption",
+						":L<@$})#@%*",
+						"0.01"
+					]
+				]
+			],
+			[
+				14063.5964912281,
+				[
+					[
+						"makeCaption",
+						"=][.'@#)$((",
+						"0.01"
+					]
+				]
+			],
+			[
+				14074.0131578947,
+				[
+					[
+						"makeCaption",
+						"].#%][.#@#)7",
+						"0.01"
+					]
+				]
+			],
+			[
+				14084.4298245614,
+				[
+					[
+						"makeCaption",
+						";#$}%:)(][.",
+						"0.01"
+					]
+				]
+			],
+			[
+				14094.8464912281,
+				[
+					[
+						"makeCaption",
+						"#@$%(*&!^",
+						"0.01"
+					]
+				]
+			],
+			[
+				14105.2631578947,
+				[
+					[
+						"makeCaption",
+						"around",
+						"1"
+					]
+				]
+			],
+			[
+				15549.0131578947,
+				[
+					[
+						"makeCaption",
+						"Run",
+						"0.6"
 					]
 				]
 			],
@@ -7569,12 +7929,32 @@
 				]
 			],
 			[
+				17574.0131578947,
+				[
+					[
+						"makeCaption",
+						"Run",
+						"0.6"
+					]
+				]
+			],
+			[
 				17605.2631578947,
 				[
 					[
 						"ca burst",
 						"0.02",
 						""
+					]
+				]
+			],
+			[
+				19480.2631578947,
+				[
+					[
+						"makeCaption",
+						"Run",
+						"0.6"
 					]
 				]
 			],
@@ -7589,12 +7969,32 @@
 				]
 			],
 			[
+				21480.2631578947,
+				[
+					[
+						"makeCaption",
+						"Run",
+						"0.6"
+					]
+				]
+			],
+			[
 				21605.2631578947,
 				[
 					[
 						"ca burst",
 						"0.02",
 						""
+					]
+				]
+			],
+			[
+				23480.2631578947,
+				[
+					[
+						"makeCaption",
+						"Run",
+						"0.6"
 					]
 				]
 			],
@@ -7609,12 +8009,32 @@
 				]
 			],
 			[
+				25480.2631578947,
+				[
+					[
+						"makeCaption",
+						"Run",
+						"0.6"
+					]
+				]
+			],
+			[
 				25605.2631578947,
 				[
 					[
 						"ca burst",
 						"0.02",
 						""
+					]
+				]
+			],
+			[
+				27480.2631578947,
+				[
+					[
+						"makeCaption",
+						"Run",
+						"0.6"
 					]
 				]
 			],
@@ -7784,6 +8204,46 @@
 				]
 			],
 			[
+				45980.2631578947,
+				[
+					[
+						"makeCaption",
+						"Let me welcome you newcomer to.. your.. job..",
+						"3.7"
+					]
+				]
+			],
+			[
+				49980.2631578947,
+				[
+					[
+						"makeCaption",
+						"If you listen you'll survive this I.. be..lieve.. that..",
+						"3.8"
+					]
+				]
+			],
+			[
+				53980.2631578947,
+				[
+					[
+						"makeCaption",
+						"You can overcome the terrors that.. you'll.. see.. here..",
+						"3.7"
+					]
+				]
+			],
+			[
+				57980.2631578947,
+				[
+					[
+						"makeCaption",
+						"The Puppet's watching always stalking be.. care..ful... now.",
+						"4"
+					]
+				]
+			],
+			[
 				62042.7631578947,
 				[
 					[
@@ -7810,6 +8270,16 @@
 						"Change Character",
 						"Dad",
 						"suitedAftonPanic"
+					]
+				]
+			],
+			[
+				63980.2631578947,
+				[
+					[
+						"makeCaption",
+						"Second night, will we survive this demonized animatronic?",
+						"3"
 					]
 				]
 			],
@@ -7844,6 +8314,16 @@
 				]
 			],
 			[
+				67086.032388664,
+				[
+					[
+						"makeCaption",
+						"Come third night, I lost my sight, reset the cameras, seal the air vent",
+						"3"
+					]
+				]
+			],
+			[
 				67182.1862348178,
 				[
 					[
@@ -7870,6 +8350,16 @@
 						"ca burst",
 						"0.01",
 						""
+					]
+				]
+			],
+			[
+				70162.955465587,
+				[
+					[
+						"makeCaption",
+						"Listen closely, hear him crawling in the air ducts, system reset!",
+						"3"
 					]
 				]
 			],
@@ -7910,6 +8400,16 @@
 						"ca burst",
 						"0.01",
 						""
+					]
+				]
+			],
+			[
+				73239.8785425101,
+				[
+					[
+						"makeCaption",
+						"Hallucinating, vision fading, they're watching me, anticipating\r\n",
+						"3"
 					]
 				]
 			],
@@ -7964,6 +8464,16 @@
 				]
 			],
 			[
+				76268.7246963562,
+				[
+					[
+						"makeCaption",
+						"Run, run, crash the system",
+						"1"
+					]
+				]
+			],
+			[
 				76316.8016194331,
 				[
 					[
@@ -8014,6 +8524,16 @@
 				]
 			],
 			[
+				77855.2631578947,
+				[
+					[
+						"makeCaption",
+						"Run, run from Freddy",
+						"1"
+					]
+				]
+			],
+			[
 				77951.4170040485,
 				[
 					[
@@ -8050,6 +8570,16 @@
 						"ca burst",
 						"0.01",
 						""
+					]
+				]
+			],
+			[
+				79393.7246963562,
+				[
+					[
+						"makeCaption",
+						"Run, run, will you make it?",
+						"1"
 					]
 				]
 			],
@@ -8094,6 +8624,16 @@
 				]
 			],
 			[
+				80932.1862348177,
+				[
+					[
+						"makeCaption",
+						"Run, run, keep it steady",
+						"1"
+					]
+				]
+			],
+			[
 				81028.3400809716,
 				[
 					[
@@ -8134,6 +8674,16 @@
 				]
 			],
 			[
+				82470.6477732793,
+				[
+					[
+						"makeCaption",
+						"Run, run while they're not here",
+						"1"
+					]
+				]
+			],
+			[
 				82566.8016194331,
 				[
 					[
@@ -8170,6 +8720,16 @@
 						"ca burst",
 						"0.01",
 						""
+					]
+				]
+			],
+			[
+				84009.1093117408,
+				[
+					[
+						"makeCaption",
+						"Run, run, Mangle's screaming",
+						"1"
 					]
 				]
 			],
@@ -8220,6 +8780,16 @@
 						"makeText",
 						"PRESS SPACEBAR TO DODGE",
 						"3"
+					]
+				]
+			],
+			[
+				85499.4939271254,
+				[
+					[
+						"makeCaption",
+						"Run, run, system error",
+						"1"
 					]
 				]
 			],
@@ -8350,6 +8920,16 @@
 						"ca burst",
 						"0.01",
 						"0.01"
+					]
+				]
+			],
+			[
+				87086.0323886639,
+				[
+					[
+						"makeCaption",
+						"Run, run, watch your breathin'",
+						"1"
 					]
 				]
 			],

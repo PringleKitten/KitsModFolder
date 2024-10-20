@@ -7,6 +7,7 @@ function onEvent(name, value1, value2)
     if name == 'movePLAYERStrumline (X)' then
         value1 = tonumber(value1)
         value2 = tonumber(value2)
+
         if getPropertyFromClass('ClientPrefs', 'assetMovement') == 'assetMovement' then
             bugged = true
         else
