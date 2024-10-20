@@ -1,5 +1,5 @@
 --CHECK THESE WHEN YOU CAN FOR CUSTOM OPTIONS WITHOUT MY ENGINE
-local force = true --Should mobile support be enabled at all times?
+local force = false --Should mobile support be enabled at all times?
 local visuals = true --MOST arrow movements?
 local healthDrain = true
 local mechanics = true --Regular Dodge
