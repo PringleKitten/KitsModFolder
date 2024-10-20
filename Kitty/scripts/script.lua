@@ -1,5 +1,5 @@
 --CHECK THESE WHEN YOU CAN FOR CUSTOM OPTIONS WITHOUT MY ENGINE
-local force = false --Should mobile support be enabled at all times?
+local force = true --Should mobile support be enabled at all times?
 local visuals = true --MOST arrow movements?
 local healthDrain = true
 local mechanics = true --Regular Dodge
@@ -16,7 +16,15 @@ local stopcam = false
 local czm = 1
 local czmu = 1
 local czmc = 1
-function onCreate()
+local mdsc = false
+local ls = false
+
+function capps(capsst)
+    captions = capsst
+end
+
+
+function onCreatePost()
     callScript("scripts/LaneUnderlay", "getVarr", {force})
     callScript("custom_events/customDodgeKey", "getVarr", {mechanics2})
     callScript("custom_events/hitkey", "getVarr", {mechanics2})
@@ -28,18 +36,21 @@ function onCreate()
     callScript("custom_events/DrainOnEvent", "getVarr", {healthDrain})
     callScript("custom_events/DrainOnStep", "getVarr", {healthDrain})
     callScript("custom_events/MoveArrow", "getVarr", {visuals})
-    callScript("custom_events/MoveOPPONENTStrumline (X)", "getVarr", {visuals})
-    callScript("custom_events/MoveOPPONENTStrumline (Y)", "getVarr", {visuals})
-    callScript("custom_events/MovePLAYERStrumline (X)", "getVarr", {visuals})
-    callScript("custom_events/MovePLAYERStrumline (Y)", "getVarr", {visuals})
-    callScript("custom_events/MoveStrumline", "getVarr", {visuals})
+    callScript("custom_events/moveOPPONENTStrumline (X)", "getVarr", {visuals})
+    callScript("custom_events/moveOPPONENTStrumline (Y)", "getVarr", {visuals})
+    callScript("custom_events/movePLAYERStrumline (X)", "getVarr", {visuals})
+    callScript("custom_events/movePLAYERStrumline (Y)", "getVarr", {visuals})
+    callScript("custom_events/moveStrumline", "getVarr", {visuals})
     callScript("custom_events/newArrowToggler", "getVarr", {visuals})
     callScript("custom_events/Tilt", "getVarr", {visuals})
     callScript("custom_events/TiltBGTimed", "getVarr", {visuals})
     callScript("custom_events/TiltHudTimed", "getVarr", {visuals})
     callScript("scripts/eventConvertScript", "getVarr", {visuals})
     callScript("custom_events/transparenthelp", "getVarr", {visuals,botherme})
+    callScript("scripts/makeCaption", "invt", {ls})
+    callScript("scripts/makeCaption", "middcs", {mdsc})
     setProperty('skipArrowStartTween', true)
+    setProperty('healthBar.numDivisions', 10000)
 end
 
 function onSongStart()
@@ -163,6 +174,8 @@ function onEvent(name, value1, value2)
                 ls = false
                 mdsc = false
             end
+            callScript("scripts/makeCaption", "invt", {ls})
+            callScript("scripts/makeCaption", "middcs", {mdsc})
         end
         if name == 'movePLAYERStrumline (X)' then
             value1 = tonumber(value1)
@@ -227,7 +240,10 @@ function onEvent(name, value1, value2)
     end
     if name == "hudzoom" then 
         value1 = tonumber(value1)
-        value2 = tonumber(value2)       
+        value2 = tonumber(value2) 
+        if bugged then
+            bugdone = false
+        end
         if value2 == '' then
 			doTweenZoom('camzz','camHUD',tonumber(value1),0.01,'sineInOut')
 	    else
@@ -284,6 +300,11 @@ function onUpdate(elapsed)
             doTweenZoom('tweeningZoomin', 'camGame', dcgz, 0.15, 'quadOut')
         end
     end
+    if bugdone then
+        debugPrint(bugdone,bugged,lastZOOM)
+        setProperty("camHUD.zoom",lastZOOM)
+        doTweenZoom("tweeningZoom", "camHUD", lastZOOM, 0.0, "linear")
+    end
 end
 
 function onSectionHit()
@@ -299,7 +320,13 @@ end
 
 function onTweenCompleted(name)
     if name == 'camzz' then
-        setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
+        if not bugged then
+            setProperty("defaultCamUIZoom",getProperty('camHUD.zoom'))
+        end
+        lastZOOM = getProperty('camHUD.zoom')
+        if bugged and lastZOOM ~= 1 then
+            bugdone = true
+        end
     end
 end
 
@@ -308,9 +335,7 @@ function onDestroy()
 end
 
 --This below makes the Health Bar move Smoothly
-    function onCreatePost()
-        setProperty('healthBar.numDivisions', 10000)
-    end
+
     local flip = false
     local percent = 50
     function onUpdatePost(e)

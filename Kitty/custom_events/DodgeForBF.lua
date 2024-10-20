@@ -1,7 +1,10 @@
 function getVarr(mec,fo)
     mechanics = mec
     force = fo
-    debugPrint('AYOOOOOOOOOOO',force,mechanics)
+end
+
+function cdal(al)
+    allowCountdown = al
 end
 
 function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to '.' for default or no value
@@ -55,7 +58,7 @@ function onEvent(name, value1, value2)
         else
             bugged = false
         end
-        if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
+        if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) then
             --Get Dodge time
             DodgeTime = (value1)
             Dodged = false
@@ -76,43 +79,47 @@ function onEvent(name, value1, value2)
 end
 
 function onUpdate()
-    if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
-        bugged = true
-    else
-        bugged = false
-    end
-    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
-        if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
-            sdgd = true
+    if allowCountdown then
+        if getPropertyFromClass('ClientPrefs', 'mechanics') == 'mechanics' then
+            bugged = true
         else
-            sdgd = false
+            bugged = false
         end
-        if getProperty('ssl.animation.curAnim.finished') then
-            removeLuaSprite('ssl')
-        end
-        if twice == 2 then
-            twice = 0
-            setProperty('health', getProperty('health')-.8)
-        end
-        if (canDodge == true and (keyJustPressed('space') or sdgd)) or (botPlay == true and canDodge == true) then
-            Dodged = true
-            twice = 0
-            if song == 'run-run' and count < 3 then
-                triggerEvent('Play Animation','dodge', 'bf')
-            elseif song ~= 'run-run' then
-                triggerEvent('Play Animation','dodge', 'bf')
+        if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) then
+            if bugged or force then
+                if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
+                    sdgd = true
+                else
+                    sdgd = false
+                end
             end
-            canDodge = false
-            setProperty('health', getProperty('health')+.1)
-        elseif (canDodge == false and (keyJustPressed('space') or sdgd)) then
-            if songName == 'run-run' and count < 3 then
-                triggerEvent('Play Animation','hurt', 'bf')
-            elseif songName ~= 'run-run' then
-                triggerEvent('Play Animation','hurt', 'bf')
+            if getProperty('ssl.animation.curAnim.finished') then
+                removeLuaSprite('ssl')
             end
-            setProperty('health', getProperty('health')-.3)
-            count = count + 1
-            go = true
+            if twice == 2 then
+                twice = 0
+                setProperty('health', getProperty('health')-.8)
+            end
+            if (canDodge == true and (keyJustPressed('space') or sdgd)) or (botPlay == true and canDodge == true) then
+                Dodged = true
+                twice = 0
+                if song == 'run-run' and count < 3 then
+                    triggerEvent('Play Animation','dodge', 'bf')
+                elseif song ~= 'run-run' then
+                    triggerEvent('Play Animation','dodge', 'bf')
+                end
+                setProperty('health', getProperty('health')+.1)
+                canDodge = false
+            elseif (canDodge == false and (keyJustPressed('space') or sdgd)) then
+                if songName == 'run-run' and count < 3 then
+                    triggerEvent('Play Animation','hurt', 'bf')
+                elseif songName ~= 'run-run' then
+                    triggerEvent('Play Animation','hurt', 'bf')
+                end
+                setProperty('health', getProperty('health')-.3)
+                count = count + 1
+                go = true
+            end
         end
     end
 end
@@ -125,7 +132,7 @@ function onTimerCompleted(tag, loops, loopsLeft)
     else
         bugged = false
     end
-    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) == true then
+    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) then
         if tag == 'bfff' then
             triggerEvent('Change Character', 'bf', 'bfghost')
         end
