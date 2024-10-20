@@ -27,7 +27,7 @@ function onSongStart()
     else
         bugged = false
     end
-    if getPropertyFromClass('ClientPrefs', 'mechanics') == true or (bugged and mechanics) or force then
+    if (bugged or force) and mechanics then
         luasprite('ddgg','me/buttons/sbutton',0,580,'other',0.7,0.7,0,0,'.',true)
     end
 end
