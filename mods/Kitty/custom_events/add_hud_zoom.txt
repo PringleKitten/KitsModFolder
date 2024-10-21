@@ -1,3 +1,0 @@
-
-v1: ADD hud zoom amount from current
-v2: time
