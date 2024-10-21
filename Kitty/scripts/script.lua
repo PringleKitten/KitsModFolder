@@ -111,6 +111,7 @@ function onSongStart()
     dcgz = getProperty('defaultCamZoom')
     czm = getProperty('camZoomingMult')
     callScript("custom_events/CZoom Custom Toggle", "getVarr", {bugged})
+    callScript("custom_events/Add Camera Zoom Edit", "getVarr", {bugged})
 end
 
 function goodNoteHit()
