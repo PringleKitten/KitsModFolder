@@ -103,7 +103,9 @@ function onSongStart()
     debugPrint(' | ')
     debugPrint(' | ')
     doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
-    setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
+    if not bugged then
+        setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
+    end
     setPropertyFromClass("openfl.Lib", "application.window.title", songName)
     if getProperty('defaultCamUIZoom') ~= 'defaultCamUIZoom' then
         dcuiz = getProperty('defaultCamUIZoom')
@@ -302,7 +304,6 @@ function onUpdate(elapsed)
         end
     end
     if bugdone then
-        debugPrint(bugdone,bugged,lastZOOM)
         setProperty("camHUD.zoom",lastZOOM)
         doTweenZoom("tweeningZoom", "camHUD", lastZOOM, 0.0, "linear")
     end
