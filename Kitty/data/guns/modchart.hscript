@@ -1,0 +1,11 @@
+function update(elapsed)
+{
+    if (curStep > 896 && curStep < 1024) {
+        dad.y -= 50 * elapsed;
+         }
+
+    if (curStep > 1024 && curStep < 1152) {
+        boyfriend.y -= 50 * elapsed;
+    }
+    
+}
