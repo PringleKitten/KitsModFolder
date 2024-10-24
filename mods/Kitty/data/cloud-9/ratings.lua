@@ -30,6 +30,7 @@ function luatxt(tag,txt,w,x,y,cam,ts,tc,sc,ali,f) -- set certain values to '.' f
 end
 
 function onCreate()
+    health = (getProperty('health')*50)
     nr = (math.floor(rating*10000)/100)
     --Text Basics!
 
@@ -119,11 +120,6 @@ function customRatingThing(m)
     setTextString("Mss", ("Misses: "..misses))
 end
 
-function onUpdate()
-    health = (getProperty('health')*50)
-    setTextString("hp", ("Health: "..health))
-end
-
 function goodNoteHit(id, noteData, noteType, isSustainNote)
     if getPropertyFromGroup('notes',id,'rating') == 'sick' then
         sks = sks+1
@@ -207,6 +203,13 @@ function goodNoteHit(id, noteData, noteType, isSustainNote)
             setTextColor("com", "FFFFFF")
         end
     end
+    health = (getProperty('health')*50)
+    if health >= 100 then
+        health = 100
+    end
+    if health <= 100 then
+        setTextString("hp", ("Health: "..health))
+    end
 end
 
 function noteMiss(id, noteData, noteType, isSustainNote)
@@ -222,6 +225,8 @@ function noteMiss(id, noteData, noteType, isSustainNote)
     doTweenY("mtxtsy", "com.scale", 1, 0.5, "expoOut")
     doTweenX("mtxtx", "com", 0, 0.5, "expoOut")
     doTweenY("mtxty", "com", screenHeight-28, 0.5, "expoOut")
+    health = (getProperty('health')*50)
+    setTextString("hp", ("Health: "..health))
 end
 
 --When using credits, This makes the text go back after the credits.lua normal time length.

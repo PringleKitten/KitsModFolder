@@ -167,6 +167,7 @@ function onUpdatePost()
                     triggerEvent('Change Character', 'bf', 'bf-dead')
                     triggerEvent('Play Animation', 'firstDeath', 'bf')
                     runTimer('bfff', 2.2)
+                    callScript('scripts/Drainer','triggZ',{3,5})
                 end
             end
             go = false
