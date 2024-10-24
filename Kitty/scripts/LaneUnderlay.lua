@@ -49,7 +49,7 @@ function getVarr(fo)
 
 	if run1 then
 		run1 = false
-	callScript("custom_events/DodgeForBF", "getVarr", {_,_,allowCountdown})
+	callScript("custom_events/DodgeForBF", "cdal", {allowCountdown})
 
 	simpleishGraphic('BG', 0, 0, screenWidth, screenHeight, '06000e', 'other')
 
@@ -90,11 +90,11 @@ function getVarr(fo)
 		luatxt('txtcc','CC', 0,getProperty('txtup.x')-1003,getProperty('txtup.y')-150,'other',screenWidth/39,'.','.',true)
 		luatxt('txtinv','I', 0,getProperty('txtup.x')-995,getProperty('txtup.y')+100,'other',screenWidth/39,'.','.',true)
 	end
-	luatxt('keyy','PRESS C TO CHANGE', 0,((screenWidth/1.075)-100)-1040,((screenHeight/1.105)-210),'other',screenWidth/80,'0000FF','.',true)
-	luatxt('keyyInv','PRESS I TO CHANGE', 0,((screenWidth/1.075)-100)-1040,((screenHeight/1.105)),'other',screenWidth/80,'0000FF','.',true)
+	luatxt('keyy','PRESS C TO CHANGE', 0,((screenWidth/1.075)-100)-1040,((screenHeight/1.105)-210),'other',screenWidth/80,'00FFFF','.',true)
+	luatxt('keyyInv','PRESS I TO CHANGE', 0,((screenWidth/1.075)-100)-1040,((screenHeight/1.105)),'other',screenWidth/80,'00FFFF','.',true)
 	luatxt('ifso','(If applicable)', 0,((screenWidth/1.075)-100)-1040,((screenHeight/1.105)-210)-20,'other',screenWidth/80,'808080','.',true)
 	luatxt('captiontxt','Captions: true', 0,((screenWidth/1.075)-100)-1080,((screenHeight/1.105)-210)-50,'other',screenWidth/39,'00FF00','.',true)
-	luatxt('invertxt','Invert Caption Placement: false', 0,((screenWidth/1.075)-100)-1080,((screenHeight/1.105)-60)+30,'other',screenWidth/39,'00FF00','.',true)
+	luatxt('invertxt','Caption Placement: Opponent', 0,((screenWidth/1.075)-100)-1080,((screenHeight/1.105)-60)+30,'other',screenWidth/39,'00FF00','.',true)
 end
 end
 
@@ -209,14 +209,18 @@ function buttonStuff()
 			doTweenAlpha("keyyInvabtn", "invert", 0, 0.2, "linear")
 			setTextColor("captiontxt", "FF0000")
 			setTextString('captiontxt','Captions: false')
-		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPress('I')) and not inv then
+		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPress('I')) and inv == 'center' then
 			inv = true
 			callScript("scripts/makeCaption", "invt", {true})
-			setTextString('invertxt','Invert Caption Placement: true')
+			setTextString('invertxt','Caption Placement: Player')
 		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPress('I')) and inv then
 			inv = false
-			setTextString('invertxt','Invert Caption Placement: false')
 			callScript("scripts/makeCaption", "invt", {false})
+			setTextString('invertxt','Caption Placement: Opponent')
+		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPress('I')) and not inv then
+			inv = 'center'
+			callScript("scripts/makeCaption", "middcs", {true})
+			setTextString('invertxt','Caption Placement: Center')
 		end
 	else
 		if keyPress('C') and not captions then
@@ -232,14 +236,19 @@ function buttonStuff()
 			setTextColor("captiontxt", "FF0000")
 			setTextString('captiontxt','Captions: false')
 		end
-		if keyPress('I') and not inv then
+		if keyPress('I') and inv == 'center' then
 			inv = true
 			callScript("scripts/makeCaption", "invt", {true})
-			setTextString('invertxt','Invert Caption Placement: true')
+			callScript("scripts/makeCaption", "middcs", {false})
+			setTextString('invertxt','Caption Placement: Player')
 		elseif keyPress('I') and inv then
 			inv = false
-			callScript("scripts/makeCaption", "invt", {false})
-			setTextString('invertxt','Invert Caption Placement: false')
+			callScript("scripts/makeCaption", "middcs", {false})
+			setTextString('invertxt','Caption Placement: Opponent')
+		elseif keyPress('I') and not inv then
+			inv = 'center'
+			callScript("scripts/makeCaption", "middcs", {true})
+			setTextString('invertxt','Caption Placement: Center')
 		end
 	end
 end
@@ -255,11 +264,22 @@ function onUpdate()
         for _, value in pairs({'up','down','left','right','back','space','cc','invert'}) do
             removeLuaSprite(value)
         end
-		callScript("scripts/makeCaption", "invt", {inv})
+
+		if inv == 'center' then
+			callScript("scripts/makeCaption", "middcs", {true})
+			callScript("scripts/makeCaptionbystep", "middcs", {true})
+			callScript("scripts/makeCaption", "invt", {false})
+			callScript("scripts/makeCaptionbystep", "invt", {false})
+		else
+			callScript("scripts/makeCaption", "middcs", {false})
+			callScript("scripts/makeCaptionbystep", "middcs", {false})
+			callScript("scripts/makeCaption", "invt", {inv})
+			callScript("scripts/makeCaptionbystep", "invt", {inv})
+		end
 		callScript("scripts/makeCaption", "captionson",{captions})
+		callScript("scripts/makeCaptionbystep", "captionson",{captions})
 		callScript("scripts/script", "capps",{captions})
 		allowCountdown = true
-		runTimer("cdd", 0.1,0)
 		startCountdown()
 
 	elseif (keyPress('SPACE') or spc) and allowVerticalScroll and selectedUnderlaySettings then
@@ -428,9 +448,7 @@ function onUpdate()
 	end
 end
 
-function onTimerCompleted(tag, loops, loopsLeft)
-	if tag == 'cdd' then
+function onSongStart()
 	callScript("custom_events/DodgeForBF", "cdal", {allowCountdown})
 	callScript("custom_events/DodgeEvent", "cdal", {allowCountdown})
-	end
 end

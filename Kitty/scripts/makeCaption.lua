@@ -19,7 +19,7 @@ function captionson(capen)
     	setObjectCamera('captionText', 'other')
     	setProperty('captionText.alpha', 0)
 	end
-	
+
 	if mid and not ls then
 		screenCenter("captionText", 'x')
 	elseif ls and not mid then
