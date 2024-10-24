@@ -23,6 +23,10 @@ function capps(capsst)
     captions = capsst
 end
 
+function offnewch(ossf)
+    changeOffset = ossf
+end
+
 
 function onCreatePost()
     callScript("scripts/LaneUnderlay", "getVarr", {force})
@@ -78,7 +82,7 @@ function onSongStart()
         setTextSize("drawfps", 20)
         setObjectCamera("drawfps", 'other')
         addLuaText("drawfps")
-    offset = getPropertyFromClass('ClientPrefs','noteOffset')
+    offset = getPropertyFromClass('ClientPrefs','noteOffset')-changeOffset
     if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == 'ratingPenalty' and botherme then
         debugPrint('-- You WILL continue to see this message unless you set (local botherme) in scripts/script.lua to false! --')
         debugPrint('Different engine recognized? WILL NOT penalize player for bad ratings unless you change the setting to (local penalizeanyway = true) in mods/kitty/scripts/script.lua!')
@@ -101,7 +105,8 @@ function onSongStart()
         bugged = true
     end
     debugPrint('- - -')
-    debugPrint('Current Offset: ','(',offset,')')
+    debugPrint('Song Offset to Mains: ','(',changeOffset,')')
+    debugPrint('Main Offset: ','(',offset,')')
     debugPrint('- - -')
     debugPrint(' | ')
     debugPrint(' | ')
