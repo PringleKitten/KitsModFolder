@@ -17,6 +17,8 @@ function onCreate()
             newOff = -50 --Number is YOUR Song Offset
         elseif songName == 'cg5-(stuck-inside)' then
             newOff = -75 --Number is YOUR Song Offset
+        elseif songName == 'Stress' or songName == 'Ugh' then
+            newOff = 50 --Number is YOUR Song Offset
         end
     end
     if newOff ~= 0 then

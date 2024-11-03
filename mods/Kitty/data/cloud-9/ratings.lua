@@ -54,7 +54,7 @@ function onCreate()
     setProperty('sc.y',30)
     setProperty('com.y',screenHeight-28)
 
-    makeLuaSprite('beat', 'me/popup/beatthing',20,y1-70)
+    makeLuaSprite('beat', 'me/popup/beatthing',20,getProperty('S.y')-70)
     setObjectCamera("beat", 'other')
     scaleObject("beat", 0.15, 0.15)
     addLuaSprite("beat")
@@ -65,7 +65,7 @@ function onBeatHit()
         doTweenColor("bcst", "beat", "FF0000", 0.1, "linear")
         raa = false
     else
-        doTweenColor("bcst", "beat", ".", 0.1, "linear")
+        doTweenColor("bcst", "beat", "FFFFFF", 0.1, "linear")
         raa = true
     end
     setProperty('beat.scale.x',0.3)
