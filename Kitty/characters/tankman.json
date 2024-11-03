@@ -1,99 +1,99 @@
 {
 	"animations": [
 		{
-			"loop": false,
 			"offsets": [
-				51,
-				137
-			],
-			"anim": "singLEFT-alt",
-			"fps": 24,
-			"name": "TANKMAN UGH",
-			"indices": []
-		},
-		{
-			"offsets": [
-				75,
-				150
+				54,
+				80
 			],
 			"loop": false,
 			"fps": 24,
 			"anim": "idle",
 			"indices": [],
-			"name": "Tankman Idle Dance instance"
+			"name": "Tankman Idle Dance"
 		},
 		{
 			"offsets": [
-				65,
-				124
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singLEFT",
-			"indices": [],
-			"name": "Tankman Note Left"
-		},
-		{
-			"offsets": [
-				140,
-				49
+				143,
+				-18
 			],
 			"loop": false,
 			"fps": 24,
 			"anim": "singDOWN",
 			"indices": [],
-			"name": "Tankman DOWN"
+			"name": "Tankman DOWN note"
 		},
 		{
 			"offsets": [
-				117,
-				197
+				146,
+				70
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "Tankman Right Note"
+		},
+		{
+			"offsets": [
+				40,
+				54
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "Tankman Note Left"
+		},
+		{
+			"offsets": [
+				34,
+				71
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP-alt",
+			"indices": [],
+			"name": "TANKMAN UGH"
+		},
+		{
+			"offsets": [
+				46,
+				96
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "HUH",
+			"indices": [],
+			"name": "PRETTY GOOD tankman"
+		},
+		{
+			"offsets": [
+				92,
+				130
 			],
 			"loop": false,
 			"fps": 24,
 			"anim": "singUP",
 			"indices": [],
 			"name": "Tankman UP"
-		},
-		{
-			"offsets": [
-				59,
-				161
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "GOOD",
-			"indices": [],
-			"name": "PRETTY GOOD"
-		},
-		{
-			"loop": false,
-			"offsets": [
-				139,
-				133
-			],
-			"anim": "singRIGHT",
-			"fps": 24,
-			"name": "Tankman Right",
-			"indices": []
 		}
 	],
 	"no_antialiasing": false,
 	"image": "characters/tankman",
 	"position": [
-		0,
-		350
+		81,
+		299
 	],
 	"healthicon": "tankman",
 	"flip_x": true,
 	"healthbar_colors": [
-		225,
-		225,
-		225
+		255,
+		255,
+		255
 	],
 	"camera_position": [
-		50,
-		-220
+		-78,
+		-50
 	],
 	"sing_duration": 4,
 	"scale": 1
