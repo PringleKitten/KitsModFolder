@@ -1,2 +1,0 @@
-Value 1 = Time to hit
-Value 2 = Key to press, Blank for random

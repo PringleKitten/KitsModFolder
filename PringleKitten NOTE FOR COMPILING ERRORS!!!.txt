@@ -1,0 +1,9 @@
+if you get an error at any point when installing flxanimate or something:
+**First of all install flxanimate using: haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate.git 768740a56b26aa0c072720e0d1236b94afe68e3e
+
+**if you can't cause of "Error: std@sys_remove_dir"
+**Try running this command:
+
+git config --global --add safe.directory "Directory of your Source Code"
+
+Then try installing and compiling once again!
