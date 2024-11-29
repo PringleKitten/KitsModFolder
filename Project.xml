@@ -177,6 +177,7 @@
 	<haxeflag name="--macro" value="include('my.pack')" />
 
 	<!-- _________________________________ Custom _______________________________ -->
+	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
 
 	<assets path='art/iconOG.png' rename='icon.png' if="linux" />
 	

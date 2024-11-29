@@ -324,7 +324,7 @@ class PlayState extends MusicBeatState
 		if (isStoryMode)
 			detailsText = "Story Mode: " + WeekData.getCurrentWeek().weekName;
 		else
-			detailsText = "Freeplay";
+			detailsText = "("+storyDifficultyText+") " + SONG.song + ", Botplay: " + ClientPrefs.getGameplaySetting('botplay', false) + ", Practice: " + ClientPrefs.getGameplaySetting('practice', false);
 
 		// String for when the game is paused
 		detailsPausedText = "Paused - " + detailsText;
@@ -1254,7 +1254,7 @@ class PlayState extends MusicBeatState
 
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence (with Time Left)
-		if(autoUpdateRPC) DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength);
+		if(autoUpdateRPC) DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true, songLength);
 		#end
 		setOnScripts('songLength', songLength);
 		callOnScripts('onSongStart');
@@ -1603,7 +1603,7 @@ class PlayState extends MusicBeatState
 	override public function onFocusLost():Void
 	{
 		#if DISCORD_ALLOWED
-		if (health > 0 && !paused && autoUpdateRPC) DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+		if (health > 0 && !paused && autoUpdateRPC) DiscordClient.changePresence(detailsPausedText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter());
 		#end
 
 		super.onFocusLost();
@@ -1617,9 +1617,9 @@ class PlayState extends MusicBeatState
 		if(!autoUpdateRPC) return;
 
 		if (showTime)
-			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.data.noteOffset);
+			DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.data.noteOffset);
 		else
-			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+			DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true, songLength);
 		#end
 	}
 
@@ -1909,7 +1909,7 @@ class PlayState extends MusicBeatState
 		openSubState(new PauseSubState());
 
 		#if DISCORD_ALLOWED
-		if(autoUpdateRPC) DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+		if(autoUpdateRPC) DiscordClient.changePresence(detailsPausedText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter());
 		#end
 	}
 
@@ -1999,7 +1999,7 @@ class PlayState extends MusicBeatState
 
 				#if DISCORD_ALLOWED
 				// Game Over doesn't get his its variable because it's only used here
-				if(autoUpdateRPC) DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
+				if(autoUpdateRPC) DiscordClient.changePresence("Game Over - " + detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter());
 				#end
 				isDead = true;
 				return true;
@@ -2068,12 +2068,12 @@ class PlayState extends MusicBeatState
 				gfSpeed = Math.round(flValue1);
 
 			case 'Add Camera Zoom':
-				if(ClientPrefs.data.camZooms && FlxG.camera.zoom < 2) {
-					if(ClientPrefs.data.camZoomsHud && FlxG.camera.zoom < 2) {
+				if(ClientPrefs.data.camZooms) {
+					if(ClientPrefs.data.camZoomsHud) {
 						if(flValue2 == null) flValue2 = 0.05;
 						camHUD.zoom += flValue2;
 					}
-					if(ClientPrefs.data.camZoomsBg && FlxG.camera.zoom < 2) {
+					if(ClientPrefs.data.camZoomsBg) {
 						if(flValue1 == null) flValue1 = 0.03;
 						FlxG.camera.zoom += flValue1;					
 					}
@@ -2943,6 +2943,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		vocals.volume = 0;
+		DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true, songLength);
 	}
 
 	function opponentNoteHit(note:Note):Void
@@ -3088,7 +3089,7 @@ class PlayState extends MusicBeatState
 			noteMiss(note);
 			if(!note.noteSplashData.disabled && !note.isSustainNote) spawnNoteSplashOnNote(note);
 		}
-
+		DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true, songLength);
 		stagesFunc(function(stage:BaseStage) stage.goodNoteHit(note));
 		var result:Dynamic = callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) callOnHScript('goodNoteHit', [note]);
