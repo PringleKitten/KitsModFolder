@@ -1,4 +1,4 @@
-offset = 150
+offset = 75
 local newOff = 0
 local c = true -- set to True to use custom offsets
 

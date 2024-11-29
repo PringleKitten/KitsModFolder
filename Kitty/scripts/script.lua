@@ -105,8 +105,8 @@ function onSongStart()
         bugged = true
     end
     debugPrint('- - -')
-    debugPrint('Song Offset to Mains: ','(',changeOffset,')')
-    debugPrint('Main Offset: ','(',offset,')')
+    debugPrint('Song Offset to Mains: '..'('..changeOffset..')')
+    debugPrint('Main Offset: '..'('..offset..')')
     debugPrint('- - -')
     debugPrint(' | ')
     debugPrint(' | ')

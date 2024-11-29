@@ -8125,7 +8125,7 @@
 		"player2": "tankman",
 		"player3": null,
 		"song": "Guns",
-		"stage": "tank",
+		"stage": "ktank",
 		"needsVoices": true,
 		"validScore": true,
 		"bpm": 185,

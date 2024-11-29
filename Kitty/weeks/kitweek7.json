@@ -1,5 +1,5 @@
 {
-	"storyName": "tankman",
+	"storyName": "tanke",
 	"difficulties": "Hard",
 	"hideFreeplay": false,
 	"weekBackground": "",
@@ -45,5 +45,5 @@
 			]
 		]
 	],
-	"weekName": "tankman"
+	"weekName": "tanke"
 }

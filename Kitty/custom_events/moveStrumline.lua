@@ -11,9 +11,9 @@ function onEvent(name, value1, value2)
         end
             if getPropertyFromClass('ClientPrefs', 'assetMovement') == true or (bugged and visuals) == true then
                 if getPropertyFromClass("ClientPrefs", "downScroll") == true or getPropertyFromClass("ClientPrefs", "middleScroll") == true then
-                    debugPrint('Hey bro, turn off downscroll or middlescroll in clientPrefs so you dont have visual bugs!')
-                    debugPrint('Hey bro, turn off downscroll or middlescroll in clientPrefs so you dont have visual bugs!')
-                    debugPrint('Hey bro, turn off downscroll or middlescroll in clientPrefs so you dont have visual bugs!')
+                    debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+                    debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+                    debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
                 end
         oX1 = getPropertyFromGroup('opponentStrums', 0, 'x')
         oX2 = getPropertyFromGroup('opponentStrums', 1, 'x')

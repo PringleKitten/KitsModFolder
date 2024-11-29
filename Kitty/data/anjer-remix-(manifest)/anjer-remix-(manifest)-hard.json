@@ -1,7 +1,8 @@
 {
 	"song": {
-		"player1": "coolerredbf",
-		"events": [
+	"player1": "coolerredbf",
+	"player2": "sky-mad",
+	"events": [
 			[
 				0,
 				[
@@ -3282,9 +3283,9 @@
 					]
 				]
 			]
-		],
-		"gfVersion": "gf-cruc",
-		"notes": [
+	],
+	"gfVersion": "gf-cruc",
+	"notes": [
 			{
 				"lengthInSteps": 16,
 				"sectionNotes": [],
@@ -12643,14 +12644,13 @@
 				"changeBPM": false,
 				"mustHitSection": true
 			}
-		],
-		"player2": "sky-mad",
-		"player3": null,
-		"song": "anjer-remix-(manifest)",
-		"needsVoices": false,
-		"validScore": true,
-		"stage": "shift_manifest",
-		"bpm": 225,
-		"speed": 2.7
+	],
+	"player3": null,
+	"song": "anjer-remix-(manifest)",
+	"stage": "shift_manifest",
+	"needsVoices": false,
+	"validScore": true,
+	"bpm": 225,
+	"speed": 2.7
 	}
 }

@@ -1,7 +1,7 @@
 {
-	"name": "Wolf/Pringle/Kitty",
+	"name": "PringleKitten 0.6.3",
 	"description": "Anything you want to play I'll add",
 	"restart":false,
-	"runsGlobally": false,
+	"runsGlobally": true,
 	"color": [251, 77, 155]
 }

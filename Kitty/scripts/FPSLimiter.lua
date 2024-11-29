@@ -1,4 +1,4 @@
-local fps = 120  -- Change this value to change the desired fps limit
+local fps = 240  -- Change this value to change the desired fps limit
 local change = false -- Set to true to use this custom fps script
 
 function onCreate()
