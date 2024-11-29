@@ -166,7 +166,7 @@ class PlayState extends MusicBeatState
 
 	public var camZooming:Bool = false;
 	public var camZoomingMult:Float = 1;
-	public var camZoomingDecay:Float = 5;
+	public var camZoomingDecay:Float = 7;
 	private var curSong:String = "";
 
 	public var gfSpeed:Int = 1;
