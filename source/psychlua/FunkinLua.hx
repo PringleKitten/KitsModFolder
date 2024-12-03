@@ -192,6 +192,10 @@ class FunkinLua {
 		set('cameraZoomOnBeat', ClientPrefs.data.camZooms);
 		set('hudZoomSections', ClientPrefs.data.camZoomsHud);
 		set('bgZoomSections', ClientPrefs.data.camZoomsBg);
+		set('mechanics', ClientPrefs.data.mechanics);
+		set('assetMovement', ClientPrefs.data.assetMovement);
+		set('healthDrain', ClientPrefs.data.healthDrain);
+		set('ratingPenalty', ClientPrefs.data.ratingPenalty);
 		set('flashingLights', ClientPrefs.data.flashing);
 		set('noteOffset', ClientPrefs.data.noteOffset);
 		set('healthBarAlpha', ClientPrefs.data.healthBarAlpha);
