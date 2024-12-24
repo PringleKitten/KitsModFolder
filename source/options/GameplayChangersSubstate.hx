@@ -229,8 +229,8 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 											else
 											{
 												oOption.displayFormat = "%vX";
-												oOption.maxValue = 3;
-												if(oOption.getValue() > 3) oOption.setValue(3);
+												oOption.maxValue = 1000;
+												if(oOption.getValue() > 1000) oOption.setValue(1000);
 											}
 											updateTextFrom(oOption);
 										}
@@ -287,9 +287,9 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 					if(leOption.name == 'Scroll Speed')
 					{
 						leOption.displayFormat = "%vX";
-						leOption.maxValue = 3;
-						if(leOption.getValue() > 3)
-							leOption.setValue(3);
+						leOption.maxValue = 1000;
+						if(leOption.getValue() > 1000)
+							leOption.setValue(1000);
 
 						updateTextFrom(leOption);
 					}
