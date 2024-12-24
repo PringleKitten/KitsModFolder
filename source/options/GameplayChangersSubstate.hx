@@ -23,27 +23,27 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		optionsArray.push(goption);
 
 		var option:GameplayOption = new GameplayOption('Scroll Speed', 'scrollspeed', FLOAT, 1);
-		option.scrollSpeed = 2.0;
-		option.minValue = 0.35;
+		option.scrollSpeed = 10.0;
+		option.minValue = 0.1;
 		option.changeValue = 0.05;
 		option.decimals = 2;
 		if (goption.getValue() != "constant")
 		{
 			option.displayFormat = '%vX';
-			option.maxValue = 3;
+			option.maxValue = 1000;
 		}
 		else
 		{
 			option.displayFormat = "%v";
-			option.maxValue = 6;
+			option.maxValue = 1000;
 		}
 		optionsArray.push(option);
 
 		#if FLX_PITCH
 		var option:GameplayOption = new GameplayOption('Playback Rate', 'songspeed', FLOAT, 1);
-		option.scrollSpeed = 1;
-		option.minValue = 0.5;
-		option.maxValue = 3.0;
+		option.scrollSpeed = 10;
+		option.minValue = 0.1;
+		option.maxValue = 1000.0;
 		option.changeValue = 0.05;
 		option.displayFormat = '%vX';
 		option.decimals = 2;
@@ -224,7 +224,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 											if (curOption.getValue() == "constant")
 											{
 												oOption.displayFormat = "%v";
-												oOption.maxValue = 6;
+												oOption.maxValue = 1000;
 											}
 											else
 											{
@@ -356,7 +356,7 @@ class GameplayOption
 	public var type:OptionType = BOOL;
 
 	public var showBoyfriend:Bool = false;
-	public var scrollSpeed:Float = 50; //Only works on int/float, defines how fast it scrolls per second while holding left/right
+	public var scrollSpeed:Float = 200; //Only works on int/float, defines how fast it scrolls per second while holding left/right
 
 	private var variable:String = null; //Variable from ClientPrefs.hx's gameplaySettings
 	public var defaultValue:Dynamic = null;
