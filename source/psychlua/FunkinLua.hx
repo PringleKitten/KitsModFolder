@@ -190,12 +190,15 @@ class FunkinLua {
 		set('timeBarType', ClientPrefs.data.timeBarType);
 		set('scoreZoom', ClientPrefs.data.scoreZoom);
 		set('cameraZoomOnBeat', ClientPrefs.data.camZooms);
-		set('hudZoomSections', ClientPrefs.data.camZoomsHud);
-		set('bgZoomSections', ClientPrefs.data.camZoomsBg);
-		set('mechanics', ClientPrefs.data.mechanics);
+		// IFE Customs
 		set('assetMovement', ClientPrefs.data.assetMovement);
 		set('healthDrain', ClientPrefs.data.healthDrain);
 		set('ratingPenalty', ClientPrefs.data.ratingPenalty);
+		set('mechanics', ClientPrefs.data.mechanics);
+		set('mechanicsAgain', ClientPrefs.data.mechanicsAgain);
+		set('mobileMechanics', ClientPrefs.data.mobileMechanics);
+		set('mobileChoice', ClientPrefs.data.mobileChoice);
+		//End
 		set('flashingLights', ClientPrefs.data.flashing);
 		set('noteOffset', ClientPrefs.data.noteOffset);
 		set('healthBarAlpha', ClientPrefs.data.healthBarAlpha);

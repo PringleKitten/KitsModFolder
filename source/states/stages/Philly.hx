@@ -116,12 +116,8 @@ class Philly extends BaseStage
 							doFlash();
 							if(ClientPrefs.data.camZooms)
 							{
-								if(ClientPrefs.data.camZoomsHud) {
-									camHUD.zoom += 0.1;
-								}
-									if(ClientPrefs.data.camZoomsBg) {
-										FlxG.camera.zoom += 0.5;
-									}
+								camHUD.zoom += 0.1;
+								FlxG.camera.zoom += 0.5;
 							}
 
 							blammedLightsBlack.visible = false;

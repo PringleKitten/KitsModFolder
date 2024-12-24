@@ -1,5 +1,7 @@
 package states;
 
+import openfl.Lib;
+
 import backend.Highscore;
 import backend.StageData;
 import backend.WeekData;
@@ -187,6 +189,10 @@ class PlayState extends MusicBeatState
 	public static var chartingMode:Bool = false;
 
 	//Gameplay settings
+	//IFE
+	public var camZoomsHud:Bool = true;
+	public var camZoomsBg:Bool = true;
+	//end
 	public var healthGain:Float = 1;
 	public var healthLoss:Float = 1;
 
@@ -219,6 +225,7 @@ class PlayState extends MusicBeatState
 	public static var deathCounter:Int = 0;
 
 	public var defaultCamZoom:Float = 1.05;
+	// IFE CUSTOMS
 	public var defaultCamUIZoom:Float = 1;
 
 	// how big to stretch the pixel art assets
@@ -1153,10 +1160,11 @@ class PlayState extends MusicBeatState
 
 	public dynamic function fullComboFunction()
 	{
-		var sicks:Int = ratingsData[0].hits;
-		var goods:Int = ratingsData[1].hits;
-		var bads:Int = ratingsData[2].hits;
-		var shits:Int = ratingsData[3].hits;
+		var perfects:Int = ratingsData[0].hits;
+		var sicks:Int = ratingsData[1].hits;
+		var goods:Int = ratingsData[2].hits;
+		var bads:Int = ratingsData[3].hits;
+		var shits:Int = ratingsData[4].hits;
 
 		ratingFC = "";
 		if(songMisses == 0)
@@ -1164,6 +1172,7 @@ class PlayState extends MusicBeatState
 			if (bads > 0 || shits > 0) ratingFC = 'FC';
 			else if (goods > 0) ratingFC = 'GFC';
 			else if (sicks > 0) ratingFC = 'SFC';
+			else if (perfects > 0) ratingFC = 'MFC';
 		}
 		else {
 			if (songMisses < 10) ratingFC = 'SDCB';
@@ -2069,11 +2078,11 @@ class PlayState extends MusicBeatState
 
 			case 'Add Camera Zoom':
 				if(ClientPrefs.data.camZooms) {
-					if(ClientPrefs.data.camZoomsHud) {
+					if(camZoomsHud) {
 						if(flValue2 == null) flValue2 = 0.05;
 						camHUD.zoom += flValue2;
 					}
-					if(ClientPrefs.data.camZoomsBg) {
+					if(camZoomsBg) {
 						if(flValue1 == null) flValue1 = 0.03;
 						FlxG.camera.zoom += flValue1;					
 					}
@@ -2848,6 +2857,24 @@ class PlayState extends MusicBeatState
 				invalidateNote(note);
 		});
 
+		if (ClientPrefs.data.ratingPenalty)
+			{
+				var healthLoss:Float = 0;
+				if (ratingPercent < 0.86 && ratingPercent > 0.8)
+					healthLoss = 0.1;
+				else if (ratingPercent < 0.78 && ratingPercent > 0.7)
+					healthLoss = 0.12;
+				else if (ratingPercent < 0.67 && ratingPercent > 0.63)
+					healthLoss = 0.16;
+				else if (ratingPercent < 0.6 && ratingPercent > 0.55)
+					healthLoss = 0.2;
+				else if (ratingPercent < 0.53)
+					healthLoss = 0.23;
+		
+				if (healthLoss > 0)
+					health -= healthLoss;
+			}
+
 		noteMissCommon(daNote.noteData, daNote);
 		stagesFunc(function(stage:BaseStage) stage.noteMiss(daNote));
 		var result:Dynamic = callOnLuas('noteMiss', [notes.members.indexOf(daNote), daNote.noteData, daNote.noteType, daNote.isSustainNote]);
@@ -3090,6 +3117,21 @@ class PlayState extends MusicBeatState
 			noteMiss(note);
 			if(!note.noteSplashData.disabled && !note.isSustainNote) spawnNoteSplashOnNote(note);
 		}
+
+		var rating:String = note.rating;
+		if (ClientPrefs.data.ratingPenalty)
+		{
+			switch (rating)
+			{
+				case 'good':
+					health -= 0.01;
+				case 'bad':
+					health -= 0.02;
+				case 'shit':
+					health -= 0.2;
+			}
+		}
+
 		DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true, songLength);
 		stagesFunc(function(stage:BaseStage) stage.goodNoteHit(note));
 		var result:Dynamic = callOnLuas('goodNoteHit', [notes.members.indexOf(note), leData, leType, isSus]);
@@ -3230,10 +3272,10 @@ class PlayState extends MusicBeatState
 
 			if (camZooming && FlxG.camera.zoom < 2 && ClientPrefs.data.camZooms)
 			{
-				if (ClientPrefs.data.camZoomsHud) {
+				if (camZoomsHud) {
 					camHUD.zoom += 0.05 * camZoomingMult;
 				}
-				if (ClientPrefs.data.camZoomsBg) {
+				if (camZoomsBg) {
 					FlxG.camera.zoom += 0.04 * camZoomingMult;
 				}				
 			}

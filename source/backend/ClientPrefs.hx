@@ -23,12 +23,15 @@ import states.TitleState;
 	public var cacheOnGPU:Bool = #if !switch false #else true #end; //From Stilic
 	public var framerate:Int = 60;
 	public var camZooms:Bool = true;
-	public var camZoomsHud:Bool = true;
-	public var camZoomsBg:Bool = true;
+	// IFE CUSTOMS
 	public var assetMovement:Bool = true;
-	public var mechanics:Bool = true;
 	public var healthDrain:Bool = true;
 	public var ratingPenalty:Bool = true;
+	public var mechanics:Bool = true;
+	public var mechanicsAgain:Bool = true;
+	public var mobileMechanics:Bool = false;
+	public var mobileChoice:Int = 2;
+	//end
 	public var hideHud:Bool = false;
 	public var noteOffset:Int = 90;
 	public var arrowRGB:Array<Array<FlxColor>> = [

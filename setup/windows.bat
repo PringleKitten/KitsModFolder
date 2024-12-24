@@ -15,6 +15,8 @@ haxelib install hscript-iris 1.1.0
 haxelib install tjson 1.4.0
 haxelib install hxdiscord_rpc 1.2.4
 haxelib install hxvlc 1.9.2
+haxelib git hxcpp https://github.com/HaxeFoundation/hxcpp
+lime rebuild hxcpp
 haxelib git flxanimate https://github.com/Dot-Stuff/flxanimate dev
 haxelib remove linc_luajit
 haxelib git linc_luajit https://github.com/superpowers04/linc_luajit

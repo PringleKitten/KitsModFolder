@@ -64,13 +64,9 @@ class Spooky extends BaseStage
 			gf.playAnim('scared', true);
 
 		if(ClientPrefs.data.camZooms) {
-			if(ClientPrefs.data.camZoomsHud) {
-				camHUD.zoom += 0.03;
-			}
-				if(ClientPrefs.data.camZoomsBg) {
-					FlxG.camera.zoom += 0.015;
-				}			
-
+			camHUD.zoom += 0.03;
+			FlxG.camera.zoom += 0.015;	
+			
 			if(!game.camZooming) { //Just a way for preventing it to be permanently zoomed until Skid & Pump hits a note
 				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.5);
 				FlxTween.tween(camHUD, {zoom: 1}, 0.5);
