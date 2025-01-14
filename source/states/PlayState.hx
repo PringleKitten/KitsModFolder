@@ -575,7 +575,7 @@ class PlayState extends MusicBeatState
 		practiceTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		practiceTxt.scrollFactor.set();
 		practiceTxt.borderSize = 1.25;
-		practiceTxt.visible = cpuControlled;
+		practiceTxt.visible = practiceMode;
 		uiGroup.add(practiceTxt);
 		if(ClientPrefs.data.downScroll)
 			practiceTxt.y = healthBar.y + 50;
