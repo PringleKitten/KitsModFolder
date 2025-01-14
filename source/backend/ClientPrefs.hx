@@ -82,7 +82,7 @@ import states.TitleState;
 	public var sickWindow:Int = 45;
 	public var goodWindow:Int = 90;
 	public var badWindow:Int = 135;
-	public var safeFrames:Float = 8;
+	public var safeFrames:Float = 10;
 	public var guitarHeroSustains:Bool = true;
 	public var discordRPC:Bool = true;
 	public var loadingScreen:Bool = true;

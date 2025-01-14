@@ -887,13 +887,13 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 
 		var lastZoom = FlxG.camera.zoom;
 		if(FlxG.keys.justPressed.R && !FlxG.keys.pressed.CONTROL) FlxG.camera.zoom = 1;
-		else if (FlxG.keys.pressed.E && FlxG.camera.zoom < 100) {
+		else if (FlxG.keys.pressed.E && FlxG.camera.zoom < 3) {
 			FlxG.camera.zoom += elapsed * FlxG.camera.zoom * shiftMult * ctrlMult;
-			if(FlxG.camera.zoom > 100) FlxG.camera.zoom = 100;
+			if(FlxG.camera.zoom > 3) FlxG.camera.zoom = 3;
 		}
-		else if (FlxG.keys.pressed.Q && FlxG.camera.zoom > 0.05) {
+		else if (FlxG.keys.pressed.Q && FlxG.camera.zoom > 0.1) {
 			FlxG.camera.zoom -= elapsed * FlxG.camera.zoom * shiftMult * ctrlMult;
-			if(FlxG.camera.zoom < 0.05) FlxG.camera.zoom = 0.05;
+			if(FlxG.camera.zoom < 0.1) FlxG.camera.zoom = 0.1;
 		}
 
 		if(lastZoom != FlxG.camera.zoom) cameraZoomText.text = 'Zoom: ' + FlxMath.roundDecimal(FlxG.camera.zoom, 2) + 'x';

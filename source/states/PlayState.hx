@@ -204,6 +204,8 @@ class PlayState extends MusicBeatState
 
 	public var botplaySine:Float = 0;
 	public var botplayTxt:FlxText;
+	public var practiceSine:Float = 0;
+	public var practiceTxt:FlxText;
 
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
@@ -568,6 +570,15 @@ class PlayState extends MusicBeatState
 		uiGroup.add(botplayTxt);
 		if(ClientPrefs.data.downScroll)
 			botplayTxt.y = healthBar.y + 70;
+
+		practiceTxt = new FlxText(400, healthBar.y - 110, FlxG.width - 800, Language.getPhrase("Practice").toUpperCase(), 32);
+		practiceTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		practiceTxt.scrollFactor.set();
+		practiceTxt.borderSize = 1.25;
+		practiceTxt.visible = cpuControlled;
+		uiGroup.add(practiceTxt);
+		if(ClientPrefs.data.downScroll)
+			practiceTxt.y = healthBar.y + 50;
 
 		uiGroup.cameras = [camHUD];
 		noteGroup.cameras = [camHUD];
@@ -1350,7 +1361,7 @@ class PlayState extends MusicBeatState
 				var spawnTime: Float = songNotes[0];
 				var noteColumn: Int = Std.int(songNotes[1] % totalColumns);
 				var holdLength: Float = songNotes[2];
-				var noteType: String = songNotes[3];
+				var noteType: String = !Std.isOfType(songNotes[3], String) ? Note.defaultNoteTypes[songNotes[3]] : songNotes[3];
 				if (Math.isNaN(holdLength))
 					holdLength = 0.0;
 
@@ -1686,6 +1697,11 @@ class PlayState extends MusicBeatState
 		if(botplayTxt != null && botplayTxt.visible) {
 			botplaySine += 180 * elapsed;
 			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
+		}
+
+		if(practiceTxt != null && practiceTxt.visible) {
+			practiceSine += 180 * elapsed;
+			practiceTxt.alpha = 1 - Math.sin((Math.PI * practiceSine) / 180);
 		}
 
 		if (controls.PAUSE && startedCountdown && canPause)
@@ -2559,14 +2575,12 @@ class PlayState extends MusicBeatState
 		if(daRating.noteSplash && !note.noteSplashData.disabled)
 			spawnNoteSplashOnNote(note);
 
-		if(!practiceMode && !cpuControlled) {
-			songScore += score;
-			if(!note.ratingDisabled)
-			{
-				songHits++;
-				totalPlayed++;
-				RecalculateRating(false);
-			}
+		songScore += score;
+		if(!note.ratingDisabled)
+		{
+			songHits++;
+			totalPlayed++;
+			RecalculateRating(false);
 		}
 
 		var uiFolder:String = "";
@@ -3149,14 +3163,14 @@ class PlayState extends MusicBeatState
 		if(note != null) {
 			var strum:StrumNote = playerStrums.members[note.noteData];
 			if(strum != null)
-				spawnNoteSplash(note, strum);
+				spawnNoteSplash(strum.x, strum.y, note.noteData, note, strum);
 		}
 	}
 
-	public function spawnNoteSplash(note:Note, strum:StrumNote) {
-		var splash:NoteSplash = new NoteSplash();
+	public function spawnNoteSplash(x:Float = 0, y:Float = 0, ?data:Int = 0, ?note:Note, ?strum:StrumNote) {
+		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
 		splash.babyArrow = strum;
-		splash.spawnSplashNote(note);
+		splash.spawnSplashNote(x, y, data, note);
 		grpNoteSplashes.add(splash);
 	}
 
@@ -3181,7 +3195,8 @@ class PlayState extends MusicBeatState
 		for (script in hscriptArray)
 			if(script != null)
 			{
-				script.executeFunction('onDestroy');
+				var ny:Dynamic = script.get('onDestroy');
+				if(ny != null && Reflect.isFunction(ny)) ny();
 				script.destroy();
 			}
 
@@ -3348,7 +3363,7 @@ class PlayState extends MusicBeatState
 		try
 		{
 			newScript = new HScript(null, file);
-			newScript.executeFunction('onCreate');
+			newScript.call('onCreate');
 			trace('initialized hscript interp successfully: $file');
 			hscriptArray.push(newScript);
 		}
