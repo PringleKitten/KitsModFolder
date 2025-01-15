@@ -2,77 +2,79 @@ package backend;
 
 class Highscore
 {
-	public static var weekScores:Map<String, Int> = new Map();
-	public static var songScores:Map<String, Int> = new Map<String, Int>();
+	public static var weekScores:Map<String, {score:Int, cheated:Int}> = new Map();
+	public static var songScores:Map<String, {score:Int, cheated:Int}> = new Map();
 	public static var songRating:Map<String, Float> = new Map<String, Float>();
-	public static var weekCheated:Map<String, Int> = new Map();
-	public static var songCheatedSave:Map<String, Int> = new Map<String, Int>();
 
 	public static function resetSong(song:String, diff:Int = 0):Void
 	{
 		var daSong:String = formatSong(song, diff);
-		setScoreCheated(daSong, 0);
-		setScore(daSong, 0);
+		setScore(daSong, 0, -1);
 		setRating(daSong, 0);
 	}
 
 	public static function resetWeek(week:String, diff:Int = 0):Void
 	{
 		var daWeek:String = formatSong(week, diff);
-		setWeekScore(daWeek, 0);
-		setWeekCheated(daWeek, 0);
+		setWeekScore(daWeek, 0, -1);
 	}
 
-	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1):Void
+	public static function saveScore(song:String, songCheatedSave:Int = -1, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1):Void
 	{
 		if(song == null) return;
 		var daSong:String = formatSong(song, diff);
 
 		if (songScores.exists(daSong))
 		{
-			if (songScores.get(daSong) < score)
-			{
-				setScore(daSong, score);
-				if(rating >= 0) setRating(daSong, rating);
-			}
+            var existingScore = songScores.get(daSong);
+                setScore(daSong, score, songCheatedSave);
+                if(rating >= 0) setRating(daSong, rating);
 		}
 		else
 		{
-			setScore(daSong, score);
+			setScore(daSong, score, songCheatedSave);
 			if(rating >= 0) setRating(daSong, rating);
 		}
 	}
 
-	public static function saveWeekScore(week:String, score:Int = 0, ?diff:Int = 0):Void
+	public static function saveWeekScore(week:String, weekCheated:Int = -1, score:Int = 0, ?diff:Int = 0):Void
 	{
 		var daWeek:String = formatSong(week, diff);
 
 		if (weekScores.exists(daWeek))
 		{
-			if (weekScores.get(daWeek) < score)
-				setWeekScore(daWeek, score);
+            var existingScore = weekScores.get(daWeek);
+                setWeekScore(daWeek, score, weekCheated);
 		}
-		else setWeekScore(daWeek, score);
+		else setWeekScore(daWeek, score, weekCheated);
 	}
 
 	/**
 	 * YOU SHOULD FORMAT SONG WITH formatSong() BEFORE TOSSING IN SONG VARIABLE
 	 */
-	static function setScore(song:String, score:Int):Void
+	static function setScore(song:String, score:Int, songCheatedSave:Int):Void
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
-		songScores.set(song, score);
+		songScores.set(song, {score: score, cheated: songCheatedSave});
 		FlxG.save.data.songScores = songScores;
 		FlxG.save.flush();
 	}
-	static function setWeekScore(week:String, score:Int):Void
+	static function setWeekScore(week:String, score:Int, weekCheated:Int):Void
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
-		weekScores.set(week, score);
+		weekScores.set(week, {score: score, cheated: weekCheated});
 		FlxG.save.data.weekScores = weekScores;
 		FlxG.save.flush();
 	}
 
+	public static function getCheatedStatus(song:String, diff:Int):Int
+		{
+			var daSong:String = formatSong(song, diff);
+			if (!songScores.exists(daSong))
+				return -1;
+		
+			return songScores.get(daSong).cheated;
+		}
 	static function setRating(song:String, rating:Float):Void
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
@@ -90,9 +92,9 @@ class Highscore
 	{
 		var daSong:String = formatSong(song, diff);
 		if (!songScores.exists(daSong))
-			setScore(daSong, 0);
+			setScore(daSong, 0, -1);
 
-		return songScores.get(daSong);
+		return songScores.get(daSong).score;
 	}
 
 	public static function getRating(song:String, diff:Int):Float
@@ -108,74 +110,9 @@ class Highscore
 	{
 		var daWeek:String = formatSong(week, diff);
 		if (!weekScores.exists(daWeek))
-			setWeekScore(daWeek, 0);
+			setWeekScore(daWeek, 0, -1);
 
-		return weekScores.get(daWeek);
-	}
-
-	public static function saveScoreCheated(song:String, songCheated:Int, ?diff:Int = 0):Void
-	{
-		if(song == null) return;
-		var daSongCheated:String = formatSong(song, diff);
-
-		if (songCheatedSave.exists(daSongCheated))
-		{
-			if (songCheatedSave.get(daSongCheated))
-			{
-				setScoreCheated(daSongCheated, songCheated);
-			}
-		}
-		else
-		{
-			setScoreCheated(daSongCheated, songCheated);
-		}
-		Sys.println(songCheated);
-	}
-	
-	public static function saveWeekCheated(week:String, songCheated:Int, ?diff:Int = 0):Void
-	{
-		var daWeekCheated:String = formatSong(week, diff);
-
-		if (weekCheated.exists(daWeekCheated))
-		{
-			if (weekCheated.get(daWeekCheated))
-				setWeekCheated(daWeekCheated, songCheated);
-		}
-		else setWeekCheated(daWeekCheated, songCheated);
-	}
-
-	static function setWeekCheated(week:String, songCheated:Int):Void
-	{
-		// Reminder that I don't need to format this song, it should come formatted!
-		weekCheated.set(week, songCheated);
-		FlxG.save.data.weekCheated = weekCheated;
-		FlxG.save.flush();
-	}
-
-	public static function getWeekCheated(week:String, diff:Int):Int
-    {
-		var daWeekCheated:String = formatSong(week, diff);
-		if (!weekCheated.exists(daWeekCheated))
-			setWeekCheated(daWeekCheated, 0);
-
-		return weekCheated.get(daWeekCheated);
-	}
-
-	static function setScoreCheated(song:String, songCheated:Int):Void
-	{
-		// Reminder that I don't need to format this song, it should come formatted!
-		songCheatedSave.set(song, songCheated);
-		FlxG.save.data.songCheatedSave = songCheated;
-		FlxG.save.flush();
-	}
-
-	public static function getScoreCheated(song:String, diff:Int):Int
-	{
-		var daSongCheated:String = formatSong(song, diff);
-		if (!songCheatedSave.exists(daSongCheated))
-			setScoreCheated(daSongCheated, 0);
-
-		return songCheatedSave.get(daSongCheated);
+		return weekScores.get(daWeek).score;
 	}
 
 	public static function load():Void
@@ -188,11 +125,5 @@ class Highscore
 
 		if (FlxG.save.data.songRating != null)
 			songRating = FlxG.save.data.songRating;
-
-		if (FlxG.save.data.weekCheated != null)
-			weekCheated = FlxG.save.data.weekCheated;
-
-		if (FlxG.save.data.songCheatedSave != null)
-			songCheatedSave = FlxG.save.data.songCheatedSave;
 	}
 }

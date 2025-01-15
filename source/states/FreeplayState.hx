@@ -34,7 +34,7 @@ class FreeplayState extends MusicBeatState
 	var lerpRating:Float = 0;
 	var intendedScore:Int = 0;
 	var intendedRating:Float = 0;
-	var cheatedSC:Int = 0;
+	var cheatedSC:Int = -1;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -244,11 +244,10 @@ class FreeplayState extends MusicBeatState
 
 		if (!player.playingMusic)
 		{
-			if(!cheatedSC == 1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%)', [lerpScore, ratingSplit.join('.')]);
+			if(cheatedSC == -1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%)', [lerpScore, ratingSplit.join('.')]);
 
-			if(cheatedSC == 1) scoreText.text = Language.getPhrase('cheated_save', 'PERSONAL BEST: cheated* {1} ({2}%)', [lerpScore, ratingSplit.join('.')]);
+			if(cheatedSC > -1) scoreText.text = Language.getPhrase('cheated_save', 'PERSONAL BEST: cheated* {1} ({2}%)', [lerpScore, ratingSplit.join('.')]);
 
-			//Sys.println(cheatedSC);
 			positionHighscore();
 			
 			if(songs.length > 1)
@@ -493,7 +492,7 @@ class FreeplayState extends MusicBeatState
 
 		curDifficulty = FlxMath.wrap(curDifficulty + change, 0, Difficulty.list.length-1);
 		#if !switch
-		cheatedSC = Highscore.getScoreCheated(songs[curSelected].songName, curDifficulty);
+		cheatedSC = Highscore.getCheatedStatus(songs[curSelected].songName, curDifficulty);
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
 		#end
