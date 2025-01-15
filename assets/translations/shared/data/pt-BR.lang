@@ -4,6 +4,15 @@ Português (Brasil)
 score_text: "Pontos: {1} | Erros: {2} | Avaliação: {3}"
 score_text_instakill: "Pontos: {1} | Avaliação: {2}"
 botplay: "Automático"
+botplay_textforpgktn: "Automático - "
+practice_textforpgktn: "Prática - "
+itsboththem_text: "Prática/Automático - "
+score_text12: "Prática - Pontos: {1} | Erros: {2} | Avaliação: {3}"
+score_text13: "Automático - Pontos: {1} | Erros: {2} | Avaliação: {3}"
+score_text14: "Prática/Automático - Pontos: {1} | Erros: {2} | Avaliação: {3}"
+score_text22: "Prática - Pontos: {1} | Erros: {2} | Avaliação: {3}"
+score_text23: "Automático - Pontos: {1} | Erros: {2} | Avaliação: {3}"
+score_text24: "Prática/Automático - Pontos: {1} | Erros: {2} | Avaliação: {3}"
 
 rating_you_suck: "Que Horrível!"
 rating_shit: "Merda"
@@ -49,6 +58,7 @@ storyname_weekend1: "Dívidas Fora do Prazo"
 
 // Freeplay
 personal_best: "MELHOR PONTUAÇÃO: {1} ({2}%)"
+cheated_save: "MELHOR PONTUAÇÃO: cheated* {1} ({2}%)"
 freeplay_tip: "Aperte SPACE para ouvir a Música / Aperte CTRL para abrir o Menu de Modificadores / Aperte RESET para limpar sua pontuação."
 
 musicplayer_playing: "MÚSICA: {1}"

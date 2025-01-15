@@ -215,6 +215,7 @@ class PlayState extends MusicBeatState
 	public var cameraSpeed:Float = 1;
 
 	public var songScore:Int = 0;
+	public var songCheated:Int = 0;
 	public var songHits:Int = 0;
 	public var songMisses:Int = 0;
 	public var scoreTxt:FlxText;
@@ -1164,8 +1165,24 @@ class PlayState extends MusicBeatState
 		}
 
 		var tempScore:String;
-		if(!instakillOnMiss) tempScore = Language.getPhrase('score_text', 'Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
-		else tempScore = Language.getPhrase('score_text_instakill', 'Score: {1} | Rating: {2}', [songScore, str]);
+		tempScore = Language.getPhrase('score_text', 'Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+
+		if(!instakillOnMiss && !practiceMode && !cpuControlled) tempScore = Language.getPhrase('score_text', 'Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+
+		if(instakillOnMiss && !practiceMode && !cpuControlled) tempScore = Language.getPhrase('score_text_instakill', 'Score: {1} | Rating: {2}', [songScore, str]);
+
+		if(!instakillOnMiss && practiceMode && !cpuControlled) tempScore = Language.getPhrase('score_text12', 'Practice - Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+
+		if(!instakillOnMiss && cpuControlled && !practiceMode) tempScore = Language.getPhrase('score_text13', 'BotPlay - Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+
+		if(!instakillOnMiss && practiceMode && cpuControlled) tempScore = Language.getPhrase('score_text14', 'Practice/BotPlay - Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+
+		if(instakillOnMiss && practiceMode && !cpuControlled) tempScore = Language.getPhrase('score_text22', 'Practice - Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+
+		if(instakillOnMiss && cpuControlled && !practiceMode) tempScore = Language.getPhrase('score_text23', 'BotPlay - Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+
+		if(instakillOnMiss && practiceMode && cpuControlled) tempScore = Language.getPhrase('score_text24', 'Practice/BotPlay - Score: {1} | Misses: {2} | Rating: {3}', [songScore, songMisses, str]);
+
 		scoreTxt.text = tempScore;
 	}
 
@@ -2436,6 +2453,8 @@ class PlayState extends MusicBeatState
 			var percent:Float = ratingPercent;
 			if(Math.isNaN(percent)) percent = 0;
 			Highscore.saveScore(Song.loadedSongName, songScore, storyDifficulty, percent);
+			Highscore.saveScoreCheated(Song.loadedSongName, songCheated, storyDifficulty);
+			Sys.println(songCheated);
 			#end
 			playbackRate = 1;
 
@@ -2465,6 +2484,7 @@ class PlayState extends MusicBeatState
 					if(!ClientPrefs.getGameplaySetting('practice') && !ClientPrefs.getGameplaySetting('botplay')) {
 						StoryMenuState.weekCompleted.set(WeekData.weeksList[storyWeek], true);
 						Highscore.saveWeekScore(WeekData.getWeekFileName(), campaignScore, storyDifficulty);
+						Highscore.saveWeekCheated(WeekData.getWeekFileName(), songCheated, storyDifficulty);
 
 						FlxG.save.data.weekCompleted = StoryMenuState.weekCompleted;
 						FlxG.save.flush();
@@ -2575,7 +2595,27 @@ class PlayState extends MusicBeatState
 		if(daRating.noteSplash && !note.noteSplashData.disabled)
 			spawnNoteSplashOnNote(note);
 
-		songScore += score;
+		if(!practiceMode && !cpuControlled)
+		{
+			songCheated = 0;
+			songScore += score;
+		}
+		if(!practiceMode && cpuControlled)
+		{
+			songCheated = 1;
+			songScore += Std.int(score*0.1);
+		}
+		if(practiceMode && !cpuControlled)
+		{
+			songCheated = 1;
+			songScore += Std.int(score*0.1);
+		}
+		if(practiceMode && cpuControlled)
+		{
+			songCheated = 1;
+			songScore += Std.int(score*0.1);
+		}
+
 		if(!note.ratingDisabled)
 		{
 			songHits++;
@@ -2962,7 +3002,7 @@ class PlayState extends MusicBeatState
 		combo = 0;
 
 		health -= subtract * healthLoss;
-		if(!practiceMode) songScore -= 10;
+		songScore -= 10;
 		if(!endingSong) songMisses++;
 		totalPlayed++;
 		RecalculateRating(true);
