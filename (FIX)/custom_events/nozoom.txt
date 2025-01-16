@@ -1,8 +1,0 @@
-(when using kadezoom event, otherwise turns zooming all off)
-Value1 - 
-If 1, then NO CAM ZOOM
-0 = zooms normally
-
-Value2 - 
-If 1, then NO UI ZOOM
-0 = zooms normally
