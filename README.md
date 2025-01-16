@@ -1,3 +1,9 @@
+# PringleKitten's Modifcations
+Mechanic type ClientPrefs for those who do stuff with dodging and making modcharts! (and more)
+This also features showing you cheated scores!(WIP)
+This is also just an optimized version of Psych Engine, removing a lot of clutter and other things that just were not needed that took up storage.
+
+
 # Friday Night Funkin' - Psych Engine
 Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
 
