@@ -7,54 +7,70 @@ local v1 = false
 local v2 = false
 function onEvent(name, value1, value2)
     if name == "TiltBGTimed" then
-        if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
-        event = "TiltBGTimed"
-        value1 = tonumber(value1) or 0;
-        value2 = tonumber(value2) or 0;
-        if value1 == 00 then
-            doTweenAngle('GUI4tween', 'camGame', 0, value2, 'bounceOut');
-            ran1 = false
-        elseif value2 == 1 then
-            if ran1 then
-                doTweenAngle('GUI5tween', 'camGame', 10, value2, 'bounceOut');
-                ran1 = false
-            else
-                doTweenAngle('GUI5tween', 'camGame', -10, value2, 'bounceOut');
-                ran1 = true
+        if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
+            event = "TiltBGTimed"
+            value1 = tonumber(value1);
+            value2 = tonumber(value2);
+
+            if value2 == nil and value1 ~= 1234 and value1 ~= 1111 then
+                value2 = 0.3
+            elseif value2 == nil then
+                value2 = 0
             end
-        elseif value1 == 2 then
-            if ran1 then
-                doTweenAngle('GUI6tween', 'camGame', 30, value2, 'bounceOut');
-                ran1 = false
-            else
-                doTweenAngle('GUI6tween', 'camGame', -30, value2, 'bounceOut');
-                ran1 = true
+
+            if value2 > 0.011 then
+                if value1 == 00 then
+                    doTweenAngle('BGtween', 'camGame', 0, value2, 'linear');
+                    ran = false
+                elseif value1 == 1 then
+                    if ran then
+                        doTweenAngle('BG1tween', 'camGame', 10, value2, 'linear');
+                        ran = false
+                    else
+                        doTweenAngle('BG1tween', 'camGame', -10, value2, 'linear');
+                        ran = true
+                    end
+                elseif value1 == 2 then
+                    if ran then
+                        doTweenAngle('BG2tween', 'camGame', 30, value2, 'linear');
+                        ran = false
+                    else
+                        doTweenAngle('BG2tween', 'camGame', -30, value2, 'linear');
+                        ran = true
+                    end
+                elseif ran then
+                    doTweenAngle('BG3tween', 'camGame', value1, value2, 'linear');
+                    ran = false
+                else
+                    doTweenAngle('BG3tween', 'camGame', -value1, value2, 'linear');
+                    ran = true
+                end
             end
-        elseif value1 == 1234 then
-            v2 = true
-        elseif value1 == 1111 then
-            v2 = false
-            value1 = 0
-            value2 = 0
-        elseif ran then
-                doTweenAngle('GUI7tween', 'camGame', value1, value2, 'bounceOut');
-                ran1 = false
-            else
-                doTweenAngle('GUI7tween', 'camGame', -value1, value2, 'bounceOut');
-                ran1 = true
+            if value1 == 1234 then
+                v1 = true
+            elseif value1 == 1111 then
+                v1 = false
+                if value2 < 0.011 then
+                    setProperty('camGame.angle', 0);
+                else
+                    doTweenAngle("BG9tween", "camGame", 0, value2, "quadInOut")
+                end
+            elseif value2 < 0.011 and ran then
+                setProperty('camGame.angle',value1)
+                ran = false
+            elseif value2 < 0.011 and not ran then
+                setProperty('camGame.angle',-value1)
+                ran = true
+            end
         end
     end
-end
 end
 
 function onBeatHit()
-    if getPropertyFromClass('ClientPrefs', 'assetMovement') == true then
-        if v2 then
-            thing = thing * -1
-            doTweenAngle('rotate', 'camHUD', thing * 5, crochet / 1000, 'quadInOut')
+    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
+        if v1 then
+            thing2 = thing2 * -1
+            doTweenAngle('rotate', 'camGame', thing2 * 5, crochet / 1000, 'quadInOut')
         end
     end
 end
-
-
-

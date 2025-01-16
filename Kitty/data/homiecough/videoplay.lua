@@ -1,14 +1,14 @@
 local offset = 0
 function onSongStart()
-    offset = getPropertyFromClass('ClientPrefs','noteOffset')
+    offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
     setProperty('showComboNum', false)
     setProperty('showRating', false)
     runTimer('vid',offset/1000)
-    debugPrint('Current Offset: ','(',offset,')')
+    
 end
 
 function onTimerCompleted(tag)
     if tag == 'vid' then
-        callScript('scripts/videoSprite', 'makeVideoSprite', {'homie', 'hc', 382, -11.2, 'camGame', 1.111, 1.1105})
+        callScript('scripts/videoSprite', 'makeVideoSprite', {'homie', 'hc','camGame',1})
     end
 end

@@ -1,6 +1,6 @@
-(when using kadezoom event, otherwise turns zooming all off)
+On my engine this works
 Value1 - 
-If 1, then NO CAM ZOOM
+If 1, then NO Background ZOOM
 0 = zooms normally
 
 Value2 - 

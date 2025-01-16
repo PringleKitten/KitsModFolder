@@ -1,49 +1,26 @@
-function onCreate()
-    addHaxeLibrary('MP4Handler', 'vlc')
-    addHaxeLibrary('Event', 'openfl.events')
+function makeVideoSprite(tag, videoPath,camera,zoom)
+    amieven = getProperty('camZooming')
+    startVideo(videoPath)
+    setObjectCamera('videoCutscene',camera)
+    screenCenter(videoPath)
+    setProperty('canPause', true)
+    setProperty('inCutscene', false)
+    setProperty("camZooming", true)
+    setProperty('camGame.zoom',zoom)
+    setProperty('defaultCamZoom',zoom)
+    setProperty("camZooming", amieven)
 end
-local videoSprites = {}
-function makeVideoSprite(tag, videoPath, x, y, camera, aa, bb)
-    makeLuaSprite(tag, '', x, y)
-    setObjectCamera(tag, camera)
-    addLuaSprite(tag, false)
-    scaleObject(tag, aa, bb)
-    runHaxeCode([[
-        ]]..tag..[[= new MP4Handler();
-        ]]..tag..[[.playVideo(Paths.video("]]..videoPath..[["));
-        ]]..tag..[[.visible = false; 
-        FlxG.stage.removeEventListener("enterFrame", ]]..tag..[[.update);
-        ]]..tag..[[.finishCallback = function()
-            { 
-                game.getLuaObject("]]..tag..[[").visible = false; 
-            }
 
-    ]])
-    table.insert(videoSprites, tag)
-    --debugPrint('bro the video has been started!')
-end
-function onUpdatePost()
-    for _, __ in pairs(videoSprites) do
-        runHaxeCode([[
-            if (game.getLuaObject("]]..__..[[") != null)
-            {
-            game.getLuaObject("]]..__..[[").loadGraphic(]]..__..[[.bitmapData);
-            ]]..__..[[.volume = 0;
-            }
-        ]])
-    end
+function onDestroy()
+    setProperty('inCutscene', false);
+    callMethod('remove', {instanceArg('videoCutscene'), true})
+    removeLuaSprite("videoCutscene")
+    setProperty('canPause', true)
 end
 function onPause()
-    for _, __ in pairs(videoSprites) do
-        runHaxeCode([[
-            ]]..__..[[.pause();
-        ]])
-    end
+    callMethod('videoCutscene.pause')
 end
+
 function onResume()
-    for _, __ in pairs(videoSprites) do
-        runHaxeCode([[
-            ]]..__..[[.resume();
-        ]])
-    end
+    callMethod('videoCutscene.resume')
 end

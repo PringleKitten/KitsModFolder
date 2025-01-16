@@ -1,11 +1,15 @@
+function onCreate()
+    dX = getProperty('healthBar.x')
+    dY = getProperty('healthBar.y')
+end
+
 function onEvent(name, value1, value2)
     if name == 'healthBarMove' then
-        dX = getProperty('healthBar.x')
-        dY = getProperty('healthBar.y')
         if value1 == 'left' then
             value1 = screenWidth/-5
         elseif value1 == 'center' then
             value1 = dX
+            value2 = dY
         elseif value1 == 'right' then
             value1 = screenWidth/1.38
         end

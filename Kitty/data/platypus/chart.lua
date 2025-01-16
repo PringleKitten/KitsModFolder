@@ -23,7 +23,7 @@ function shaderTween(shader,var,value,time,easing)
 end
 function onSongStart()
     for i = 0,7 do 
-        x = getPropertyFromGroup('strumLineNotes', i, 'x')
+        x = getPropertyFromGroup('strumLineNotes', i, 'x')-323
  
         y = getPropertyFromGroup('strumLineNotes', i, 'y')
  

@@ -1,8 +1,17 @@
+local r1t = true
 function onEvent(name, value1, value2)
     if name == 'movePLAYERStrumline (X)' then
         value1 = tonumber(value1)
         value2 = tonumber(value2)
-
+        if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
+            if r1t then
+                if getPropertyFromClass("ClientPrefs", "downScroll") == true or getPropertyFromClass("ClientPrefs", "middleScroll") == true then
+                    debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+                    debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+                    debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+                    r1t = false
+                end
+            end
             pX1 = getPropertyFromGroup('playerStrums', 0, 'x')
             pX2 = getPropertyFromGroup('playerStrums', 1, 'x')
             pX3 = getPropertyFromGroup('playerStrums', 2, 'x')
@@ -13,6 +22,6 @@ function onEvent(name, value1, value2)
                 noteTweenX("pX2",6,pX3+value1,value2,"quartInOut");
                 noteTweenX("pX3",7,pX4+value1,value2,"quartInOut");
             end
-
+        end
     end
 end

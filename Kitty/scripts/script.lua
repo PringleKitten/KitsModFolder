@@ -1,30 +1,31 @@
-local kadezoom = false
+-- Script setup --
 local stopui = false
 local stopcam = false
-local czm = 1
-local czmu = 1
-local czmc = 1
-function onCreate()
-    precacheImage('me/popup/bars')
+local mdsc = false
+local ls = false
+
+function capps(capsst)
+    captions = capsst
+end
+
+function offnewch(ossf)
+    changeOffset = ossf
+end
+
+
+function onCreatePost()
+    setProperty('camZoomingMult',1)
+    callScript("scripts/makeCaption", "invt", {ls})
+    callScript("scripts/makeCaption", "middcs", {mdsc})
+    callScript("scripts/makeCaptionbystep", "invt", {ls})
+    callScript("scripts/makeCaptionbystep", "middcs", {mdsc})
     setProperty('skipArrowStartTween', true)
-    makeLuaText('st', 'l', '800', 400,450)
-    addLuaText('st')
-    setTextSize('st', 50)
-    setTextAlignment('st', 'center')
-    setProperty('st.x', (screenWidth/2)-(getProperty('st.width')/2))
-    setObjectCamera('st', 'other')
-    setProperty('st.alpha', 0)
-    makeLuaSprite('bars', 'me/popup/bars', 0,0)
-    setObjectCamera('bars', 'hud')
-    addLuaSprite('bars')
-    setProperty('bars.scale.x', 2)
-    setProperty('bars.scale.y', 2)
-    setProperty('bars.alpha', 0)
-    setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
-    setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
+    setProperty('healthBar.numDivisions', 10000)
 end
 
 function onSongStart()
+    ls = false
+    offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')-changeOffset
     dpsx0 = getPropertyFromGroup('playerStrums', 0, 'x')
     dpsx1 = getPropertyFromGroup('playerStrums', 1, 'x')
     dpsx2 = getPropertyFromGroup('playerStrums', 2, 'x')
@@ -41,208 +42,131 @@ function onSongStart()
     dosy1 = getPropertyFromGroup('opponentStrums', 1, 'y')
     dosy2 = getPropertyFromGroup('opponentStrums', 2, 'y')
     dosy3 = getPropertyFromGroup('opponentStrums', 3, 'y')
-    setProperty('bars.alpha', 1);
-    doTweenY('ba', 'bars.scale', 1.1, 1, 'quadInOut')
-    setObjectCamera('bars', 'other')
-    setObjectCamera('bars', 'hud')
-    screenCenter('bars')
-    setProperty('bars.alpha', 0)
-    doTweenY('ba', 'bars.scale', 3, 0.1, 'quadInOut')
-    doTweenZoom('camz','camHUD',1,0.01,'sineInOut')
-    setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
-    setPropertyFromClass("openfl.Lib", "application.window.title", songName)
-    dcuiz = getProperty('defaultCamUIZoom')
-    dcgz = getProperty('defaultCamZoom')
-    czm = getProperty('camZoomingMult')
-end
-
-function goodNoteHit()
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
-        if getProperty('ratingPercent') < 0.9 and getProperty('ratingPercent') > 0.85 then
-            setProperty('health', getProperty('health') + 0.01)
-        elseif getProperty('ratingPercent') < 0.85 and getProperty('ratingPercent') > 0.8 then
-            setProperty('health', getProperty('health') + 0.02)
-        elseif getProperty('ratingPercent') < 0.8 and getProperty('ratingPercent') > 0.75 then
-            setProperty('health', getProperty('health') + 0.03)
-        elseif getProperty('ratingPercent') < 0.7 and getProperty('ratingPercent') > 0.65 then
-            setProperty('health', getProperty('health') + 0.04)
-        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0 then
-            setProperty('health', getProperty('health') + 0.05)
-        end
-    end
-end
-
-function noteMiss()
-    if getPropertyFromClass('ClientPrefs', 'ratingPenalty') == true then
-        if getProperty('ratingPercent') < 0.86 and getProperty('ratingPercent') > 0.8 then
-            setProperty('health', getProperty('health') - 0.1)
-        elseif getProperty('ratingPercent') < 0.78 and getProperty('ratingPercent') > 0.7 then
-            setProperty('health', getProperty('health') - 0.12)
-        elseif getProperty('ratingPercent') < 0.67 and getProperty('ratingPercent') > 0.63 then
-            setProperty('health', getProperty('health') - 0.16)
-        elseif getProperty('ratingPercent') < 0.6 and getProperty('ratingPercent') > 0.55 then
-            setProperty('health', getProperty('health') - 0.2)
-        elseif getProperty('ratingPercent') < 0.53 and getProperty('ratingPercent') > 0 then
-            setProperty('health', getProperty('health') - 0.23)
-        end
-    end
+    makeLuaText("drawfps", drawf, 0, 0.0, 0.0)
+    setTextSize("drawfps", 20)
+    setObjectCamera("drawfps", 'other')
+    addLuaText("drawfps")
+    debugPrint('- - -')
+    debugPrint('Song Offset to Mains: '..'('..changeOffset..')')
+    debugPrint('Main Offset: '..'('..offset..')')
+    debugPrint('- - -')
+    debugPrint(' | ')
+    debugPrint(' | ')
 end
 
 function onEvent(name, value1, value2)
-    if name == 'newArrowToggler' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 3 then
-            mdsc = true
-        elseif value1 == 2 then
-            mdsc = false
-            ls = true
+    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
+        if name == 'newArrowToggler' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 3 or value1 == 33 then
+                mdsc = true
+            elseif value1 == 2 and not ls then
+                mdsc = false
+                ls = true
+            elseif value1 == 2 and ls then
+                ls = false
+                mdsc = false
+            end
+            callScript("scripts/makeCaption", "invt", {ls})
+            callScript("scripts/makeCaption", "middcs", {mdsc})
+            callScript("scripts/makeCaptionbystep", "invt", {ls})
+            callScript("scripts/makeCaptionbystep", "middcs", {mdsc})
         end
-    end
-    if name == 'movePLAYERStrumline (X)' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 0 and mdsc then
-            noteTweenX("pX",4,dpsx0-323,value2,"cubeInOut");
-            noteTweenX("pX1",5,dpsx1-323,value2,"cubeInOut");
-            noteTweenX("pX2",6,dpsx2-323,value2,"cubeInOut");
-            noteTweenX("pX3",7,dpsx3-323,value2,"cubeInOut");
-        elseif value1 == 0 and not mdsc then
-            noteTweenX("pX",4,dpsx0,value2,"cubeInOut");
-            noteTweenX("pX1",5,dpsx1,value2,"cubeInOut");
-            noteTweenX("pX2",6,dpsx2,value2,"cubeInOut");
-            noteTweenX("pX3",7,dpsx3,value2,"cubeInOut");
-        elseif value1 == 0 and ls then
-            noteTweenX("pX",4,defaultOpponentStrumX0,value2,"cubeInOut");
-            noteTweenX("pX1",5,defaultOpponentStrumX1,value2,"cubeInOut");
-            noteTweenX("pX2",6,defaultOpponentStrumX2,value2,"cubeInOut");
-            noteTweenX("pX3",7,defaultOpponentStrumX3,value2,"cubeInOut");
+        if name == 'movePLAYERStrumline (X)' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 0 and mdsc then
+                noteTweenX("pX",4,dpsx0-323,value2,"cubeInOut");
+                noteTweenX("pX1",5,dpsx1-323,value2,"cubeInOut");
+                noteTweenX("pX2",6,dpsx2-323,value2,"cubeInOut");
+                noteTweenX("pX3",7,dpsx3-323,value2,"cubeInOut");
+            elseif value1 == 0 and not mdsc then
+                noteTweenX("pX",4,dpsx0,value2,"cubeInOut");
+                noteTweenX("pX1",5,dpsx1,value2,"cubeInOut");
+                noteTweenX("pX2",6,dpsx2,value2,"cubeInOut");
+                noteTweenX("pX3",7,dpsx3,value2,"cubeInOut");
+            elseif value1 == 0 and ls then
+                noteTweenX("pX",4,defaultOpponentStrumX0,value2,"cubeInOut");
+                noteTweenX("pX1",5,defaultOpponentStrumX1,value2,"cubeInOut");
+                noteTweenX("pX2",6,defaultOpponentStrumX2,value2,"cubeInOut");
+                noteTweenX("pX3",7,defaultOpponentStrumX3,value2,"cubeInOut");
+            end
         end
-    end
-    if name == 'movePLAYERStrumline (Y)' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 0 then
-            noteTweenY("pY",4,dpsy0,value2,"cubeInOut");
-            noteTweenY("pY1",5,dpsy1,value2,"cubeInOut");
-            noteTweenY("pY2",6,dpsy2,value2,"cubeInOut");
-            noteTweenY("pY3",7,dpsy3,value2,"cubeInOut");
+        if name == 'movePLAYERStrumline (Y)' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 0 then
+                noteTweenY("pY",4,dpsy0,value2,"cubeInOut");
+                noteTweenY("pY1",5,dpsy1,value2,"cubeInOut");
+                noteTweenY("pY2",6,dpsy2,value2,"cubeInOut");
+                noteTweenY("pY3",7,dpsy3,value2,"cubeInOut");
+            end
         end
-    end
-    if name == 'moveOPPONENTStrumline (Y)' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 0 then
-            noteTweenY("oY",4,dosy0,value2,"cubeInOut");
-            noteTweenY("oY1",5,dosy1,value2,"cubeInOut");
-            noteTweenY("oY2",6,dosy2,value2,"cubeInOut");
-            noteTweenY("oY3",7,dosy3,value2,"cubeInOut");
+        if name == 'moveOPPONENTStrumline (Y)' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 0 then
+                noteTweenY("oY",4,dosy0,value2,"cubeInOut");
+                noteTweenY("oY1",5,dosy1,value2,"cubeInOut");
+                noteTweenY("oY2",6,dosy2,value2,"cubeInOut");
+                noteTweenY("oY3",7,dosy3,value2,"cubeInOut");
+            end
         end
-    end
-    if name == 'moveOPPONENTStrumline (X)' then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 0 and mdsc then
-            noteTweenX("oX",0,dosx0+75,value2,"cubeInOut");
-            noteTweenX("oX1",1,dosx1+75,value2,"cubeInOut");
-            noteTweenX("oX2",2,dpsx2-79,value2,"cubeInOut");
-            noteTweenX("oX3",3,dpsx3-79,value2,"cubeInOut");
-        elseif value1 == 0 and not mdsc then
-            noteTweenX("oX",0,dosx0,value2,"cubeInOut");
-            noteTweenX("oX1",1,dosx1,value2,"cubeInOut");
-            noteTweenX("oX2",2,dosx2,value2,"cubeInOut");
-            noteTweenX("oX3",3,dosx3,value2,"cubeInOut");
-        elseif value1 == 0 and ls then
-            noteTweenX("oX",0,defaultPlayerStrumX0,value2,"cubeInOut");
-            noteTweenX("oX1",1,defaultPlayerStrumX1,value2,"cubeInOut");
-            noteTweenX("oX2",2,defaultPlayerStrumX2,value2,"cubeInOut");
-            noteTweenX("oX3",3,defaultPlayerStrumX3,value2,"cubeInOut");
+        if name == 'moveOPPONENTStrumline (X)' then
+            value1 = tonumber(value1)
+            value2 = tonumber(value2)
+            if value1 == 0 and mdsc then
+                noteTweenX("oX",0,dosx0+75,value2,"cubeInOut");
+                noteTweenX("oX1",1,dosx1+75,value2,"cubeInOut");
+                noteTweenX("oX2",2,dosx2-79,value2,"cubeInOut");
+                noteTweenX("oX3",3,dosx3-79,value2,"cubeInOut");
+            elseif value1 == 0 and not mdsc then
+                noteTweenX("oX",0,dosx0,value2,"cubeInOut");
+                noteTweenX("oX1",1,dosx1,value2,"cubeInOut");
+                noteTweenX("oX2",2,dosx2,value2,"cubeInOut");
+                noteTweenX("oX3",3,dosx3,value2,"cubeInOut");
+            elseif value1 == 0 and ls then
+                noteTweenX("oX",0,defaultPlayerStrumX0,value2,"cubeInOut");
+                noteTweenX("oX1",1,defaultPlayerStrumX1,value2,"cubeInOut");
+                noteTweenX("oX2",2,defaultPlayerStrumX2,value2,"cubeInOut");
+                noteTweenX("oX3",3,defaultPlayerStrumX3,value2,"cubeInOut");
+            end
         end
     end
     if name == "hudzoom" then 
         value1 = tonumber(value1)
-        value2 = tonumber(value2)       
-        if value2 == '' then
-			doTweenZoom('camzz','camHUD',tonumber(value1),0.01,'sineInOut')
+        value2 = tonumber(value2) 
+        if value2 == '' or value2 < 0.02 then
+            setProperty('camHUD.zoom',value1)
+			setProperty('defaultCamUIZoom',value1)
 	    else
-            doTweenZoom('camzz','camHUD',tonumber(value1),tonumber(value2),'sineInOut')
+            doTweenZoom('camzz','camHUD',value1,value2,'sineInOut')
+            setProperty('camZoomsHud', false)
+            buerbfgeriugberbge = true
 	    end
-    end
-    if name == "kadezoomtoggle" then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 1 then
-            czm = 0
-            kadezoom = true
-        else
-            kadezoom = false
-            czm = 1
-        end
-        setProperty('camZoomingMult', czm)
-    end
-    if name == "nozoom" then
-        value1 = tonumber(value1)
-        value2 = tonumber(value2)
-        if value1 == 1 then
-            stopcam = true
-            czmc = 0
-            --setPropertyFromClass('ClientPrefs', 'bgZoomSections', false)--WHY ARENT THESE WORKING?!!?
-            --debugPrint('czm = 0 due to event')
-        elseif value1 == 0 then
-            stopcam = false
-            czmc = 1
-            --setPropertyFromClass('ClientPrefs', 'bgZoomSections', true)--WHY ARENT THESE WORKING?!!?
-        end
-        if value2 == 1 then
-            stopui = true
-            czmu = 0
-            --setPropertyFromClass('ClientPrefs', 'hudZoomSections', false) --WHY ARENT THESE WORKING?!!?
-        elseif value2 == 0 then
-            stopui = false
-            czmu = 1
-            --setPropertyFromClass('ClientPrefs', 'hudZoomSections', true) --WHY ARENT THESE WORKING?!!?
-        end
+
     end
 end
 
 function onUpdate(elapsed)
+    drawf = getPropertyFromClass("Main", "fpsVar.text")
+    setTextString("drawfps", drawf)
     el = elapsed
-    --debugPrint('onupdate','|',dcuiz)
-    if kadezoom == true then
-        if stopui == false then
-            doTweenZoom('tweeningZoom', 'camHUD', czmu, 0.15, 'quadOut')
-        end
-        if stopcam == false then
-            doTweenZoom('tweeningZoomin', 'camGame', dcgz, 0.15, 'quadOut')
-        end
-    end
-end
-
-function onSectionHit()
-    if kadezoom == true then
-        if stopui == false then
-            doTweenZoom('tweeningZoom', 'camHUD', czmu+0.08, 0.06, 'quadOut')
-        end
-        if stopcam == false then
-            doTweenZoom('tweeningZoomin', 'camGame', czmc+0.08, 0.06, 'quadOut')
-        end
+    if buerbfgeriugberbge then
+        setProperty("defaultCamUIZoom",getProperty('camHUD.zoom'))
     end
 end
 
 function onTweenCompleted(name)
     if name == 'camzz' then
-        setProperty("defaultCamUIZoom",getProperty('camHUD.zoom')) 
+        setProperty("defaultCamUIZoom",getProperty('camHUD.zoom'))
+        buerbfgeriugberbge = false
     end
-end
-
-function onDestroy()
-    setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
 end
 
 --This below makes the Health Bar move Smoothly
-    function onCreatePost()
-        setProperty('healthBar.numDivisions', 10000)
-    end
+
     local flip = false
     local percent = 50
     function onUpdatePost(e)

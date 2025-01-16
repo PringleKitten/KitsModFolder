@@ -1,2 +1,0 @@
-v1: ADD bg zoom amount from current
-v2: time

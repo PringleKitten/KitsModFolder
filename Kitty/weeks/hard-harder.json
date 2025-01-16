@@ -18,7 +18,7 @@
 	],
 	"songs": [
 		[
-			"TLTstone FNaF1",
+			"alan becker (rush e)",
 			"bf",
 			[
 				125,
@@ -27,7 +27,7 @@
 			]
 		],
 		[
-			"mm-alone",
+			"marshmallow (alone)",
 			"bf",
 			[
 				125,
@@ -36,8 +36,17 @@
 			]
 		],
 		[
-			"ab-rushe",
+			"the living tombstone (FNaF1)",
 			"bf",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"timber",
+			"dad",
 			[
 				125,
 				0,

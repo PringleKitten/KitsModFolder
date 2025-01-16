@@ -1,3 +1,4 @@
+local run1time = true
 local ran = false
 local ran1 = false
 local xx1 = false
@@ -6,11 +7,54 @@ local xx3 = false
 local camzoomN = false
 local camzoomS = false
 local camzoomB = false
+function onSongStart()
+    defaultOpponentStrumX0 = defaultOpponentStrumX0
+    defaultOpponentStrumX1 = defaultOpponentStrumX1
+    defaultOpponentStrumX2 = defaultOpponentStrumX2
+    defaultOpponentStrumX3 = defaultOpponentStrumX3
+    defaultPlayerStrumX0 = defaultPlayerStrumX0
+    defaultPlayerStrumX1 = defaultPlayerStrumX1
+    defaultPlayerStrumX2 = defaultPlayerStrumX2
+    defaultPlayerStrumX3  = defaultPlayerStrumX3 
+    defaultOpponentStrumY0 = defaultOpponentStrumY0
+    defaultOpponentStrumY1 = defaultOpponentStrumY1
+    defaultOpponentStrumY2 = defaultOpponentStrumY2
+    defaultOpponentStrumY3 = defaultOpponentStrumY3
+    defaultPlayerStrumY0 = defaultPlayerStrumY0
+    defaultPlayerStrumY1 = defaultPlayerStrumY1
+    defaultPlayerStrumY2 = defaultPlayerStrumY2
+    defaultPlayerStrumY3 = defaultPlayerStrumY3
+ 
+    dosx0 = defaultOpponentStrumX0
+    dosx1 = defaultOpponentStrumX1
+    dosx2 = defaultOpponentStrumX2
+    dosx3 = defaultOpponentStrumX3
+    dpsx0 = defaultPlayerStrumX0
+    dpsx1 = defaultPlayerStrumX1
+    dpsx2 = defaultPlayerStrumX2
+    dpsx3 = defaultPlayerStrumX3 
+    dosy0 = defaultOpponentStrumY0
+    dosy1 = defaultOpponentStrumY1
+    dosy2 = defaultOpponentStrumY2
+    dosy3 = defaultOpponentStrumY3
+    dpsy0 = defaultPlayerStrumY0
+    dpsy1 = defaultPlayerStrumY1
+    dpsy2 = defaultPlayerStrumY2
+    dpsy3 = defaultPlayerStrumY3
+end
 function onEvent(name, value1, value2)
     value1 = tonumber(value1);
     value2 = tonumber(value2);
-   if name == "ArrowToggling" then
-
+    if name == "ArrowToggling" then
+        if run1time == true then
+            if getPropertyFromClass("ClientPrefs", "downScroll") == true or getPropertyFromClass("ClientPrefs", "middleScroll") == true then
+                debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+                debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+                debugPrint('Hey bro, turn off downscroll or middlescroll in ClientPrefs so you dont have visual bugs!')
+            end
+        end
+        run1time = false
+        if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
            --Change downscroll/upscroll
            if value1 == 1 then
                if ran then
@@ -204,7 +248,7 @@ function onEvent(name, value1, value2)
                ls = false
                mdsc = true
          end
-
+      end
    end
    if value2 == 90 then
        lk = true

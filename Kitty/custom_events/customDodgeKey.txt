@@ -1,0 +1,5 @@
+Value 1 is key that must be HELD
+this MUST be in ALL CAPS
+^ you can change action in the event script
+
+Value 2 is time you have to dodge

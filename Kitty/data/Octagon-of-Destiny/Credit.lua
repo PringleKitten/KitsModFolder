@@ -142,7 +142,6 @@ function onTimerCompleted(tag)
 			removeLuaSprite('creditsGraphic'..string.char(64+i)..'b')
 			removeLuaText('creditsText'..string.char(64+i)..'a')
 			removeLuaText('creditsText'..string.char(64+i)..'b')
-			removeLuaScript(scriptName)
 		end
 	end
 end
