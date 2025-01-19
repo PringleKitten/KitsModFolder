@@ -600,18 +600,23 @@ class FunkinLua {
 
 		//Tween shit, but for strums
 		Lua_helper.add_callback(lua, "noteTweenX", function(tag:String, note:Int, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/game.playbackRate;
 			return noteTweenFunction(tag, note, {x: value}, duration, ease);
 		});
 		Lua_helper.add_callback(lua, "noteTweenY", function(tag:String, note:Int, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/game.playbackRate;
 			return noteTweenFunction(tag, note, {y: value}, duration, ease);
 		});
 		Lua_helper.add_callback(lua, "noteTweenAngle", function(tag:String, note:Int, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/game.playbackRate;
 			return noteTweenFunction(tag, note, {angle: value}, duration, ease);
 		});
 		Lua_helper.add_callback(lua, "noteTweenAlpha", function(tag:String, note:Int, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/game.playbackRate;
 			return noteTweenFunction(tag, note, {alpha: value}, duration, ease);
 		});
 		Lua_helper.add_callback(lua, "noteTweenDirection", function(tag:String, note:Int, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/game.playbackRate;
 			return noteTweenFunction(tag, note, {direction: value}, duration, ease);
 		});
 		Lua_helper.add_callback(lua, "mouseClicked", function(?button:String = 'left') {
@@ -656,6 +661,7 @@ class FunkinLua {
 			
 			var originalTag:String = tag;
 			tag = LuaUtils.formatVariable('timer_$tag');
+			time = time/game.playbackRate;
 			variables.set(tag, new FlxTimer().start(time, function(tmr:FlxTimer)
 			{
 				if(tmr.finished) variables.remove(tag);
