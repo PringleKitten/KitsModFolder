@@ -21,7 +21,7 @@ class CreditsState extends MusicBeatState
 	{
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
+		DiscordClient.changePresence("Looking through the Credits...", null);
 		#end
 
 		persistentUpdate = true;

@@ -34,6 +34,8 @@ class FreeplayState extends MusicBeatState
 	var lerpRating:Float = 0;
 	var intendedScore:Int = 0;
 	var intendedRating:Float = 0;
+	var recentScore:Int = 0;
+	var recentRating:Float = 0;
 	var cheatedSC:Int = -1;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
@@ -143,11 +145,11 @@ class FreeplayState extends MusicBeatState
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 
-		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
+		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 100, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
-		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
+		diffText = new FlxText(scoreText.x, scoreText.y + 64, 0, "", 24);
 		diffText.font = scoreText.font;
 		add(diffText);
 
@@ -239,14 +241,21 @@ class FreeplayState extends MusicBeatState
 		while(ratingSplit[1].length < 2) //Less than 2 decimals in it, add decimals then
 			ratingSplit[1] += '0';
 
+		var rratingSplit:Array<String> = Std.string(CoolUtil.floorDecimal(recentRating * 100, 2)).split('.');
+		if(rratingSplit.length < 2) //No decimals, add an empty space
+			rratingSplit.push('');
+		
+		while(rratingSplit[1].length < 2) //Less than 2 decimals in it, add decimals then
+			rratingSplit[1] += '0';
+
 		var shiftMult:Int = 1;
 		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
 
 		if (!player.playingMusic)
 		{
-			if(cheatedSC == -1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%)', [lerpScore, ratingSplit.join('.')]);
+			if(cheatedSC == -1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%)\nLast Play: {3} ({4}%)', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.')]);
 
-			if(cheatedSC > -1) scoreText.text = Language.getPhrase('cheated_save', 'PERSONAL BEST: cheated* {1} ({2}%)', [lerpScore, ratingSplit.join('.')]);
+			if(cheatedSC > -1) scoreText.text = Language.getPhrase('cheated_save', 'PERSONAL BEST: cheated* {1} ({2}%)\nLast Play: cheated* {3} ({4}%)', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.')]);
 
 			positionHighscore();
 			
@@ -494,6 +503,8 @@ class FreeplayState extends MusicBeatState
 		#if !switch
 		cheatedSC = Highscore.getCheatedStatus(songs[curSelected].songName, curDifficulty);
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		recentScore = Highscore.getRScore(songs[curSelected].songName, curDifficulty);
+		recentRating = Highscore.getRRating(songs[curSelected].songName, curDifficulty);
 		intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
 		#end
 
