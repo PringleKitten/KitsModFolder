@@ -4,6 +4,7 @@ import flixel.FlxG;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.system.System;
+import openfl.Lib;
 
 /**
 	The FPS class provides an easy-to-use monitor to display
@@ -33,7 +34,7 @@ class FPSCounter extends TextField
 		currentFPS = 0;
 		selectable = false;
 		mouseEnabled = false;
-		defaultTextFormat = new TextFormat("_sans", 14, color);
+		defaultTextFormat = new TextFormat("_sans", 20, color);
 		autoSize = LEFT;
 		multiline = true;
 		text = "FPS: ";
@@ -60,14 +61,18 @@ class FPSCounter extends TextField
 		deltaTimeout = 0.0;
 	}
 
-	public dynamic function updateText():Void { // so people can override it in hscript
-		text = 'FPS: ${currentFPS}'
-		+ '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(memoryMegas)}';
+ public dynamic function updateText():Void { // so people can override it in hscript
+     text = 'FPS: ${currentFPS}'
+     + '\nRAM: ${flixel.util.FlxStringUtil.formatBytes(cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_RESERVED))}';
 
-		textColor = 0xFFFFFFFF;
-		if (currentFPS < FlxG.drawFramerate * 0.5)
-			textColor = 0xFFFF0000;
-	}
+     if (ClientPrefs.data.cacheOnGPU) {
+         text += '\nGPU Cache: ${flixel.util.FlxStringUtil.formatBytes(openfl.Lib.current.stage.context3D.totalGPUMemory)}';
+     }
+     textColor = 0xFFFFFFFF;
+     if (currentFPS < FlxG.drawFramerate * 0.5)
+         textColor = 0xFFFF0000;
+ }
+
 
 	inline function get_memoryMegas():Float
 		return cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE);
