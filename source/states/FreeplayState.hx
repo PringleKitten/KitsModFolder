@@ -37,6 +37,9 @@ class FreeplayState extends MusicBeatState
 	var recentScore:Int = 0;
 	var recentRating:Float = 0;
 	var cheatedSC:Int = -1;
+	var rcheaT:Int = -1;
+	var rate:Float = 1;
+	var rrate:Float = 1;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -253,9 +256,14 @@ class FreeplayState extends MusicBeatState
 
 		if (!player.playingMusic)
 		{
-			if(cheatedSC == -1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%)\nLast Play: {3} ({4}%)', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.')]);
+			
+			if(cheatedSC == -1 && rcheaT == -1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%) {5}x\nLast Play: {3} ({4}%) {6}x', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.'), rate, rrate]);
+			
+			if(cheatedSC > -1 && rcheaT == -1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: cheated* {1} ({2}%) {5}x\nLast Play: {3} ({4}%) {6}x', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.'), rate, rrate]);
 
-			if(cheatedSC > -1) scoreText.text = Language.getPhrase('cheated_save', 'PERSONAL BEST: cheated* {1} ({2}%)\nLast Play: cheated* {3} ({4}%)', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.')]);
+			if(cheatedSC == -1 && rcheaT > -1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%) {5}x\nLast Play: cheated* {3} ({4}%) {6}x', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.'), rate, rrate]);
+
+			if(cheatedSC > -1 && rcheaT > -1) scoreText.text = Language.getPhrase('cheated_save', 'PERSONAL BEST: cheated* {1} ({2}%) {5}x\nLast Play: cheated* {3} ({4}%) {6}x', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.'), rate, rrate]);
 
 			positionHighscore();
 			
@@ -502,9 +510,12 @@ class FreeplayState extends MusicBeatState
 		curDifficulty = FlxMath.wrap(curDifficulty + change, 0, Difficulty.list.length-1);
 		#if !switch
 		cheatedSC = Highscore.getCheatedStatus(songs[curSelected].songName, curDifficulty);
+		rcheaT = Highscore.getRCheatedStatus(songs[curSelected].songName, curDifficulty);
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		recentScore = Highscore.getRScore(songs[curSelected].songName, curDifficulty);
 		recentRating = Highscore.getRRating(songs[curSelected].songName, curDifficulty);
+		rate = Highscore.getRate(songs[curSelected].songName, curDifficulty);
+		rrate = Highscore.getRRate(songs[curSelected].songName, curDifficulty);
 		intendedRating = Highscore.getRating(songs[curSelected].songName, curDifficulty);
 		#end
 

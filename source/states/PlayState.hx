@@ -1307,6 +1307,7 @@ class PlayState extends MusicBeatState
 			songCheated = 1;
 			cheatMult = 0.1;
 		}
+		cheatMult = Math.abs(((0.25*(playbackRate-1))+1)*cheatMult);
 
 		stagesFunc(function(stage:BaseStage) stage.startSong());
 
@@ -2478,7 +2479,7 @@ class PlayState extends MusicBeatState
 			#if !switch
 			var percent:Float = ratingPercent;
 			if(Math.isNaN(percent)) percent = 0;
-			Highscore.saveScore(Song.loadedSongName, songCheated, songScore, storyDifficulty, percent, songScore, percent);
+			Highscore.saveScore(Song.loadedSongName, songCheated, songScore, storyDifficulty, percent, songScore, percent, playbackRate, playbackRate, songCheated);
 			#end
 			playbackRate = 1;
 
