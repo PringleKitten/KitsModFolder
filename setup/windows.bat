@@ -5,10 +5,6 @@ cd ..
 echo Installing dependencies...
 echo This might take a few moments depending on your internet speed.
 haxelib setup
-git config --global  --add safe.directory E:/folders/FNF/0/KitsModFolder/.haxelib/flxanimate/git
-git config --global --add safe.directory E:/folders/FNF/0/KitsModFolder/.haxelib/linc_luajit/git
-git config --global --add safe.directory "E:/folders/FNF/0/KitsModFolder/.haxelib/funkin,vis/git"
-git config --global --add safe.directory "E:/folders/FNF/0/KitsModFolder/.haxelib/grig,audio/git"
 haxelib install lime 8.1.2
 haxelib install openfl 9.3.3
 haxelib install flixel 5.6.1
