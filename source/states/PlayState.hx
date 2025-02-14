@@ -1,7 +1,5 @@
 package states;
 
-import openfl.Lib;
-
 import backend.Highscore;
 import backend.StageData;
 import backend.WeekData;

@@ -94,8 +94,8 @@
 	<section if="MODS_ALLOWED">
 		<assets path='example_mods' rename='mods' embed='false' type='template' unless="mac"/>
 		<assets path='example_mods' rename='mods' embed='false' if="mac"/>
+		<assets path='list.txt' rename='modsList.txt' />
 	</section>
-	<assets path='list.txt' rename='modsList.txt' />
 
 	<!-- OpenAL config -->
 	<section if="desktop">
@@ -182,10 +182,10 @@
 	<!-- _________________________________ Custom _______________________________ -->
 	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
 
-	<assets path='art/iconOG.png' rename='icon.png' if="linux" />
+	<assets path='art/icons/iconOG.png' rename='icon.png' if="linux" />
 	
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='64'/>
-	<icon path="art/iconOG.png" />
+	<icon path="art/icons/icon16.png" size='16'/>
+	<icon path="art/icons/icon32.png" size='32'/>
+	<icon path="art/icons/icon64.png" size='64'/>
+	<icon path="art/icons/iconOG.png" />
 </project>

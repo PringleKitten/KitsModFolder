@@ -14,8 +14,8 @@ enum MainMenuColumn {
 
 class MainMenuState extends MusicBeatState
 {
-	public static var psychEngineVersion:String = '1.0.3 (Feb 12 Commit a07d1d5)'; // This is also used for Discord RPC
-	public static var internetFavsVersion:String = '3.12'; // This is also used for Discord RPC
+	public static var psychEngineVersion:String = '1.0.3 (Feb 13 Commit b8571ff)'; // This is also used for Discord RPC
+	public static var internetFavsVersion:String = '3.12.1'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 	public static var curColumn:MainMenuColumn = CENTER;
 	var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
