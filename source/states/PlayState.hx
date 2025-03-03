@@ -232,6 +232,8 @@ class PlayState extends MusicBeatState
 	public var defaultCamZoom:Float = 1.05;
 	// IFE CUSTOMS
 	public var defaultCamUIZoom:Float = 1;
+	var sustainEndTimes:Map<Int, Float> = new Map(); // Stores when sustain notes should end
+	var sustainNotesHeld:Map<Int, Bool> = new Map(); // Tracks whether a sustain note is being held
 
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
@@ -3176,6 +3178,13 @@ class PlayState extends MusicBeatState
 				if(combo > 9999) combo = 9999;
 				popUpScore(note);
 			}
+
+			if (note.isSustainNote)
+				{
+					sustainEndTimes.set(leData, note.strumTime);
+					sustainNotesHeld.set(leData, true);
+				}
+
 			var gainHealth:Bool = true; // prevent health gain, *if* sustains are treated as a singular note
 			if (guitarHeroSustains && note.isSustainNote) gainHealth = false;
 			if (gainHealth) health += note.hitHealth * healthGain;
@@ -3220,6 +3229,38 @@ class PlayState extends MusicBeatState
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) callOnHScript('goodNoteHit', [note]);
 		if(!note.isSustainNote) invalidateNote(note);
 	}
+
+	override function onUpdatePost(elapsed:Float) {
+		if (ClientPrefs.data.osuSustainInput)
+		{
+			super.onUpdatePost(elapsed);
+		
+			var currentTime:Float = Conductor.songPosition - 5;
+			
+			for (key in sustainEndTimes.keys())
+			{
+				var endTime:Float = sustainEndTimes.get(key);
+				
+				if (sustainNotesHeld.get(key)) // Check if the sustain note is still held
+				{
+					var keyArray:Array<String> = ['left', 'down', 'up', 'right'];
+					var keyPressed:Bool = Reflect.field(FlxG.keys.pressed, keyArray[key]);
+		
+					if (!keyPressed) // If the key is released before sustain ends
+					{
+						sustainNotesHeld.set(key, false); // Mark note as released
+					}
+				}
+				
+				if (!sustainNotesHeld.get(key) && currentTime >= (endTime + 200)) // 200ms hit window
+				{
+					noteMiss(daNote);
+					sustainEndTimes.remove(key);
+					sustainNotesHeld.remove(key);
+				}
+			}
+		}}
+		
 
 	public function invalidateNote(note:Note):Void {
 		note.kill();

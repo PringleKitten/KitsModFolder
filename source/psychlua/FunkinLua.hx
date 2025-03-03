@@ -193,6 +193,7 @@ class FunkinLua {
 		// IFE Customs
 		set('assetMovement', ClientPrefs.data.assetMovement);
 		set('healthDrain', ClientPrefs.data.healthDrain);
+		set('osuSustainInput', ClientPrefs.data.osuSustainInput);
 		set('ratingPenalty', ClientPrefs.data.ratingPenalty);
 		set('mechanics', ClientPrefs.data.mechanics);
 		set('mechanicsAgain', ClientPrefs.data.mechanicsAgain);

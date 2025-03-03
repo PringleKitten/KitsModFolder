@@ -36,6 +36,12 @@ class PringlekittenSettingsSubState extends BaseOptionsMenu
 			'ratingPenalty',
 			BOOL);
 		addOption(option);
+
+		var option:Option = new Option('Osu Sustain Input',
+			"If checked, you will have to let go on time of when the sustain of the note ends.",
+			'osuSustainInput',
+			BOOL);
+		addOption(option);
 		
 		var option:Option = new Option('Mobile Buttons',
 			'0 = Off, 1 = On, 2 = Default by Installation',
