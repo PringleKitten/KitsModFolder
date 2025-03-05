@@ -232,8 +232,7 @@ class PlayState extends MusicBeatState
 	public var defaultCamZoom:Float = 1.05;
 	// IFE CUSTOMS
 	public var defaultCamUIZoom:Float = 1;
-	var sustainEndTimes:Map<Int, Float> = new Map(); // Stores when sustain notes should end
-	var sustainNotesHeld:Map<Int, Bool> = new Map(); // Tracks whether a sustain note is being held
+	public var dontDestroy:Bool = false;
 
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
@@ -1120,6 +1119,7 @@ class PlayState extends MusicBeatState
 
 	public function clearNotesBefore(time:Float)
 	{
+		//if (!dontDestroy) { Osu Input System thingy
 		var i:Int = unspawnNotes.length - 1;
 		while (i >= 0) {
 			var daNote:Note = unspawnNotes[i];
@@ -1147,7 +1147,7 @@ class PlayState extends MusicBeatState
 				invalidateNote(daNote);
 			}
 			--i;
-		}
+		}//}
 	}
 
 	// fun fact: Dynamic Functions can be overriden by just doing this
@@ -1592,6 +1592,7 @@ class PlayState extends MusicBeatState
 	{
 		var strumLineX:Float = ClientPrefs.data.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X;
 		var strumLineY:Float = ClientPrefs.data.downScroll ? (FlxG.height - 150) : 50;
+
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
@@ -1756,6 +1757,50 @@ class PlayState extends MusicBeatState
 		setOnScripts('curDecStep', curDecStep);
 		setOnScripts('curDecBeat', curDecBeat);
 
+		// Until I figure out how to make this Osu Input System work,
+		// this is commented out, but here for anyone who knows what they're doing
+		// Cause I do NOT know what I'm doing at all.
+
+//		if (ClientPrefs.data.osuSustainInput) {
+//			notes.forEach(function(note:Note) {
+//				if (note.wasGoodHit && note.isSustainNote && note.mustPress && !note.tooLate && !note.goodRelease) {
+//					var key = switch (note.noteData)
+//					{
+//						case 0: "note_left";
+//						case 1: "note_down";
+//						case 2: "note_up";
+//						case 3: "note_right";
+//						default: "";
+//					}
+//					var keyPressed:Bool = controls.pressed(key);
+//					var keyReleased:Bool = controls.justReleased(key);
+//					var currentTime:Float = Conductor.songPosition;
+//					var sustainReleaseTime = currentTime + (note.sustainLength / playbackRate);
+//					note.remember = true;
+//					dontDestroy = true;
+//
+//					trace('Key: ' + key + '||' + 'Holding?: ' + keyPressed + '|' + keyReleased + '|' + sustainReleaseTime);
+//
+//					if (keyPressed && currentTime >= sustainReleaseTime + 200) {
+//						// Held longer than should have
+//						noteMiss(note);
+//						note.destroy();
+//						dontDestroy = false;
+//						note.tooLate = true;
+//						note.remember = false;
+//					}
+//					else if (keyReleased && currentTime >= sustainReleaseTime && currentTime < sustainReleaseTime + 200) {
+//						// Released on time
+//						goodNoteHit(note);
+//						note.destroy();
+//						dontDestroy = false;
+//												note.remember = false;
+//						note.goodRelease = true;
+//		            }
+//				}
+//			});
+//		}
+
 		if(botplayTxt != null && botplayTxt.visible) {
 			botplaySine += 180 * elapsed;
 			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
@@ -1908,7 +1953,11 @@ class PlayState extends MusicBeatState
 						notes.forEachAlive(function(daNote:Note)
 						{
 							daNote.canBeHit = false;
-							daNote.wasGoodHit = false;
+							//if ((ClientPrefs.data.osuSustainInput && !daNote.remember) || !ClientPrefs.data.osuSustainInput) Osu Input System thingy
+								daNote.wasGoodHit = false;
+
+							//daNote.goodRelease = false; Osu Input System thingy
+							//daNote.earlyRelease = false;
 						});
 					}
 				}
@@ -3179,12 +3228,6 @@ class PlayState extends MusicBeatState
 				popUpScore(note);
 			}
 
-			if (note.isSustainNote)
-				{
-					sustainEndTimes.set(leData, note.strumTime);
-					sustainNotesHeld.set(leData, true);
-				}
-
 			var gainHealth:Bool = true; // prevent health gain, *if* sustains are treated as a singular note
 			if (guitarHeroSustains && note.isSustainNote) gainHealth = false;
 			if (gainHealth) health += note.hitHealth * healthGain;
@@ -3230,39 +3273,8 @@ class PlayState extends MusicBeatState
 		if(!note.isSustainNote) invalidateNote(note);
 	}
 
-	override function onUpdatePost(elapsed:Float) {
-		if (ClientPrefs.data.osuSustainInput)
-		{
-			super.onUpdatePost(elapsed);
-		
-			var currentTime:Float = Conductor.songPosition - 5;
-			
-			for (key in sustainEndTimes.keys())
-			{
-				var endTime:Float = sustainEndTimes.get(key);
-				
-				if (sustainNotesHeld.get(key)) // Check if the sustain note is still held
-				{
-					var keyArray:Array<String> = ['left', 'down', 'up', 'right'];
-					var keyPressed:Bool = Reflect.field(FlxG.keys.pressed, keyArray[key]);
-		
-					if (!keyPressed) // If the key is released before sustain ends
-					{
-						sustainNotesHeld.set(key, false); // Mark note as released
-					}
-				}
-				
-				if (!sustainNotesHeld.get(key) && currentTime >= (endTime + 200)) // 200ms hit window
-				{
-					noteMiss(daNote);
-					sustainEndTimes.remove(key);
-					sustainNotesHeld.remove(key);
-				}
-			}
-		}}
-		
-
 	public function invalidateNote(note:Note):Void {
+
 		note.kill();
 		notes.remove(note, true);
 		note.destroy();

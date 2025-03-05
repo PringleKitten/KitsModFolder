@@ -1,0 +1,5 @@
+v1: 
+ "oX" | "oY" | "pX" | "pY" | "bX" | "bY"
+opponent X|Y | player X|Y  | Move Both X|Y
+
+v2: Current X/Y+(your value)

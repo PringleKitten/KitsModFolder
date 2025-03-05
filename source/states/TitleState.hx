@@ -445,7 +445,7 @@ class TitleState extends MusicBeatState
 					addMoreText('shut up bro', -40);
 				case 8:
 					deleteCoolText();
-					addMoreText('PringleKiten\'s');
+					addMoreText('PringleKitten\'s');
 				case 9:
 					addMoreText('Modded Psych Engine');
 				case 10:

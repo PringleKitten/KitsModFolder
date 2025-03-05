@@ -1,5 +1,4 @@
---Made by RamenDominoes
---Hope you like it! <3
+--Made by RamenDominoes edited by PringleKitten
 
 allowCountdown = false
 allowVerticalScroll = true
@@ -43,6 +42,9 @@ end
 --------------------------------------------------------------------------------------
 ---------------------------------Added by PringleKitten-------------------------------
 --------------------------------------------------------------------------------------
+
+local cam = 'other'
+local ui = 0
 function onCreatePost()
 	setProperty('healthBar.alpha', 0);
 	setProperty('healthBarBG.alpha', 0);
@@ -104,21 +106,21 @@ function onCreatePost()
 		luatxt('keyy','PRESS C TO CHANGE',0,getProperty('ifso.x')-5,getProperty('ifso.y')+20,'hud',screenWidth/80,'00FFFF','.',true)
 		luatxt('invertxt','Caption Placement: Opponent', 0,getProperty('invert.x')-20,getProperty('invert.y')+100,'hud',screenWidth/39,'00FF00','.',true)
 		luatxt('keyyInv','PRESS I TO CHANGE', 0,getProperty('invert.x')-20,getProperty('invert.y')+130,'hud',screenWidth/80,'00FFFF','.',true)
-		luatxt('uiStatement','Show Psych UI: '..'true', 0,getProperty('txtuiBn.x')+80,getProperty('txtuiBn.y'),'hud',screenWidth/80,'00FFFF','.',true)
+		luatxt('uiStatement','UI: '..'Psych', 0,getProperty('txtuiBn.x')+80,getProperty('txtuiBn.y'),'hud',screenWidth/80,'00FFFF','.',true)
 	else
 		luatxt('captiontxt','Captions: true', 0,950,150,'hud',screenWidth/39,'00FF00','.',true)
 		luatxt('ifso','(If applicable)', 0,990,180,'hud',screenWidth/80,'808080','.',true)
 		luatxt('keyy','PRESS C TO CHANGE',0,985,200,'hud',screenWidth/80,'00FFFF','.',true)
 		luatxt('invertxt','Caption Placement: Opponent', 0,10,625,'hud',screenWidth/39,'00FF00','.',true)
 		luatxt('keyyInv','PRESS I TO CHANGE', 0,10,655,'hud',screenWidth/80,'00FFFF','.',true)
-		luatxt('uiStatement','Show Psych UI: true', 0,1052,483,'hud',screenWidth/80,'00FFFF','.',true)
-		-- yes I know I don't need this again but it's easier cuz I got it synced together above the else so.
+		luatxt('uiStatement','UI: Psych', 0,1052,483,'hud',screenWidth/80,'00FFFF','.',true)
 	end
 	luatxt('txtcamBn','Other', 0,952,593,'hud',screenWidth/39,'.','.',true)
 	setTextSize("uiStatement", 18)
 	runTimer('disprCap',2)
 end
 	callScript("scripts/ratings", "ratingPosFunc")
+	callScript("scripts/ratings", "rtsSetup",{cam,ui})
 end
 
 local inv = false
@@ -158,8 +160,7 @@ end
 --------------------------------------------------------------------------------------
 ---------------------------------End of Script Set Up---------------------------------
 --------------------------------------------------------------------------------------
-local cam = 'other'
-local ui = true
+
 function onStartCountdown()
 	if not allowCountdown then
 		return Function_Stop
@@ -269,12 +270,18 @@ function buttonStuff()
 			screenCenter("testCaption", 'x')
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui then
-			ui = false
-			setTextString('uiStatement','Show Psych UI: false')
-		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and not ui then
-			ui = true
-			setTextString('uiStatement','Show Psych UI: true')
+		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui == 0 then
+			ui = 1
+			setTextString('uiStatement','UI: IFE')
+		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui == 1 then
+			ui = 2
+			setTextString('uiStatement','UI: Psych+IFE')
+		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui == 2 then
+			ui = 3
+			setTextString('uiStatement','UI: Psych+IFE V2')
+		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui == 3 then
+			ui = 0
+			setTextString('uiStatement','UI: Psych')
 		elseif ((mouseOverlaps('camBn', 'camOther') and mouseClicked("left")) or keyPress('O')) and cam == 'other' then
 			cam = 'game'
 			setTextString("txtcamBn", cam)
@@ -334,12 +341,18 @@ function buttonStuff()
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
 		end
-		if keyPress('U') and ui then
-			ui = false
-			setTextString('uiStatement','Show Psych UI: false')
-		elseif keyPress('U') and not ui then
-			ui = true
-			setTextString('uiStatement','Show Psych UI: true')
+		if keyPress('U') and ui == 0 then
+			ui = 1
+			setTextString('uiStatement','UI: IFE')
+		elseif keyPress('U') and ui == 1 then
+			ui = 2
+			setTextString('uiStatement','UI: Psych+IFE')
+		elseif keyPress('U') and ui == 2 then
+			ui = 3
+			setTextString('uiStatement','UI: Psych+IFE V2')
+		elseif keyPress('U') and ui == 3 then
+			ui = 0
+			setTextString('uiStatement','UI: Psych')
 		end
 		if keyPress('O') and cam == 'other' then
 			cam = 'game'
@@ -358,6 +371,14 @@ function buttonStuff()
 end
 
 function onUpdate()
+	if getProperty('inCutscene') and not doneIt2 then
+		setProperty("testCaption.alpha", 0)
+        doneIt2 = true
+    end
+    if not getProperty('inCutscene') and doneIt2 then
+		setProperty("testCaption.alpha", 1)
+        doneIt2 = false
+    end
 	if not (getProperty('inCutscene') or (getProperty('videoCutscene') or getProperty('videoCutscene.isPlaying'))) then
 	if not allowCountdown then
         buttonStuff()
@@ -570,4 +591,5 @@ end
 function onSongStart()
 	callScript("custom_events/DodgeForBF", "cdal", {allowCountdown})
 	callScript("custom_events/DodgeEvent", "cdal", {allowCountdown})
+	close(true)
 end

@@ -1,0 +1,4 @@
+Value1
+1 = onbeat
+0 = off
+5 = bounce once (Must be used on beat 1,2,3, or 4)

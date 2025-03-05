@@ -7,8 +7,3 @@ function onCreate()
         end
     end
 end
-function noteMiss(id, direction, noteType, isSustainNote)
-    if noteType == "Flame_Note" then
-        characterPlayAnim('bf', 'hey', true)
-    end
-end

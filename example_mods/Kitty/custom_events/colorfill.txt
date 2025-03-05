@@ -1,0 +1,2 @@
+value 1 = red, green, blue, bg red, bg green, bg blue
+value 2 = time, easing

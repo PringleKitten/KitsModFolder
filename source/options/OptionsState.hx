@@ -2,139 +2,191 @@ package options;
 
 import states.MainMenuState;
 import backend.StageData;
+import flixel.FlxG;
+import flixel.group.FlxGroup;
+import haxe.ds.StringMap;
 
 class OptionsState extends MusicBeatState
 {
-	var options:Array<String> = [
-		'Note Colors',
-		'Controls',
-		'Adjust Delay and Combo',
-		'Graphics',
-		'Visuals',
-		'Gameplay',
-		'Internet Favorites Settings'
-		#if TRANSLATIONS_ALLOWED , 'Language' #end
-	];
-	private var grpOptions:FlxTypedGroup<Alphabet>;
-	private static var curSelected:Int = 0;
-	public static var menuBG:FlxSprite;
-	public static var onPlayState:Bool = false;
+    var options:Array<String> = [
+        'Note Colors',
+        'Controls',
+        'Adjust Delay and Combo',
+        'Graphics',
+        'Visuals',
+        'Gameplay',
+        'Internet Favorites Settings'
+        #if TRANSLATIONS_ALLOWED , 'Language' #end
+    ];
 
-	function openSelectedSubstate(label:String) {
-		switch(label)
-		{
-			case 'Note Colors':
-				openSubState(new options.NotesColorSubState());
-			case 'Controls':
-				openSubState(new options.ControlsSubState());
-			case 'Graphics':
-				openSubState(new options.GraphicsSettingsSubState());
-			case 'Visuals':
-				openSubState(new options.VisualsSettingsSubState());
-			case 'Gameplay':
-				openSubState(new options.GameplaySettingsSubState());
-			case 'Internet Favorites Settings':
-				openSubState(new options.PringlekittenSettingsSubState());
-			case 'Adjust Delay and Combo':
-				MusicBeatState.switchState(new options.NoteOffsetState());
-			case 'Language':
-				openSubState(new options.LanguageSubState());
-		}
-	}
+    private var grpOptions:FlxGroup;
+    private static var curSelected:Int = 3;
+    public static var onPlayState:Bool = false;
 
-	var selectorLeft:Alphabet;
-	var selectorRight:Alphabet;
+    private var optionMap:StringMap<() -> Void>;
+    private var scrollMenuSelected:Bool = true;
 
-	override function create()
-	{
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Options Menu", null);
-		#end
+    var selectorLeft:Alphabet;
+    var selectorRight:Alphabet;
+    
+    var scrollMenuText:FlxText;
+    var scrollMenuCheckbox:FlxSprite;
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.data.antialiasing;
-		bg.color = 0xFFea71fd;
-		bg.updateHitbox();
+    function openSelectedSubstate(label:String) {
+        optionMap.get(label)();
+    }
 
-		bg.screenCenter();
-		add(bg);
+    override function create()
+    {
+        #if DISCORD_ALLOWED
+        DiscordClient.changePresence("Options Menu", null);
+        #end
 
-		grpOptions = new FlxTypedGroup<Alphabet>();
-		add(grpOptions);
+        FlxG.mouse.visible = true;
 
-		for (num => option in options)
-		{
-			var optionText:Alphabet = new Alphabet(0, 0, Language.getPhrase('options_$option', option), true);
-			optionText.screenCenter();
-			optionText.y += (92 * (num - (options.length / 2))) + 45;
-			grpOptions.add(optionText);
-		}
+        optionMap = new StringMap();
+        optionMap.set('Note Colors', () -> openSubState(new options.NotesColorSubState()));
+        optionMap.set('Controls', () -> openSubState(new options.ControlsSubState()));
+        optionMap.set('Graphics', () -> openSubState(new options.GraphicsSettingsSubState()));
+        optionMap.set('Visuals', () -> openSubState(new options.VisualsSettingsSubState()));
+        optionMap.set('Gameplay', () -> openSubState(new options.GameplaySettingsSubState()));
+        optionMap.set('Internet Favorites Settings', () -> openSubState(new options.PringlekittenSettingsSubState()));
+        optionMap.set('Adjust Delay and Combo', () -> MusicBeatState.switchState(new options.NoteOffsetState()));
+        #if TRANSLATIONS_ALLOWED
+        optionMap.set('Language', () -> openSubState(new options.LanguageSubState()));
+        #end
 
-		selectorLeft = new Alphabet(0, 0, '>', true);
-		add(selectorLeft);
-		selectorRight = new Alphabet(0, 0, '<', true);
-		add(selectorRight);
+        grpOptions = new FlxGroup();
+        add(grpOptions);
 
-		changeSelection();
-		ClientPrefs.saveSettings();
+        for (i in 0...options.length) {
+            var optionText:FlxText = new FlxText(0, 0, 0, options[i], 48);
+            optionText.screenCenter();
+            optionText.y = ((FlxG.height / 2) - 50) + (i * 60);
+            optionText.ID = i;
+            grpOptions.add(optionText);
+        }
 
-		super.create();
-	}
+        scrollMenuText = new FlxText(20, FlxG.height / 2, 220, "Scroll Menu?", 20);
+        scrollMenuText.color = FlxColor.WHITE;
+        add(scrollMenuText);
 
-	override function closeSubState()
-	{
-		super.closeSubState();
-		ClientPrefs.saveSettings();
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Options Menu", null);
-		#end
-	}
+        scrollMenuCheckbox = new FlxSprite(50, scrollMenuText.y + 25);
+        scrollMenuCheckbox.makeGraphic(50, 50, FlxColor.WHITE);
+        scrollMenuCheckbox.color = scrollMenuSelected ? 0xFF00FF : FlxColor.WHITE;
+        add(scrollMenuCheckbox);
 
-	override function update(elapsed:Float) {
-		super.update(elapsed);
+        selectorLeft = new Alphabet(0, 0, '>', true);
+        add(selectorLeft);
+        selectorRight = new Alphabet(0, 0, '<', true);
+        add(selectorRight);
 
-		if (controls.UI_UP_P)
-			changeSelection(-1);
-		if (controls.UI_DOWN_P)
-			changeSelection(1);
+        changeSelection();
+        ClientPrefs.saveSettings();
 
-		if (controls.BACK)
-		{
-			FlxG.sound.play(Paths.sound('cancelMenu'));
-			if(onPlayState)
-			{
-				StageData.loadDirectory(PlayState.SONG);
-				LoadingState.loadAndSwitchState(new PlayState());
-				FlxG.sound.music.volume = 0;
-			}
-			else MusicBeatState.switchState(new MainMenuState());
-		}
-		else if (controls.ACCEPT) openSelectedSubstate(options[curSelected]);
-	}
-	
-	function changeSelection(change:Int = 0)
-	{
-		curSelected = FlxMath.wrap(curSelected + change, 0, options.length - 1);
+        super.create();
+    }
 
-		for (num => item in grpOptions.members)
-		{
-			item.targetY = num - curSelected;
-			item.alpha = 0.6;
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-				selectorLeft.x = item.x - 63;
-				selectorLeft.y = item.y;
-				selectorRight.x = item.x + item.width + 15;
-				selectorRight.y = item.y;
-			}
-		}
-		FlxG.sound.play(Paths.sound('scrollMenu'));
-	}
+    override function closeSubState()
+    {
+        super.closeSubState();
+        ClientPrefs.saveSettings();
+        #if DISCORD_ALLOWED
+        DiscordClient.changePresence("Options Menu", null);
+        #end
+    }
 
-	override function destroy()
-	{
-		ClientPrefs.loadPrefs();
-		super.destroy();
-	}
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        var mousePoint:FlxPoint = new FlxPoint(FlxG.mouse.screenX, FlxG.mouse.screenY);
+
+        if (FlxG.mouse.justPressed) {
+            if (scrollMenuCheckbox.overlapsPoint(mousePoint)) {
+                scrollMenuSelected = !scrollMenuSelected;
+                scrollMenuCheckbox.color = scrollMenuSelected ? 0xFF00FF : FlxColor.WHITE ;
+                changeSelection();
+            }
+        }
+
+        if (controls.UI_UP_P) {
+            curSelected = Std.int(Math.max(0, curSelected - 1));
+            changeSelection();
+        }
+        if (controls.UI_DOWN_P) {
+            curSelected = Std.int(Math.min(options.length - 1, curSelected + 1));
+            changeSelection();
+        }
+
+        if (controls.BACK) {
+            FlxG.sound.play(Paths.sound('cancelMenu'));
+            if(onPlayState) {
+                StageData.loadDirectory(PlayState.SONG);
+                LoadingState.loadAndSwitchState(new PlayState());
+                FlxG.sound.music.volume = 0;
+            } else {
+                MusicBeatState.switchState(new MainMenuState());
+            }
+        } else if (controls.ACCEPT) {
+            openSelectedSubstate(options[curSelected]);
+        }
+    }
+
+    function changeSelection(change:Int = 0)
+    {
+        var baseY:Float = (FlxG.height / 2) - 50;
+        curSelected = FlxMath.wrap(curSelected + change, 0, options.length - 1);
+    
+        if (scrollMenuSelected) {
+    
+            for (item in grpOptions.members) {
+                var textItem:FlxText = cast(item, FlxText);
+                if (textItem != null) {
+                    textItem.alpha = 0.4;
+                    textItem.color = FlxColor.WHITE;
+                    textItem.y = baseY + (textItem.ID - curSelected) * 60;
+    
+                    if (textItem.ID == curSelected) {
+                        textItem.alpha = 1;
+                        textItem.color = 0xFF00FF;
+    
+                        var textWidth = textItem.width;
+                        selectorLeft.x = textItem.x - 55;
+                        selectorLeft.y = textItem.y;
+                        selectorRight.x = textItem.x + textWidth;
+                        selectorRight.y = textItem.y;
+                    }
+                }
+            }
+        } else {
+            var centerY:Float = FlxG.height / 2 - (options.length * 60) / 2;
+            for (item in grpOptions.members) {
+                var textItem:FlxText = cast(item, FlxText);
+                if (textItem != null) {
+                    textItem.alpha = 0.4;
+                    textItem.color = FlxColor.WHITE;
+                    textItem.y = centerY + (textItem.ID * 60);
+    
+                    if (textItem.ID == curSelected) {
+                        textItem.alpha = 1;
+                        textItem.color = 0xFF00FF;
+
+                        var textWidth = textItem.width;
+                        selectorLeft.x = textItem.x - 55;
+                        selectorLeft.y = textItem.y;
+                        selectorRight.x = textItem.x + textWidth;
+                        selectorRight.y = textItem.y;
+                    }
+                }
+            }
+        }
+    
+        FlxG.sound.play(Paths.sound('scrollMenu'));
+    }        
+
+    override function destroy()
+    {
+        ClientPrefs.loadPrefs();
+        super.destroy();
+    }
 }

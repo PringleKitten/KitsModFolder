@@ -1,0 +1,6 @@
+This is a toggle so just place the event AGAIN to
+disable it, and again to re-enable it.
+
+Value1 - UI Hud zoom Amount
+
+Value2 - Background zoom Amount

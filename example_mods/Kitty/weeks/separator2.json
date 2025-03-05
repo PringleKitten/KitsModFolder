@@ -1,0 +1,31 @@
+{
+	"storyName": "Separator2",
+	"difficulties": "Meow",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		0,
+		0,
+		0
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"----OTHER_MODS----",
+			"gf-invis",
+			[
+				0,
+				0,
+				0
+			]
+		]
+	],
+	"weekName": "Separator2"
+}
