@@ -1,7 +1,7 @@
 {
-	"name": "Wolf/Pringle/Kitty",
-	"description": "Anything you want to play I'll add",
-	"restart":false,
-	"runsGlobally": false,
+	"name": "PringleKitten-Everything (Rev-1.0)",
+	"description": "All Charts I've ever made",
+	"restart": true,
+	"runsGlobally": true,
 	"color": [251, 77, 155]
 }

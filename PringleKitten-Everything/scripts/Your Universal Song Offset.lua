@@ -71,4 +71,5 @@ function onDestroy()
     if c then
         setPropertyFromClass('backend.ClientPrefs','data.noteOffset',offset)
     end
+    close(true)
 end

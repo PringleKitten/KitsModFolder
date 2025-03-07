@@ -1,5 +1,23 @@
+local videoName = 'amanda'
+
+
+local offset = 0
+function onCountdownStarted()
+    startVideo(videoName, false, true, false, false)
+    
+end
 function onSongStart()
-    setProperty('showComboNum', false)
-    setProperty('showRating', false)
-    callScript('scripts/videoSpriteOld', 'makeVideoSprite', {'videso1', 'amanda', 382, -11.2, 'camGame', 1.111, 1.1105})
+    offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
+
+    setProperty('showRating', false);
+    setProperty('showComboNum', false);
+
+    runTimer('vid',(offset+100)/1000)
+end
+
+function onTimerCompleted(tag)
+    if tag == 'vid' then
+        callScript('scripts/videoSprite', 'makeVideoSprite', {videoName, videoName,'camGame',1})
+        close(true)
+    end
 end

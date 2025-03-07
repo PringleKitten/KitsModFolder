@@ -3875,7 +3875,7 @@
 		"events": [],
 		"player3": null,
 		"song": "alan-becker-(sea-shanty)",
-		"stage": "black",
+		"stage": "no-bg",
 		"validScore": true,
 		"needsVoices": false,
 		"speed": 2,

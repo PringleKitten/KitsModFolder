@@ -4,7 +4,7 @@
 		[
 			140.845070422535,
 			[
-				["nozoom", "1", "0"]
+				["nozoom", "2", "0"]
 			]
 		],
 		[
@@ -125,7 +125,7 @@
 		[
 			198802.816901408,
 			[
-				["nozoom", "1", "1"]
+				["nozoom", "2", "2"]
 			]
 		]
 	],
@@ -1923,7 +1923,7 @@
 	"song": "everytime-we-touch",
 	"needsVoices": false,
 	"validScore": true,
-	"stage": "black",
+	"stage": "no-bg",
 	"bpm": 142,
 	"speed": 2.4,
 	"format": "psych_v1_convert"

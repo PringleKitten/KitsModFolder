@@ -7,6 +7,12 @@ local xx3 = false
 local camzoomN = false
 local camzoomS = false
 local camzoomB = false
+function onCreatePost()
+    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') == false then
+        close(true)
+    end
+end
+
 function onSongStart()
     defaultOpponentStrumX0 = defaultOpponentStrumX0
     defaultOpponentStrumX1 = defaultOpponentStrumX1

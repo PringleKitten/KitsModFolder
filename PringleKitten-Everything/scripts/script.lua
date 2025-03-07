@@ -21,6 +21,9 @@ function onCreatePost()
     callScript("scripts/makeCaptionbystep", "middcs", {mdsc})
     setProperty('skipArrowStartTween', true)
     setProperty('healthBar.numDivisions', 10000)
+    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') == false then
+        close(true)
+    end
 end
 
 function onSongStart()
@@ -42,10 +45,6 @@ function onSongStart()
     dosy1 = getPropertyFromGroup('opponentStrums', 1, 'y')
     dosy2 = getPropertyFromGroup('opponentStrums', 2, 'y')
     dosy3 = getPropertyFromGroup('opponentStrums', 3, 'y')
-    makeLuaText("drawfps", drawf, 0, 0.0, 0.0)
-    setTextSize("drawfps", 20)
-    setObjectCamera("drawfps", 'other')
-    addLuaText("drawfps")
     debugPrint('- - -')
     debugPrint('Song Offset to Mains: '..'('..changeOffset..')')
     debugPrint('Main Offset: '..'('..offset..')')
@@ -137,31 +136,32 @@ function onEvent(name, value1, value2)
     if name == "hudzoom" then 
         value1 = tonumber(value1)
         value2 = tonumber(value2) 
-        if value2 == '' or value2 < 0.02 then
+        if value2 == '' or value2 < 0.011 then
             setProperty('camHUD.zoom',value1)
 			setProperty('defaultCamUIZoom',value1)
 	    else
-            doTweenZoom('camzz','camHUD',value1,value2,'sineInOut')
+            wasItOn = getProperty('camZoomsHud')
             setProperty('camZoomsHud', false)
-            buerbfgeriugberbge = true
+            doTweenZoom('camzzh','camHUD',value1,value2,'sineInOut')
+            tryingToZoom = true
+            callScript("custom_events/CZoom Custom Toggle", "hudInMove", {true})
 	    end
-
     end
 end
 
 function onUpdate(elapsed)
-    drawf = getPropertyFromClass("Main", "fpsVar.text")
-    setTextString("drawfps", drawf)
     el = elapsed
-    if buerbfgeriugberbge then
+    if tryingToZoom then
         setProperty("defaultCamUIZoom",getProperty('camHUD.zoom'))
     end
 end
 
 function onTweenCompleted(name)
-    if name == 'camzz' then
+    if name == 'camzzh' then
         setProperty("defaultCamUIZoom",getProperty('camHUD.zoom'))
-        buerbfgeriugberbge = false
+        callScript("custom_events/CZoom Custom Toggle", "hudInMove", {false, wasItOn})
+        setProperty('camZoomsHud', wasItOn)
+        tryingToZoom = false
     end
 end
 

@@ -12,6 +12,13 @@ function mysplit (inputstr, sep)
     end
 end
 
+function onCreatePost()
+    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') == false then
+        close(true)
+    end
+end
+
+
 -- Event notes hooks
 function onEvent(name, value1, value2)
     if name == "MoveArrow" then

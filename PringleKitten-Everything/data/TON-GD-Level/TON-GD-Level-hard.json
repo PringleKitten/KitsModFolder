@@ -7053,8 +7053,8 @@
 					],
 					[
 						"nozoom",
-						"1",
-						"1"
+						"2",
+						"2"
 					],
 					[
 						"Hide_Hud",
@@ -7232,7 +7232,7 @@
 		"player3": null,
 		"mania": 3,
 		"song": "TON-GD-Level",
-		"stage": "void",
+		"stage": "no-bg",
 		"validScore": true,
 		"needsVoices": false,
 		"speed": 2,

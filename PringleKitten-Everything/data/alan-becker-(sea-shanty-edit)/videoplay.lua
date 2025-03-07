@@ -1,5 +1,13 @@
+local videoName = 'absse'
+
+
 local offset = 0
+function onCountdownStarted()
+    startVideo(videoName, false, true, false, false)
+    
+end
 function onSongStart()
+    offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
     dosx0 = defaultOpponentStrumX0
     dosx1 = defaultOpponentStrumX1
     dosx2 = defaultOpponentStrumX2
@@ -49,16 +57,13 @@ function onSongStart()
     setProperty('timeTxt.visible', false)
     setProperty('showRating', false);
     setProperty('showComboNum', false);
-    offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
-    setProperty('showComboNum', false)
-    setProperty('showRating', false)
-    runTimer('vid',offset/1000)
     
+    runTimer('vid',offset/1000)
 end
 
 function onTimerCompleted(tag)
     if tag == 'vid' then
-        callScript('scripts/videoSprite', 'makeVideoSprite', {'absse', 'absse','camGame',0.422})
+        callScript('scripts/videoSprite', 'makeVideoSprite', {videoName, videoName,'camGame',0.422})
     end
 end
 

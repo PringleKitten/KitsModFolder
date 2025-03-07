@@ -88,7 +88,7 @@ function loadShader(lua,shader)
     elseif shader == 'GreyscaleEffect' then
         setShaderFloat(lua,'strength',0)
 
-    elseif shader == 'VignetteEffect' or shader == 'PaletteEffect' then
+    elseif shader == 'PaletteEffect' then
         setShaderFloat(lua,'size',0)
         setShaderFloat(lua,'stretch',0)
         setShaderFloat(lua,'red',0)

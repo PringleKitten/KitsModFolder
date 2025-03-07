@@ -7605,7 +7605,7 @@
 		"player3": null,
 		"mania": 3,
 		"song": "party-rock",
-		"stage": "blank",
+		"stage": "no-bg",
 		"validScore": true,
 		"needsVoices": false,
 		"speed": 2.8,

@@ -1,4 +1,4 @@
-function onCreate()
+function onCreatePost()
     makeLuaSprite('bars', 'me/popup/bars', 0,0)
     setObjectCamera('bars', 'hud')
     addLuaSprite('bars')

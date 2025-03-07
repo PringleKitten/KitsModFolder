@@ -901,7 +901,7 @@
 			0,
 			[
 				["HideNotes", "12", ""],
-				["nozoom", "1", "0"],
+				["nozoom", "2", "0"],
 				["newArrowToggler", "3", "5"]
 			]
 		],
@@ -951,7 +951,7 @@
 	"player3": null,
 	"mania": 3,
 	"song": "cg5-(stuck-inside)",
-	"stage": "void",
+	"stage": "no-bg",
 	"validScore": true,
 	"needsVoices": false,
 	"format": "psych_v1_convert",

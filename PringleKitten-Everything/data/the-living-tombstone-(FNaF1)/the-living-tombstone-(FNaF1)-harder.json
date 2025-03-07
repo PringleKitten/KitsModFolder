@@ -6267,8 +6267,8 @@
 					],
 					[
 						"nozoom",
-						"1",
-						"1"
+						"2",
+						"2"
 					]
 				]
 			]
@@ -13980,7 +13980,7 @@
 		"song": "the-living-tombstone-(FNaF1)",
 		"needsVoices": false,
 		"validScore": true,
-		"stage": "void",
+		"stage": "no-bg",
 		"bpm": 103,
 		"speed": 2
 	}

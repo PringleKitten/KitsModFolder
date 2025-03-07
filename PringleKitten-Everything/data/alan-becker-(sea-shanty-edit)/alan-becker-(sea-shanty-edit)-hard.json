@@ -4830,7 +4830,7 @@
 		"song": "alan-becker-(sea-shanty-edit)",
 		"needsVoices": false,
 		"validScore": true,
-		"stage": "black",
+		"stage": "no-bg",
 		"bpm": 71,
 		"speed": 2
 	}

@@ -11861,8 +11861,8 @@
 				[
 					[
 						"nozoom",
-						"1",
-						"1"
+						"2",
+						"2"
 					]
 				]
 			],
@@ -11884,7 +11884,7 @@
 		],
 		"player3": null,
 		"song": "the-living-tombstone-(FNaF1)",
-		"stage": "void",
+		"stage": "no-bg",
 		"validScore": true,
 		"needsVoices": false,
 		"speed": 2,

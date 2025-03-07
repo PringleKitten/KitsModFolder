@@ -8218,7 +8218,7 @@
 				[
 					[
 						"Hide_Hud",
-						"0",
+						"2",
 						""
 					]
 				]
@@ -10363,7 +10363,7 @@
 		"mania": 3,
 		"song": "run-run",
 		"arrowSkin": "",
-		"stage": "void",
+		"stage": "no-bg",
 		"validScore": true,
 		"needsVoices": false,
 		"speed": 2.7,

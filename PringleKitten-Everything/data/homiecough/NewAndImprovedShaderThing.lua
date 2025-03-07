@@ -70,16 +70,12 @@ local beatinSteps = {
     688
 }
 function onCreatePost()
-    callShader('createShader',{'ca','ChromAbEffect'})
     callShader('createShader',{'barrel','MirrorRepeatEffect'})
     callShader('createShader',{'colorSwap','ColorSwapEffect'})
 
     callShader('runShader',{'camGame',{'barrel','colorSwap'}})
     callShader('runShader',{'camHUD',{'colorSwap'}})
-
 	callShader('runShader',{'camHUD','barrel'})
-
-
 end
 
 function callShader(func,vars)

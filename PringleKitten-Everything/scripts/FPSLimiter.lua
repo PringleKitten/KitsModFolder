@@ -21,4 +21,5 @@ function onDestroy()
         setPropertyFromClass('flixel.FlxG', 'drawFramerate', framerate)
         setPropertyFromClass('flixel.FlxG', 'updateFramerate', framerate)
     end
+    close(true)
 end

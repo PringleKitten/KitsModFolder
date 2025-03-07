@@ -842,7 +842,7 @@
 	"player3": null,
 	"mania": 3,
 	"song": "platypus",
-	"stage": "void",
+	"stage": "no-bg",
 	"validScore": true,
 	"needsVoices": true,
 	"format": "psych_v1_convert",

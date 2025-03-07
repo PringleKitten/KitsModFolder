@@ -1,11 +1,12 @@
 tutorial
 band
 ogsongchartsbyme
+nhh
 kitweek7
 hard-harder
 hard
 multiplayer-mod-testing
-separator1
+Separator1
 hard-oneplayer
 geometrydash
 wtti
@@ -19,4 +20,4 @@ secret-b
 ghost
 ghostleft
 stickfigurething
-separator2
+Separator2

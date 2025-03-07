@@ -687,7 +687,7 @@
 				[
 					[
 						"Hide_Hud",
-						"0",
+						"2",
 						""
 					]
 				]
@@ -11070,7 +11070,7 @@
 		"mania": 3,
 		"song": "im-good-sonicwave",
 		"validScore": true,
-		"stage": "blank",
+		"stage": "no-bg",
 		"needsVoices": false,
 		"bpm": 145,
 		"speed": 2.3

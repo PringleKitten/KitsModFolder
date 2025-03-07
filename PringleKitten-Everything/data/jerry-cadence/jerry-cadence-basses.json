@@ -1297,7 +1297,7 @@
 		"song": "jerry-cadence",
 		"validScore": true,
 		"needsVoices": false,
-		"stage": "black",
+		"stage": "no-bg",
 		"ghostTapping": true,
 		"speed": 2.2,
 		"bpm": 114

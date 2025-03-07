@@ -9787,7 +9787,7 @@
 		"song": "alan-becker-(rush-e)",
 		"needsVoices": false,
 		"validScore": true,
-		"stage": "black",
+		"stage": "no-bg",
 		"bpm": 300,
 		"speed": 1.5
 	}

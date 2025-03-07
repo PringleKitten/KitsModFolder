@@ -11,23 +11,13 @@ end
 
 function onStartCountdown()
 	if not allowCountdown and not seenCutscene then --Block the first countdown
-		setProperty('inCutscene', true);
 		startVideo('stressCutscene');
 		setObjectCamera('videoCutscene','other')
-		setProperty('canPause', true)
 		allowCountdown = true;
 		return Function_Stop;
 	end
 	characterPlayAnim('gf', 'shoot1-loop', true);
 	return Function_Continue;
-end
-function onCountdownTick(counter)
-	if counter == 0 then
-		setProperty('inCutscene', false);
-    	callMethod('remove', {instanceArg('videoCutscene'), true})
-		removeLuaSprite("videoCutscene")
-		setProperty('canPause', true)
-	end
 end
 
 chartTankman = {}

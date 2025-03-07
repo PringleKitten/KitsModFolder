@@ -1,12 +1,23 @@
-function onCreate()
-    makeLuaSprite('dod', 'me/popup/dodge1', 500, 0)
-    scaleObject('dod', 5, 5)
-    addLuaSprite('dod', true)
-    setProperty('showComboNum', false)
-    setProperty('showRating', false)
+local videoName = 'sonicwave'
+
+
+local offset = 0
+function onCountdownStarted()
+    startVideo(videoName, false, true, false, false)
+    
 end
 function onSongStart()
-    removeLuaSprite('dod')
-    setPropertyFromClass('GameOverSubstate', 'deathSoundName', 'ded')
-    callScript('scripts/videoSpriteOld', 'makeVideoSprite', {'sonwave', 'sonicwave', -320, -180, 'camHUD', 0.667, 0.667})
+    offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
+
+    setProperty('showRating', false);
+    setProperty('showComboNum', false);
+
+    runTimer('vid',(offset+100)/1000)
+end
+
+function onTimerCompleted(tag)
+    if tag == 'vid' then
+        callScript('scripts/videoSprite', 'makeVideoSprite', {videoName, videoName,'camGame',1})
+        close(true)
+    end
 end

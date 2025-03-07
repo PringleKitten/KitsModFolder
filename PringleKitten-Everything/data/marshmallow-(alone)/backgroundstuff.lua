@@ -10,5 +10,6 @@ function onSectionHit()
         scaleObject('bg', 8, 8);
     elseif curSection == 85 then
         scaleObject('bg', 0, 0);
+        close(true)
     end
 end

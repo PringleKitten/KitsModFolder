@@ -1,7 +1,23 @@
+local videoName = 'ykg'
+
+
+local offset = 0
+function onCountdownStarted()
+    startVideo(videoName, false, true, false, false)
+    
+end
 function onSongStart()
-    if difficulty == 1 then
-        setProperty('showComboNum', false)
-        setProperty('showRating', false)
-        callScript('scripts/videoSpriteOld', 'makeVideoSprite', {'video29', 'ykg', -320, -180, 'camHUD',1,1})
+    offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
+
+    setProperty('showRating', false);
+    setProperty('showComboNum', false);
+
+    runTimer('vid',(offset)/1000)
+end
+
+function onTimerCompleted(tag)
+    if tag == 'vid' then
+        callScript('scripts/videoSprite', 'makeVideoSprite', {videoName, videoName,'camGame',1})
+        close(true)
     end
 end

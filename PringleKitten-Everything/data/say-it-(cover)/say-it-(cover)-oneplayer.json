@@ -6292,7 +6292,7 @@
 		"song": "say-it-(cover)",
 		"needsVoices": false,
 		"validScore": true,
-		"stage": "void",
+		"stage": "no-bg",
 		"bpm": 180,
 		"speed": 2.5
 	}
