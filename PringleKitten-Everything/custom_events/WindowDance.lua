@@ -50,7 +50,7 @@ function onUpdatePost(elapsed)
     if a then
         if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
             if dance then
-                Elap = Elap + (elapsed*v2)
+                Elap = Elap + (elapsed*v2*playbackRate)
                 setPropertyFromClass("openfl.Lib", "application.window.fullscreen", false)
                 setPropertyFromClass('openfl.Lib', 'application.window.maximized', false)
                 setPropertyFromClass("openfl.Lib", "application.window.width", 1280)

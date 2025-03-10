@@ -22,15 +22,15 @@ function onCreate()
     setObjectOrder("gameplaytext", 3)
     setObjectOrder("gameplayperson", 4)
 
-    luaText('composerperson', 5, 615, 23, 'ffffff', '000000', people[3])
-    luaText('composertext', 5, 585, 23, 'ff0000', '000000', 'Composer')
+    luaText('composerperson', 5, 685, 23, 'ffffff', '000000', people[2])
+    luaText('composertext', 5, 655, 23, 'ff0000', '000000', 'Composer')
     if getProperty("composertext.width") < getProperty("composerperson.width") then
         setProperty("composertext.x", getProperty("composerperson.x")+(getProperty("composerperson.width")-(getProperty("composerperson.width")/2)-(getProperty("composertext.width")/2)))
-        luaGraphic('composerbg', 5, 585, getTextWidth("composerperson"), 60, '000000')
+        luaGraphic('composerbg', 5, 655, getTextWidth("composerperson"), 60, '000000')
     else
-        luaGraphic('composerbg', 5, 585, getTextWidth("composertext"), 60, '000000')
+        luaGraphic('composerbg', 5, 655, getTextWidth("composertext"), 60, '000000')
     end
-    luaGraphic('composerborder', 0, 580, getProperty("composerbg.width")+10, 70, '0000ff')
+    luaGraphic('composerborder', 0, 650, getProperty("composerbg.width")+10, 70, '0000ff')
     setObjectOrder("composerborder", 1)
     setObjectOrder("composerbg", 2)
     setObjectOrder("composertext", 3)
