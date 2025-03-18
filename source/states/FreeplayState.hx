@@ -69,7 +69,7 @@ class FreeplayState extends MusicBeatState
 
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In Freeplay Menu", null);
+		DiscordClient.changePresence("Freeplay Menu", null);
 		#end
 
 		if(WeekData.weeksList.length < 1)

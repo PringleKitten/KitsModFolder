@@ -1,4 +1,0 @@
-Value1:
-1 = Play video in Background
-2 = Play Cutscene
-Value2: Video Name

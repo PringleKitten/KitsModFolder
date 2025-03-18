@@ -466,7 +466,7 @@ class TitleState extends MusicBeatState
 			{
 				playJingle = false;
 			}
-			else //Default! Edit this one!!
+			else
 			{
 				remove(credGroup);
 				FlxG.camera.flash(FlxColor.WHITE, 4);

@@ -1,3 +1,6 @@
+if not getPropertyFromClass('backend.ClientPrefs', 'data.mechanics') then
+    close()
+end
 function cdal(al)
     allowCountdown = al
 end
@@ -19,9 +22,8 @@ function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to
 end
 
 function onSongStart()
-    mechanics = getPropertyFromClass("backend.ClientPrefs", "data.mechanics")
     forceMobile = getPropertyFromClass("backend.ClientPrefs", "data.mobileMechanics")
-    if mechanics and forceMobile then
+    if forceMobile then
         luasprite('ddgg','me/buttons/sbutton',0,580,'other',0.7,0.7,0,0,'.',true)
     end
 end
@@ -47,63 +49,59 @@ end
 
 function onEvent(name, value1, value2)
     if name == "DodgeForBF" then
-        if mechanics then
-            --Get Dodge time
-            DodgeTime = (value1)
-            Dodged = false
-            names = name
-            --Make Dodge Sprite
-            makeAnimatedLuaSprite('ssl', 'me/anim/slash', 600, 550)
-            addAnimationByPrefix('ssl', 'slash', 'slash anim', 120, false)
-            addLuaSprite('ssl', true)
-            setProperty('ssl.scale.x', 4)
-            setProperty('ssl.scale.y', 4)
-            --Set values so you can dodge
-            playSound('DODGEbf')
-            canDodge = true
-            runTimer('Died', DodgeTime)
-            twice = twice+1
-        end
+        --Get Dodge time
+        DodgeTime = (value1)
+        Dodged = false
+        names = name
+        --Make Dodge Sprite
+        makeAnimatedLuaSprite('ssl', 'me/anim/slash', 600, 550)
+        addAnimationByPrefix('ssl', 'slash', 'slash anim', 120, false)
+        addLuaSprite('ssl', true)
+        setProperty('ssl.scale.x', 4)
+        setProperty('ssl.scale.y', 4)
+        --Set values so you can dodge
+        playSound('DODGEbf')
+        canDodge = true
+        runTimer('Died', DodgeTime)
+        twice = twice+1
 	end
 end
 
 function onUpdate()
     if allowCountdown then
-        if mechanics then
-            if forceMobile then
-                if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
-                    sdgd = true
-                else
-                    sdgd = false
-                end
+        if forceMobile then
+            if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
+                sdgd = true
+            else
+                sdgd = false
             end
-            if getProperty('ssl.animation.curAnim.finished') then
-                removeLuaSprite('ssl')
+        end
+        if getProperty('ssl.animation.curAnim.finished') then
+            removeLuaSprite('ssl')
+        end
+        if twice == 2 then
+            twice = 0
+            setProperty('health', getProperty('health')-.8)
+        end
+        if (canDodge == true and (keyboardJustPressed('SPACE') or sdgd)) or (botPlay == true and canDodge == true) then
+            Dodged = true
+            twice = 0
+            if song == 'run-run' and count < 3 then
+                triggerEvent('Play Animation','dodge', 'bf')
+            elseif song ~= 'run-run' then
+                triggerEvent('Play Animation','dodge', 'bf')
             end
-            if twice == 2 then
-                twice = 0
-                setProperty('health', getProperty('health')-.8)
+            setProperty('health', getProperty('health')+.1)
+            canDodge = false
+        elseif (canDodge == false and (keyboardJustPressed('SPACE') or sdgd)) then
+            if songName == 'run-run' and count < 3 then
+                triggerEvent('Play Animation','hurt', 'bf')
+            elseif songName ~= 'run-run' then
+                triggerEvent('Play Animation','hurt', 'bf')
             end
-            if (canDodge == true and (keyboardJustPressed('SPACE') or sdgd)) or (botPlay == true and canDodge == true) then
-                Dodged = true
-                twice = 0
-                if song == 'run-run' and count < 3 then
-                    triggerEvent('Play Animation','dodge', 'bf')
-                elseif song ~= 'run-run' then
-                    triggerEvent('Play Animation','dodge', 'bf')
-                end
-                setProperty('health', getProperty('health')+.1)
-                canDodge = false
-            elseif (canDodge == false and (keyboardJustPressed('SPACE') or sdgd)) then
-                if songName == 'run-run' and count < 3 then
-                    triggerEvent('Play Animation','hurt', 'bf')
-                elseif songName ~= 'run-run' then
-                    triggerEvent('Play Animation','hurt', 'bf')
-                end
-                setProperty('health', getProperty('health')-.3)
-                count = count + 1
-                go = true
-            end
+            setProperty('health', getProperty('health')-.3)
+            count = count + 1
+            go = true
         end
     end
 end
@@ -111,29 +109,26 @@ end
 
 
 function onTimerCompleted(tag, loops, loopsLeft)
-    if mechanics then
-        if tag == 'bfff' then
-            triggerEvent('Change Character', 'bf', 'bfghost')
+    if tag == 'bfff' then
+        triggerEvent('Change Character', 'bf', 'bfghost')
+    end
+    if tag == 'Died' and Dodged == false then
+        count = count + 1
+        if songName == 'run-run' and count < 3 then
+            triggerEvent('Play Animation','hurt', 'bf')
+        elseif songName ~= 'run-run' then
+            triggerEvent('Play Animation','hurt', 'bf')
         end
-        if tag == 'Died' and Dodged == false then
-            count = count + 1
-            if songName == 'run-run' and count < 3 then
-                triggerEvent('Play Animation','hurt', 'bf')
-            elseif songName ~= 'run-run' then
-                triggerEvent('Play Animation','hurt', 'bf')
-            end
-            go = true
-            setProperty('health', getProperty('health')-.8)
-            removeLuaSprite('ssl')
-            canDodge = false
-            twice = 0
-        elseif tag == 'Died' and Dodged == true then
-            Dodged = false
-            canDodge = false
-            removeLuaSprite('ssl')
-            twice = 0
-
-        end
+        go = true
+        setProperty('health', getProperty('health')-.8)
+        removeLuaSprite('ssl')
+        canDodge = false
+        twice = 0
+    elseif tag == 'Died' and Dodged == true then
+        Dodged = false
+        canDodge = false
+        removeLuaSprite('ssl')
+        twice = 0
     end
 end
 

@@ -31,10 +31,6 @@
 	<define name="MULTITHREADED_LOADING" /> <!-- UNCOMMENTING THIS LINE WILL ENABLE MULTITHREADED LOADING, WHICH IMPROVES LOADING TIMES, BUT WITH A LOW CHANCE FOR THE GAME FREEZE ON SONG LOAD -->
 	<define name="SHOW_LOADING_SCREEN" />
 	<define name="PSYCH_WATERMARKS"/> <!-- DELETE THIS TO REMOVE THE PSYCH LOGO FROM LOADING SCREEN -->
-
-	<section if="officialBuild">
-		<define name="BASE_GAME_FILES" />
-	</section>
 	<define name="VIDEOS_ALLOWED" if="windows || linux || android || mac" unless="32bits"/>
 
 	<!-- ____________________________ Window Settings ___________________________ -->
@@ -182,7 +178,7 @@
 	<!-- _________________________________ Custom _______________________________ -->
 	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
 
-	<assets path='art/icons/iconOG.png' rename='icon.png' if="linux" />
+	<assets path='art/icons/iconOG.png' rename='icon.png' if="linux || mac" />
 	
 	<icon path="art/icons/icon16.png" size='16'/>
 	<icon path="art/icons/icon32.png" size='32'/>

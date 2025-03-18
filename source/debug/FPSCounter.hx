@@ -63,7 +63,7 @@ class FPSCounter extends TextField
 
  public dynamic function updateText():Void { // so people can override it in hscript
      text = 'FPS: ${currentFPS}'
-     + '\nRAM: ${flixel.util.FlxStringUtil.formatBytes(cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_RESERVED))}';
+     + '\nMemory: ${flixel.util.FlxStringUtil.formatBytes(cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_RESERVED))}';
 
      if (ClientPrefs.data.cacheOnGPU) {
          text += '\nGPU Cache: ${flixel.util.FlxStringUtil.formatBytes(openfl.Lib.current.stage.context3D.totalGPUMemory)}';

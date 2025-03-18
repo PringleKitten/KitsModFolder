@@ -9117,7 +9117,7 @@
 	"song": "Octagon of Destiny",
 	"needsVoices": false,
 	"validScore": true,
-	"stage": "void",
+	"stage": "no-bg",
 	"bpm": 150,
 	"speed": 2.4,
 	"format": "psych_v1_convert"

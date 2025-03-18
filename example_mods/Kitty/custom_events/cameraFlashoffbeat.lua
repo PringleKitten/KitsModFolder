@@ -1,5 +1,12 @@
 c = 'FFFFFF'
 s = 0.8
+
+function onCreate()
+    if not flashingLights then
+        close()
+    end
+end
+
 function onEvent(n,v1,v2)
     if n == 'cameraFlashoffbeat' then
         if not run then

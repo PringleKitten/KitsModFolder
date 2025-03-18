@@ -1,3 +1,6 @@
+if not getPropertyFromClass('backend.ClientPrefs', 'data.mechanics') then
+    close()
+end
 function cdal(al)
     allowCountdown = al
 end
@@ -19,9 +22,8 @@ function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to
 end
 
 function onSongStart()
-    mechanics = getPropertyFromClass("backend.ClientPrefs", "data.mechanics")
     forceMobile = getPropertyFromClass("backend.ClientPrefs", "data.mobileMechanics")
-    if forceMobile and mechanics then
+    if forceMobile then
         luasprite('ddgg','me/buttons/sbutton',0,580,'other',0.7,0.7,0,0,'.',true)
     end
 end
@@ -45,7 +47,7 @@ end
 
 function onEvent(name, value1, value2)
     if name == "DodgeEvent" then
-            if mechanics == true then
+        if mechanics == true then
             --Get Dodge time
             DodgeTime = (value1)
             Dodged = false
@@ -57,7 +59,7 @@ function onEvent(name, value1, value2)
             addLuaSprite('dodge', true) 
             --Set values so you can dodge
             if not songName == 'alan-becker-(rush-e)' then
-            playSound('DODGE')
+                playSound('DODGE')
             end
             canDodge = true
             runTimer('Died', DodgeTime)
@@ -68,45 +70,38 @@ end
 
 function onUpdate()
     if allowCountdown then
-        if mechanics then
-            if forceMobile then
-                if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
-                    sdgd = true
-                else
-                    sdgd = false
-                end
+        if forceMobile then
+            if mouseOverlaps('ddgg', 'camOther') and mouseClicked("left") then
+                sdgd = true
+            else
+                sdgd = false
             end
-            if twice == 2 then
-                twice = 0
-                setProperty('health', getProperty('health')-.8)
-                removeLuaSprite('dodge')
-            end
-            if (canDodge == true and (keyboardJustPressed('SPACE') or sdgd)) or (botPlay == true and canDodge == true) then
-                Dodged = true
-                twice = 0
-                removeLuaSprite('dodge')
-                canDodge = false
-                setProperty('health', getProperty('health')+.1)
-            elseif (canDodge == false and (keyboardJustPressed('SPACE') or sdgd)) then
-                setProperty('health', getProperty('health')-.3)
-            end
+        end
+        if twice == 2 then
+            twice = 0
+            setProperty('health', getProperty('health')-.8)
+            removeLuaSprite('dodge')
+        end
+        if (canDodge == true and (keyboardJustPressed('SPACE') or sdgd)) or (botPlay == true and canDodge == true) then
+            Dodged = true
+            twice = 0
+            removeLuaSprite('dodge')
+            canDodge = false
+            setProperty('health', getProperty('health')+.1)
+        elseif (canDodge == false and (keyboardJustPressed('SPACE') or sdgd)) then
+            setProperty('health', getProperty('health')-.3)
         end
     end
 end
 
-
-
 function onTimerCompleted(tag, loops, loopsLeft)
-    if mechanics then
-        if tag == 'Died' and Dodged == false then
-            setProperty('health', getProperty('health')-.8)
-            removeLuaSprite('dodge')
-            twice = 0
-        elseif tag == 'Died' and Dodged == true then
-            Dodged = false
-            removeLuaSprite('dodge')
-            twice = 0
-
-        end
+    if tag == 'Died' and Dodged == false then
+        setProperty('health', getProperty('health')-.8)
+        removeLuaSprite('dodge')
+        twice = 0
+    elseif tag == 'Died' and Dodged == true then
+        Dodged = false
+        removeLuaSprite('dodge')
+        twice = 0
     end
 end

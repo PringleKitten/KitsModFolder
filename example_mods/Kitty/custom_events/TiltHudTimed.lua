@@ -1,19 +1,14 @@
+if not getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
+    close()
+end
 local ran = false
 local thing2 = 1
 local v1 = false
 
-function onCreatePost()
-    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') == false then
-        close(true)
-    end
-end
-
-
 function onEvent(name, value1, value2)
-    if name == "TiltHudTimed" and getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
+    if name == "TiltHudTimed" then
         value1 = tonumber(-value1)
         value2 = tonumber(value2)
-
         if value1 == 1234 then
             v1 = true
         elseif value1 == 1111 then
@@ -69,8 +64,6 @@ function onEvent(name, value1, value2)
 end
 
 function onBeatHit()
-    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') and v1 then
-        thing2 = -thing2
-        doTweenAngle('rotate', 'camHUD', thing2 * 5, crochet / 1000, 'quadInOut')
-    end
+    thing2 = -thing2
+    doTweenAngle('rotate', 'camHUD', thing2 * 5, crochet / 1000, 'quadInOut')
 end

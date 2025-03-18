@@ -4,7 +4,7 @@ local videoName = 'octagon'
 local offset = 0
 function onCountdownStarted()
     startVideo(videoName, false, true, false, false)
-    debugPrint('Loaded Video I hope?')
+    
 end
 function onSongStart()
     offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
@@ -18,6 +18,6 @@ end
 function onTimerCompleted(tag)
     if tag == 'vid' then
         callScript('scripts/videoSprite', 'makeVideoSprite', {videoName, videoName,'camGame',1})
-        close(true)
+        close()
     end
 end

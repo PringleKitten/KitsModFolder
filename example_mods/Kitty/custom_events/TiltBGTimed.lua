@@ -1,36 +1,38 @@
+if not getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
+    close()
+end
 local ran = false
 local thing2 = 1
 local v1 = false
 
-function onCreatePost()
-    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') == false then
-        close(true)
-    end
-end
-
-
 function onEvent(name, value1, value2)
-    if name == "TiltBGTimed" and getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
-        value1 = tonumber(value1)
+    if name == "TiltBGTimed" then
+        value1 = tonumber(-value1)
         value2 = tonumber(value2)
-
         if value1 == 1234 then
             v1 = true
         elseif value1 == 1111 then
             v1 = false
             if value2 > 0.011 then
-                doTweenAngle("GUI1Bruhtween", "camGame", 0, value2, "quadInOut")
+                doTweenAngle("bgGUIBruhtween", "camGame", 0, value2, "quadInOut")
             else
                 setProperty('camGame.angle', 0)
             end
-        elseif value2 < 0.011 then
-            if value1 == newV then
-                setProperty('camGame.angle', -value1)
-            else
+        end
+        if value2 < 0.011 then
+            if whar ~= value1 then
+                lopping = false
+            end
+            if (value1 == newV) or lopping then
+                lopping = true
+                newV = -newV
+                whar = value1
+                setProperty('camGame.angle', newV)
+            end
+            if not lopping then
+                newV = value1
                 setProperty('camGame.angle', value1)
             end
-            ran = not ran
-            newV = value1
         elseif value2 > 0.011 then
             if value1 == 0 then
                 angle = 0
@@ -55,15 +57,13 @@ function onEvent(name, value1, value2)
                 angle = value1
             end
             cV = value1
-            doTweenAngle('GUI1' .. tostring(value1) .. 'tween', 'camGame', angle, value2, 'linear')
+            doTweenAngle('bgGUI' .. tostring(value1) .. 'tween', 'camGame', angle, value2, 'linear')
             ran = not ran
         end
     end
 end
 
 function onBeatHit()
-    if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') and v1 then
-        thing2 = -thing2
-        doTweenAngle('roadadadtate', 'camGame', thing2 * 5, crochet / 1000, 'quadInOut')
-    end
+    thing2 = -thing2
+    doTweenAngle('bgrotate', 'camGame', thing2 * 5, crochet / 1000, 'quadInOut')
 end

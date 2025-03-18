@@ -69,5 +69,5 @@ function onBeatHit()
 end
 
 function onDestroy()
-    close(true)
+    close()
 end

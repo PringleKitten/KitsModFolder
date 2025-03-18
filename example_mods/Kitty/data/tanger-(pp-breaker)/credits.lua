@@ -61,8 +61,14 @@ function onTweenCompleted(tag)
     for _, credits in ipairs(credits) do
         if tag == credits..'away' then
             removeLuaSprite(credits)
-            close(true)
+            runTimer('no', 0.01)
         end
+    end
+end
+
+function onTimerCompleted(tag)
+    if tag == 'no' then
+        close()
     end
 end
 

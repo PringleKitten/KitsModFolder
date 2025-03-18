@@ -15,7 +15,10 @@ selectedUnderlaySettings = false
 	selectedUnderlayTypeSettings = false
 		underlayTypeSettings = 'None' -- Options are 'None', 'Player Only', 'Player and Opponent'
 	selectedUnderlayOpacitySettings = false
-
+local readed = false
+	function sawDisclaimer(read)
+		readed = read
+	end
 
 --------------------------------------------------------------------------------------
 ------------------------------Beginning of Script Set UP------------------------------
@@ -36,7 +39,9 @@ function simpleishText(tag, text, textWidth, xPos, yPos, size, alignment, camera
 	addLuaText(tag)
 end
 function keyPress(key)
-	return getPropertyFromClass('flixel.FlxG', 'keys.justPressed.'..key)
+	if readed then
+		return getPropertyFromClass('flixel.FlxG', 'keys.justPressed.'..key)
+	end
 end
 
 --------------------------------------------------------------------------------------
@@ -591,5 +596,5 @@ end
 function onSongStart()
 	callScript("custom_events/DodgeForBF", "cdal", {allowCountdown})
 	callScript("custom_events/DodgeEvent", "cdal", {allowCountdown})
-	close(true)
+	close()
 end

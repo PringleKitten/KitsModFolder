@@ -1,10 +1,9 @@
-local videoName = 'absse'
+local videoName = 'abss'
 
 
 local offset = 0
 function onCountdownStarted()
     startVideo(videoName, false, true, false, false)
-    debugPrint('Loaded Video I hope?')
 end
 function onSongStart()
     offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
@@ -63,13 +62,7 @@ end
 
 function onTimerCompleted(tag)
     if tag == 'vid' then
-        callScript('scripts/videoSprite', 'makeVideoSprite', {videoName, videoName,'camGame',0.422})
-    end
-end
-
-function onBeatHit()
-    if curStep > 31 then
-        setProperty('camHUD.angle', 0)
-        doTweenAngle('GUI3tween', 'camHUD', -7, 0.845, 'easeOut');
+        callScript('scripts/videoSprite', 'makeVideoSprite', {videoName, videoName,'camGame',0.3175})
+        close()
     end
 end

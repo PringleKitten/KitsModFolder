@@ -8,7 +8,7 @@ function onCreatePost()
         mscrol = getPropertyFromClass('backend.ClientPrefs', 'data.middleScroll')
         script = true
     else
-        close(true)
+        close()
     end
 end
 

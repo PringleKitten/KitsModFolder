@@ -2,7 +2,18 @@ local pran1 = false
 local pran = false
 local oran = false
 local oran1 = false
+local insttt = false
 local hb = 1
+
+local bpm = 0
+local beatDur = 0
+local tweenTime = 0
+
+function onCreatePost()
+    bpm = getPropertyFromClass('backend.Conductor','bpm')
+    beatDur = 60 / bpm
+    tweenTime = beatDur * 0.7
+end
 
 function onEvent(name, value1, value2)
     if name == "HideNotes" then
@@ -26,77 +37,77 @@ function onEvent(name, value1, value2)
         end
         if value1 == 1 then
             if oran then
-                showO()
+                showO();
             else
-                hideO()
+                hideO();
             end
         elseif value1 == 12 then
-            hideO()
+            hideO();
         elseif value1 == 11 then
             if oran then
-                showOF()
+                showOF();
             else
-                hideO()
+                hideO();
             end
         elseif value1 == 112 then
-            showOF()
+            showOF();
         elseif value1 == 2 then
             if pran then
-                showPF()
+                showPF();
             else
-                hideP()
+                hideP();
             end
         elseif value1 == 22 then
             if pran then
-                showP()
+                showP();
             else
-                hideP()
+                hideP();
             end
         elseif value1 == 222 then
-            showPF()
+            showPF();
         elseif value1 == 0 then
-            showPF()
-            showO()           
+            showPF();
+            showO();        
         elseif value1 == 100 then
-            showPF()
-            showOF()
+            showPF();
+            showOF();
         end
         if value2 == 0 then
-            showPFa()
-            showOa()
+            showPFa();
+            showOa();
         elseif value2 == 100 then
-            showPFa()
-            showOFa()
+            showPFa();
+            showOFa();
         elseif value2 == 1 then
             if oran1 then
-                showOa()
+                showOa();
             else
-                hideOa()
+                hideOa();
             end
         elseif value2 == 12 then
-            hideOa()
+            hideOa();
         elseif value2 == 11 then
             if oran1 then
-                showOFa()    
+                showOFa();   
             else
-                hideOa()
+                hideOa();
             end
         elseif value2 == 112 then
-            showOFa()
+            showOFa();
         elseif value2 == 2 then
             if pran1 then
-                showPFa()
+                showPFa();
             else
-                hidePa()
+                hidePa();
             end
         elseif value2 == 22 then
             if pran1 then
-                showPa()
+                showPa();
             else
-                hidePa()
+                hidePa();
             end
         elseif value2 == 222 then
-            showPFa()
+            showPFa();
         end
         local Pa = getPropertyFromGroup('notes', 4, 'alpha')
         local Oa = getPropertyFromGroup('notes', 0, 'alpha')
@@ -113,42 +124,42 @@ function onEvent(name, value1, value2)
             value2 = value2
         end
 		if value1 == '1' then
-			hideUI(false,false,0)
-			hudHideN()
+			hideUI(false,false,0);
+			hudHideN();
 		elseif value1 == '2' then
-			showUI()
-			hudShowN()
+			showUI();
+			hudShowN();
 		elseif value1 == '22' then
-			hideUI(true,false,0)
+			showUI(true,false,1);
 		elseif value1 == '222' then
-			hideUI(false,true,0)
+			showUI(false,true,1);
 		elseif value1 == '0' then
-			showUI()
-			hudShowN()
+			showUI();
+			hudShowN();
 		end
 		if value2 == '1' then
-			hideUI(true,true,0)
+			hideUI(true,true,0);
 		elseif value2 == '12' then
-			hideUI(true,false,0)
+			hideUI(true,false,0);
 		elseif value2 == '122' then
-			hideUI(false,true,0)
+			hideUI(false,true,0);
 		elseif value2 == '11' then
-			hideUI(false,false,0)
-			hudHideN()
+			hideUI(false,false,0);
+			hudHideN();
 		elseif value2 == '2' then
-			hideUI(true,true,1)
+			hideUI(true,true,1);
 		elseif value2 == '22' then
-			hideUI(true,false,1)
+			hideUI(true,false,1);
 		elseif value2 == '222' then
-			hideUI(false,true,1)
+			hideUI(false,true,1);
 		elseif value2 == '3' then
-			hideUI(false,false,1)
+			hideUI(false,false,1);
 		elseif value2 == '4' then
-			combO(false)
+			combO(false);
 		elseif value2 == '44' then
-			combO(false)
+			combO(false);
 		elseif value2 == '444' then
-			combO(true)
+			combO(true);
 		end
 	end	
 end
@@ -166,10 +177,10 @@ function hideUI(kPNa,kONa,hB)
 		hb = hb
 	end
 	if kPN or kON then
-		hudHideN()
+		hudHideN();
 	end
-	setProperty('healthBar.alpha', 0);
-	setProperty('healthBarBG.alpha', 0);
+	setProperty('healthBar.alpha', hB);
+	setProperty('healthBarBG.alpha', hB);
 	setProperty('iconP1.alpha', 0);
 	setProperty('iconP2.alpha', 0);
 	setProperty('scoreTxt.alpha', 0);
@@ -179,23 +190,32 @@ function hideUI(kPNa,kONa,hB)
 	setProperty('timeBarBG.visible', false)
 	setProperty('timeTxt.visible', false)
 end
-function showUI()
-	hb = 1
-	setProperty('timeBar.visible', true)
-	setProperty('timeBarBG.visible', true)
-	setProperty('timeTxt.visible', true)
-	setProperty('healthBar.alpha', 1);
-	setProperty('healthBarBG.alpha', 1);
-	setProperty('iconP1.alpha', 1);
-	setProperty('iconP2.alpha', 1);
+function showUI(kPNa,kONa,hB)
+    if hB == nil then hB = 1 end
+    if (kPNa ~= nil or kPNa ~= '') then
+		kPN = kPNa
+	end
+	if (kONa ~= nil or kONa ~= '') then
+		kON = kONa
+	end
+	if (hb == nil or hb == '') then
+		hb = hb
+	end
+	if kPN or kON then
+		hudHideN();
+	end
+	setProperty('timeBar.visible', true);
+	setProperty('timeBarBG.visible', true);
+	setProperty('timeTxt.visible', true);
+	setProperty('healthBar.alpha', hB);
+	setProperty('healthBarBG.alpha', hB);
+	setProperty('iconP1.alpha', hB);
+	setProperty('iconP2.alpha', hB);
 	setProperty('scoreTxt.alpha', 1);
 	setProperty('timeBar.alpha', 1);
 	setProperty('timeTxt.alpha', 1);
 end
 function hudHideN()
-	local bpm = getPropertyFromClass('backend.Conductor','bpm')
-    local beatDur = 60 / bpm
-    local tweenTime = beatDur * 0.7
 	pN = 0
 	oN = 0
     pran1 = true
@@ -213,14 +233,14 @@ function hudHideN()
         oran1 = false
 	end
 	if insttt then
-		setPropertyFromGroup("playerStrums", 0,'alpha',pN)
-		setPropertyFromGroup("playerStrums", 1,'alpha',pN)
-		setPropertyFromGroup("playerStrums", 2,'alpha',pN)
-		setPropertyFromGroup("playerStrums", 3,'alpha',pN)
-		setPropertyFromGroup("opponentStrums", 0,'alpha',oN)
-		setPropertyFromGroup("opponentStrums", 1,'alpha',oN)
-		setPropertyFromGroup("opponentStrums", 2,'alpha',oN)
-		setPropertyFromGroup("opponentStrums", 3,'alpha',oN)
+		setPropertyFromGroup("playerStrums", 0,'alpha',pN);
+		setPropertyFromGroup("playerStrums", 1,'alpha',pN);
+		setPropertyFromGroup("playerStrums", 2,'alpha',pN);
+		setPropertyFromGroup("playerStrums", 3,'alpha',pN);
+		setPropertyFromGroup("opponentStrums", 0,'alpha',oN);
+		setPropertyFromGroup("opponentStrums", 1,'alpha',oN);
+		setPropertyFromGroup("opponentStrums", 2,'alpha',oN);
+		setPropertyFromGroup("opponentStrums", 3,'alpha',oN);
 	else
 		noteTweenAlpha("oz1",0,oN,tweenTime,"quartInOut");
 		noteTweenAlpha("oz2",1,oN,tweenTime,"quartInOut");
@@ -234,14 +254,14 @@ function hudHideN()
 end
 function hudShowN()
 	if insttt then
-		setPropertyFromGroup("playerStrums", 0,'alpha',1)
-		setPropertyFromGroup("playerStrums", 1,'alpha',1)
-		setPropertyFromGroup("playerStrums", 2,'alpha',1)
-		setPropertyFromGroup("playerStrums", 3,'alpha',1)
-		setPropertyFromGroup("opponentStrums", 0,'alpha',1)
-		setPropertyFromGroup("opponentStrums", 1,'alpha',1)
-		setPropertyFromGroup("opponentStrums", 2,'alpha',1)
-		setPropertyFromGroup("opponentStrums", 3,'alpha',1)
+		setPropertyFromGroup("playerStrums", 0,'alpha',1);
+		setPropertyFromGroup("playerStrums", 1,'alpha',1);
+		setPropertyFromGroup("playerStrums", 2,'alpha',1);
+		setPropertyFromGroup("playerStrums", 3,'alpha',1);
+		setPropertyFromGroup("opponentStrums", 0,'alpha',1);
+		setPropertyFromGroup("opponentStrums", 1,'alpha',1);
+		setPropertyFromGroup("opponentStrums", 2,'alpha',1);
+		setPropertyFromGroup("opponentStrums", 3,'alpha',1);
 	else
 		noteTweenAlpha("oz1",0,1,tweenTime,"quartInOut");
 		noteTweenAlpha("oz2",1,1,tweenTime,"quartInOut");
@@ -265,12 +285,12 @@ end
 function showOF()
     opS = true
     if ist then
-        sPFG(false,'opponentStrums',1)
+        sPFG(false,'opponentStrums',1);
     end
     if ager then
-        sPFG(true,'o','a',1)
+        sPFG(true,'o','a',1);
     else
-        sPFG(true,'o',1)
+        sPFG(true,'o',1);
     end
     oran1 = false
     oran = false
@@ -278,12 +298,12 @@ end
 function showO()
     opS = true
     if ist then
-        sPFG(false,'opponentStrums',0.5)
+        sPFG(false,'opponentStrums',0.5);
     end
     if ager then
-        sPFG(true,'o','b',0.5)
+        sPFG(true,'o','b',0.5);
     else
-        sPFG(true,'o',0.5)
+        sPFG(true,'o',0.5);
     end
     oran1 = false
     oran = false
@@ -291,12 +311,12 @@ end
 function showPF()
     plS = true
     if ist then
-        sPFG(false,'playerStrums',1)
+        sPFG(false,'playerStrums',1);
     end
     if ager then
-        sPFG(true,'o','c',1)
+        sPFG(true,'o','c',1);
     else
-        sPFG(true,'o',1)
+        sPFG(true,'o',1);
     end
     pran1 = false
     pran = false
@@ -304,12 +324,12 @@ end
 function showP()
     plS = true
     if ist then
-        sPFG(false,'playerStrums',0.5)
+        sPFG(false,'playerStrums',0.5);
     end
     if ager then
-        sPFG(true,'o','d',0.5)
+        sPFG(true,'o','d',0.5);
     else
-        sPFG(true,'o',0.5)
+        sPFG(true,'o',0.5);
     end
     pran1 = false
     pran = false
@@ -317,12 +337,12 @@ end
 function hideO()
     opS = true
     if ist then
-        sPFG(false,'opponentStrums',0)
+        sPFG(false,'opponentStrums',0);
     end
     if ager then
-        sPFG(true,'o','e',0)
+        sPFG(true,'o','e',0);
     else
-        sPFG(true,'o',0)
+        sPFG(true,'o',0);
     end
     oran1 = true
     oran = true
@@ -330,12 +350,12 @@ end
 function hideP()
     plS = true
     if ist then
-        sPFG(false,'playerStrums',0)
+        sPFG(false,'playerStrums',0);
     end
     if ager then 
-        sPFG(true,'o','f',0)
+        sPFG(true,'o','f',0);
     else
-        sPFG(true,'o',0)
+        sPFG(true,'o',0);
     end
     pran1 = true
     pran = true
@@ -361,19 +381,19 @@ function sPFG(tween,stl,bit,num)
         end
     else
         for i = 0,3 do
-            setPropertyFromGroup(stl,i,'alpha',num)
+            setPropertyFromGroup(stl,i,'alpha',num);
         end
     end
 end
 function showOFa()
     opS = true
     if ist then
-        sPFGa(false,'opponentStrums',1)
+        sPFGa(false,'opponentStrums',1);
     end
     if ager then
-        sPFGa(true,'o','a',1)
+        sPFGa(true,'o','a',1);
     else
-        sPFGa(true,'o',1)
+        sPFGa(true,'o',1);
     end
     oran1 = false
     oran = false
@@ -381,12 +401,12 @@ end
 function showOa()
     opS = true
     if ist then
-        sPFGa(false,'opponentStrums',0.5)
+        sPFGa(false,'opponentStrums',0.5);
     end
     if ager then
-        sPFGa(true,'o','b',0.5)
+        sPFGa(true,'o','b',0.5);
     else
-        sPFGa(true,'o',0.5)
+        sPFGa(true,'o',0.5);
     end
     oran1 = false
     oran = false
@@ -394,12 +414,12 @@ end
 function showPFa()
     plS = true
     if ist then
-        sPFGa(false,'playerStrums',1)
+        sPFGa(false,'playerStrums',1);
     end
     if ager then
-        sPFGa(true,'o','c',1)
+        sPFGa(true,'o','c',1);
     else
-        sPFGa(true,'o',1)
+        sPFGa(true,'o',1);
     end
     pran1 = false
     pran = false
@@ -407,12 +427,12 @@ end
 function showPa()
     plS = true
     if ist then
-        sPFGa(false,'playerStrums',0.5)
+        sPFGa(false,'playerStrums',0.5);
     end
     if ager then
-        sPFGa(true,'o','d',0.5)
+        sPFGa(true,'o','d',0.5);
     else
-        sPFGa(true,'o',0.5)
+        sPFGa(true,'o',0.5);
     end
     pran1 = false
     pran = false
@@ -420,12 +440,12 @@ end
 function hideOa()
     opS = true
     if ist then
-        sPFGa(false,'opponentStrums',0)
+        sPFGa(false,'opponentStrums',0);
     end
     if ager then
-        sPFGa(true,'o','e',0)
+        sPFGa(true,'o','e',0);
     else
-        sPFGa(true,'o',0)
+        sPFGa(true,'o',0);
     end
     oran1 = true
     oran = true
@@ -433,12 +453,12 @@ end
 function hidePa()
     plS = true
     if ist then
-        sPFGa(false,'playerStrums',0)
+        sPFGa(false,'playerStrums',0);
     end
     if ager then 
-        sPFGa(true,'o','f',0)
+        sPFGa(true,'o','f',0);
     else
-        sPFGa(true,'o',0)
+        sPFGa(true,'o',0);
     end
     pran1 = true
     pran = true
@@ -464,11 +484,11 @@ function sPFGa(tween,stl,bit,num)
         end
     else
         for i = 0,3 do
-            setPropertyFromGroup(stl,i,'alpha',num)
+            setPropertyFromGroup(stl,i,'alpha',num);
         end
     end
 end
 
 function onDestroy()
-    close(true)
+    close()
 end

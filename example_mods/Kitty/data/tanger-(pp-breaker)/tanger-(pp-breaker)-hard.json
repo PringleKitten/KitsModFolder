@@ -4741,7 +4741,7 @@
 	"player3": null,
 	"offset": 0,
 	"song": "tanger-(pp-breaker)",
-	"stage": "black",
+	"stage": "no-bg",
 	"validScore": true,
 	"needsVoices": false,
 	"format": "psych_v1_convert",

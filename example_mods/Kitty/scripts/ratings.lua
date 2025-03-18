@@ -397,28 +397,8 @@ function onUpdate()
      if allowCountdown then
          updHP()
      end
-     updateTimeLeftText()
+     setTextString("timeLeftText", getProperty("timeTxt.text"))
  end        
-
-function updateTimeLeftText()
-    local songLength = getProperty('songLength')
-    local currentTime = getPropertyFromClass('backend.Conductor', 'songPosition')
-    local timeLeft = songLength - currentTime
-
-    if timeLeft < 0 then
-        timeLeft = 0
-    end
-
-    local minutes = math.floor(timeLeft / 60000)
-    local seconds = math.floor((timeLeft % 60000) / 1000)
-
-    local timeLeftString = string.format("%d:%02d", minutes, seconds)
-
-    setTextString("timeLeftText", timeLeftString)
-end
-
-
-
 
 function goodNoteHit(id, noteData, noteType, isSustainNote)
     if getPropertyFromGroup('notes',id,'rating') == 'perfect' then

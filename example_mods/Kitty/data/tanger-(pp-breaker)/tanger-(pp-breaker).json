@@ -4136,7 +4136,7 @@
 	"song": "tanger-(pp-breaker)",
 	"needsVoices": false,
 	"validScore": true,
-	"stage": "black",
+	"stage": "no-bg",
 	"bpm": 250,
 	"speed": 3.4,
 	"format": "psych_v1_convert"

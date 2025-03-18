@@ -1,3 +1,6 @@
+if not getPropertyFromClass('backend.ClientPrefs', 'data.mechanicsAgain') then
+    close()
+end
 local youDoge = false
 local Doge = false
 local dodgingmech = true
@@ -5,7 +8,7 @@ local dodgingmech = true
 function onEvent(name,value1,value2)
     if name == 'customDodgeKey' then
         dodgingmech = getPropertyFromClass('backend.ClientPrefs', 'data.mechanicsAgain')
-            if dodgingmech then
+        if dodgingmech then
             myKeyPressed = keyboardPressed(value1)
             --              ^this^ can be changed so it only runs when it is JUST pressed and NOT held down yada yada yada
             -- but gotta change the 'keyboardPressed(value1)' part to what you want, 
@@ -14,8 +17,8 @@ function onEvent(name,value1,value2)
             -- Same goes for this ^function^
             youDoge = false
             Doge = true
-                runTimer('Dbed', value2)
-            end
+            runTimer('Dbed', value2)
+        end
     end
 end
 
@@ -36,7 +39,7 @@ function onUpdate()
 end
 
 function onTimerCompleted(tag, loops, loopsLeft)
-        if dodgingmech then
+    if dodgingmech then
         if tag == 'Dbed' and youDoge == false then
             setProperty('health', 0)
         end
