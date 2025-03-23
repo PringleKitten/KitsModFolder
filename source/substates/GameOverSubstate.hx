@@ -10,6 +10,8 @@ import flixel.math.FlxPoint;
 import states.StoryMenuState;
 import states.FreeplayState;
 
+import psychlua.*;
+
 class GameOverSubstate extends MusicBeatSubstate
 {
 	public var boyfriend:Character;
@@ -149,7 +151,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 			justPlayedLoop = true;
 		}
-		var ret:Dynamic = callOnScripts('onGameOverConfirm', null, true);
+		var ret:Dynamic = PlayState.instance.callOnScripts('onGameOverConfirm', null, true);
 		if(!isEnding)
 		{
 			if (controls.ACCEPT && ret != LuaUtils.Function_Stop)
