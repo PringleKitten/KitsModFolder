@@ -73,9 +73,6 @@ class LoadingState extends MusicBeatState
 	var loadingText:FlxText;
 
 	var timePassed:Float;
-	var shakeMult:Float = 0;
-	
-	var isSpinning:Bool = false;
 	#else
 	var funkay:FlxSprite;
 	#end

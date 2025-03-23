@@ -1,6 +1,6 @@
 # PringleKitten's Modifcations
 Mechanic type ClientPrefs for those who do stuff with dodging and making modcharts! (and more)
-This also features showing you cheated scores!(WIP)
+This also features showing you cheated scores!
 This is also just an optimized version of Psych Engine, removing a lot of clutter and other things that just were not needed that took up storage.
 
 

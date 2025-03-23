@@ -149,10 +149,10 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 			justPlayedLoop = true;
 		}
-
+		var ret:Dynamic = callOnScripts('onGameOverConfirm', null, true);
 		if(!isEnding)
 		{
-			if (controls.ACCEPT)
+			if (controls.ACCEPT && ret != LuaUtils.Function_Stop)
 			{
 				endBullshit();
 			}
