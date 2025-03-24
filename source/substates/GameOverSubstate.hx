@@ -151,15 +151,22 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 			justPlayedLoop = true;
 		}
-		var ret:Dynamic = PlayState.instance.callOnScripts('onGameOverConfirm', null, true);
 		if(!isEnding)
 		{
-			if (controls.ACCEPT && ret != LuaUtils.Function_Stop)
+			if (controls.ACCEPT)
 			{
+				var ret:Dynamic = PlayState.instance.callOnScripts('onGameOverConfirmPre', true);
+				if (ret == LuaUtils.Function_Stop)
+					return;
+
 				endBullshit();
 			}
 			else if (controls.BACK)
 			{
+				var ret:Dynamic = PlayState.instance.callOnScripts('onGameOverLeavePre', true);
+				if (ret == LuaUtils.Function_Stop)
+					return;
+
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 				FlxG.camera.visible = false;
 				FlxG.sound.music.stop();
