@@ -38,7 +38,7 @@ function onCreate()
             newOff = 75 --Number is YOUR Song Offset
         end
     end
-    for _, curS in pairs({'electroman-adventures','everytime-we-touch'}) do
+    for _, curS in pairs({'everytime-we-touch'}) do
         if songName == curS then
             newOff = 35 --Number is YOUR Song Offset
         end

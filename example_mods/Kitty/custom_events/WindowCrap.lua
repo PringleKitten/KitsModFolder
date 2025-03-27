@@ -56,17 +56,26 @@ end
 function onEvent(name, value1, value2)
     if name == "WindowCrap" then
         value1 = tonumber(value1);
-        value2 = tonumber(value2);
         if value1 == 9090 then
             forceS = true
         elseif value1 == 8080 then
             forceS = false
         end
         if value1 == 1 then
-            movingX = true
+            if value2 == '00' then
+                setPropertyFromClass("openfl.Lib", "application.window.x", ogX)
+            else
+                value2 = tonumber(value2);
+                setPropertyFromClass("openfl.Lib", "application.window.x", value2)
+            end
         end
         if value1 == 2 then
-            movingY = true
+            if value2 == '00' then
+                setPropertyFromClass("openfl.Lib", "application.window.y", ogY)
+            else
+                value2 = tonumber(value2);
+                setPropertyFromClass("openfl.Lib", "application.window.y", value2)
+            end
         end
         if value1 == 3 then
             if value2 == 1 then
@@ -88,21 +97,6 @@ function onEvent(name, value1, value2)
                 setPropertyFromClass("openfl.Lib", "application.window.borderless", false)
                 fbl = false
                 fnbl = true
-            end
-        end
-        if movingX then
-            if value2 == 00 then
-                setPropertyFromClass("openfl.Lib", "application.window.x", ogX)
-            else
-                setPropertyFromClass("openfl.Lib", "application.window.x", value2)
-            end
-        
-        end
-        if movingY then
-            if value2 == 00 then
-                setPropertyFromClass("openfl.Lib", "application.window.y", ogY)
-            else
-                setPropertyFromClass("openfl.Lib", "application.window.y", value2)
             end
         end
     end

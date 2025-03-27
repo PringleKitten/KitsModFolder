@@ -2,9 +2,13 @@ local videoName = 'octagon'
 
 
 local offset = 0
-function onCountdownStarted()
-    startVideo(videoName, false, true, false, false)
-    
+function onCountdownTick(counter)
+    if counter == 0 then
+        startVideo(videoName, false, true)
+        setObjectCamera('videoCutscene','game')
+        setProperty('videoCutscene.alpha', 0.1)
+        setProperty('camGame.zoom',zoom)
+    end
 end
 function onSongStart()
     offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')

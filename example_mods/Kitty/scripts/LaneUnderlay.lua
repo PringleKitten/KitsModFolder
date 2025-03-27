@@ -1,24 +1,22 @@
+if songName == 'final-boss' then
+	close()
+end
 --Made by RamenDominoes edited by PringleKitten
-
 allowCountdown = false
 allowVerticalScroll = true
 allowHorizontalScroll = false
 visualLaneOpacity = 1 * 100
 
 local positionn = 0
-
 local forceMobile = false
+
 selectedBeginSong = true
-	beginSongConfirm = 'YES'
+beginSongConfirm = 'YES'
 
 selectedUnderlaySettings = false
-	selectedUnderlayTypeSettings = false
-		underlayTypeSettings = 'None' -- Options are 'None', 'Player Only', 'Player and Opponent'
-	selectedUnderlayOpacitySettings = false
-local readed = false
-	function sawDisclaimer(read)
-		readed = read
-	end
+selectedUnderlayTypeSettings = false
+underlayTypeSettings = 'None' -- Options are 'None', 'Player Only', 'Player and Opponent'
+selectedUnderlayOpacitySettings = false
 
 --------------------------------------------------------------------------------------
 ------------------------------Beginning of Script Set UP------------------------------
@@ -38,10 +36,8 @@ function simpleishText(tag, text, textWidth, xPos, yPos, size, alignment, camera
 	setObjectCamera(tag, camera)
 	addLuaText(tag)
 end
-function keyPress(key)
-	if readed then
-		return getPropertyFromClass('flixel.FlxG', 'keys.justPressed.'..key)
-	end
+function keyPressM(key)
+	return getPropertyFromClass('flixel.FlxG', 'keys.justPressed.'..key)
 end
 
 --------------------------------------------------------------------------------------
@@ -161,6 +157,11 @@ function luasprite(tag,path,x,y,cam,xs,ys,sfx,sfy,sc,f) -- set certain values to
     end
     addLuaSprite(tag,f)
 end
+function onSongStart()
+	callScript("custom_events/DodgeForBF", "cdal", {allowCountdown})
+	callScript("custom_events/DodgeEvent", "cdal", {allowCountdown})
+	close()
+end
 
 --------------------------------------------------------------------------------------
 ---------------------------------End of Script Set Up---------------------------------
@@ -229,7 +230,7 @@ function buttonStuff()
     	end
 	end
 	if forceMobile then
-		if ((mouseOverlaps('cc', 'camOther') and mouseClicked("left")) or keyPress('C')) and not captions then
+		if ((mouseOverlaps('cc', 'camOther') and mouseClicked("left")) or keyPressM('C')) and not captions then
 			captions = true
 			doTweenAlpha("intxta", "invertxt", 1, 0.2, "linear")
 			doTweenAlpha("keyyInva", "keyyInv", 1, 0.2, "linear")
@@ -245,7 +246,7 @@ function buttonStuff()
 			setObjectCamera('testCaption', 'other')
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('cc', 'camOther') and mouseClicked("left")) or keyPress('C')) and captions then
+		elseif ((mouseOverlaps('cc', 'camOther') and mouseClicked("left")) or keyPressM('C')) and captions then
 			captions = false
 			doTweenAlpha("intxta", "invertxt", 0, 0.2, "linear")
 			doTweenAlpha("keyyInva", "keyyInv", 0, 0.2, "linear")
@@ -254,46 +255,46 @@ function buttonStuff()
 			setTextColor("captiontxt", "FF0000")
 			setTextString('captiontxt','Captions: false')
 			removeLuaText("testCaption")
-		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPress('I')) and inv == 'center' then
+		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPressM('I')) and inv == 'center' then
 			inv = true
 			callScript("scripts/makeCaption", "invt", {true})
 			setTextString('invertxt','Caption Placement: Player')
 			setProperty("testCaption.x", 630)
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPress('I')) and inv then
+		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPressM('I')) and inv then
 			inv = false
 			callScript("scripts/makeCaption", "invt", {false})
 			setTextString('invertxt','Caption Placement: Opponent')
 			setProperty("testCaption.x", 0)
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPress('I')) and not inv then
+		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPressM('I')) and not inv then
 			inv = 'center'
 			callScript("scripts/makeCaption", "middcs", {true})
 			setTextString('invertxt','Caption Placement: Center')
 			screenCenter("testCaption", 'x')
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui == 0 then
+		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPressM('U')) and ui == 0 then
 			ui = 1
 			setTextString('uiStatement','UI: IFE')
-		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui == 1 then
+		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPressM('U')) and ui == 1 then
 			ui = 2
 			setTextString('uiStatement','UI: Psych+IFE')
-		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui == 2 then
+		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPressM('U')) and ui == 2 then
 			ui = 3
 			setTextString('uiStatement','UI: Psych+IFE V2')
-		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPress('U')) and ui == 3 then
+		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPressM('U')) and ui == 3 then
 			ui = 0
 			setTextString('uiStatement','UI: Psych')
-		elseif ((mouseOverlaps('camBn', 'camOther') and mouseClicked("left")) or keyPress('O')) and cam == 'other' then
+		elseif ((mouseOverlaps('camBn', 'camOther') and mouseClicked("left")) or keyPressM('O')) and cam == 'other' then
 			cam = 'game'
 			setTextString("txtcamBn", cam)
-		elseif ((mouseOverlaps('camBn', 'camOther') and mouseClicked("left")) or keyPress('O')) and cam == 'game' then
+		elseif ((mouseOverlaps('camBn', 'camOther') and mouseClicked("left")) or keyPressM('O')) and cam == 'game' then
 			cam = 'hud'
 			setTextString("txtcamBn", cam)
-		elseif ((mouseOverlaps('camBn', 'camOther') and mouseClicked("left")) or keyPress('O')) and cam == 'hud' then
+		elseif ((mouseOverlaps('camBn', 'camOther') and mouseClicked("left")) or keyPressM('O')) and cam == 'hud' then
 			cam = 'other'
 			setTextString("txtcamBn", cam)
 		end
@@ -301,7 +302,7 @@ function buttonStuff()
 			callScript("scripts/ratings", "rtsSetup",{cam,ui})
 		end
 	else
-		if keyPress('C') and not captions then
+		if keyPressM('C') and not captions then
 			captions = true
 			doTweenAlpha("intxta", "invertxt", 1, 0.2, "linear")
 			doTweenAlpha("keyyInva", "keyyInv", 1, 0.2, "linear")
@@ -315,7 +316,7 @@ function buttonStuff()
 			setObjectCamera('testCaption', 'other')
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
-		elseif keyPress('C') and captions then
+		elseif keyPressM('C') and captions then
 			captions = false
 			doTweenAlpha("intxta", "invertxt", 0, 0.2, "linear")
 			doTweenAlpha("keyyInva", "keyyInv", 0, 0.2, "linear")
@@ -323,7 +324,7 @@ function buttonStuff()
 			setTextString('captiontxt','Captions: false')
 			removeLuaText("testCaption")
 		end
-		if keyPress('I') and inv == 'center' then
+		if keyPressM('I') and inv == 'center' then
 			inv = true
 			callScript("scripts/makeCaption", "invt", {true})
 			callScript("scripts/makeCaption", "middcs", {false})
@@ -331,14 +332,14 @@ function buttonStuff()
 			setProperty("testCaption.x", 630)
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
-		elseif keyPress('I') and inv then
+		elseif keyPressM('I') and inv then
 			inv = false
 			callScript("scripts/makeCaption", "middcs", {false})
 			setTextString('invertxt','Caption Placement: Opponent')
 			setProperty("testCaption.x", 0)
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
-		elseif keyPress('I') and not inv then
+		elseif keyPressM('I') and not inv then
 			inv = 'center'
 			callScript("scripts/makeCaption", "middcs", {true})
 			setTextString('invertxt','Caption Placement: Center')
@@ -346,31 +347,31 @@ function buttonStuff()
 			setProperty("testCaption.alpha", 1)
 			runTimer('disprCap',2)
 		end
-		if keyPress('U') and ui == 0 then
+		if keyPressM('U') and ui == 0 then
 			ui = 1
 			setTextString('uiStatement','UI: IFE')
-		elseif keyPress('U') and ui == 1 then
+		elseif keyPressM('U') and ui == 1 then
 			ui = 2
 			setTextString('uiStatement','UI: Psych+IFE')
-		elseif keyPress('U') and ui == 2 then
+		elseif keyPressM('U') and ui == 2 then
 			ui = 3
 			setTextString('uiStatement','UI: Psych+IFE V2')
-		elseif keyPress('U') and ui == 3 then
+		elseif keyPressM('U') and ui == 3 then
 			ui = 0
 			setTextString('uiStatement','UI: Psych')
 		end
-		if keyPress('O') and cam == 'other' then
+		if keyPressM('O') and cam == 'other' then
 			cam = 'game'
 			setTextString("txtcamBn", cam)
-		elseif keyPress('O') and cam == 'game' then
+		elseif keyPressM('O') and cam == 'game' then
 			cam = 'hud'
 			setTextString("txtcamBn", cam)
-		elseif keyPress('O') and cam == 'hud' then
+		elseif keyPressM('O') and cam == 'hud' then
 			cam = 'other'
 			setTextString("txtcamBn", cam)
 		end
 	end
-	if keyPress('U') or keyPress('O') then
+	if keyPressM('U') or keyPressM('O') then
 		callScript("scripts/ratings", "rtsSetup",{cam,ui})
 	end
 end
@@ -385,152 +386,138 @@ function onUpdate()
         doneIt2 = false
     end
 	if not (getProperty('inCutscene') or (getProperty('videoCutscene') or getProperty('videoCutscene.isPlaying'))) then
-	if not allowCountdown then
-        buttonStuff()
-
-	if selectedBeginSong or selectedUnderlaySettings then
-		if keyPress('LEFT') or blft then
-			callScript("scripts/ratings", "ratingPosFunc",{0})
-			blft = false
-			brgh = false
-		elseif keyPress('RIGHT') or brgh then
-			callScript("scripts/ratings", "ratingPosFunc",{1})
-			brgh = false
-			blft = false
-		end
-	end
-
-	if (keyPress('SHIFT') or spc) and selectedBeginSong then
-		for _, value in pairs({'uiStatement','txtuiBn','txtcamBn','txtup','testCaption','txtdown','txtleft','txtright','txtback','txtspace','txtcc','captiontxt','ifso','keyy','keyyInv','invertxt','txtinv'}) do
-            removeLuaText(value)
-        end
-        for _, value in pairs({'uiBn','camBn','up','down','left','right','back','space','cc','invert'}) do
-            removeLuaSprite(value)
-        end
-
-		if inv == 'center' then
-			callScript("scripts/makeCaption", "middcs", {true})
-			callScript("scripts/makeCaptionbystep", "middcs", {true})
-			callScript("scripts/makeCaption", "invt", {false})
-			callScript("scripts/makeCaptionbystep", "invt", {false})
-		else
-			callScript("scripts/makeCaption", "middcs", {false})
-			callScript("scripts/makeCaptionbystep", "middcs", {false})
-			callScript("scripts/makeCaption", "invt", {inv})
-			callScript("scripts/makeCaptionbystep", "invt", {inv})
-		end
-		callScript("scripts/makeCaption", "captionson",{captions})
-		callScript("scripts/makeCaptionbystep", "captionson",{captions})
-		callScript("scripts/script", "capps",{captions})
-		callScript("scripts/ratings", "rtsSetup",{cam,ui})
-		allowCountdown = true
-		startCountdown()
-
-	elseif (keyPress('SHIFT') or spc) and allowVerticalScroll and selectedUnderlaySettings then
-		selectedUnderlaySettings = false
-		selectedUnderlayTypeSettings = true
-		allowHorizontalScroll = true
-
-	elseif (keyPress('BACKSPACE') or bbck) and not selectedBeginSong and allowVerticalScroll and selectedUnderlayTypeSettings then
-		selectedUnderlaySettings = true
-		selectedUnderlayTypeSettings = false
-		allowHorizontalScroll = false
-	elseif (keyPress('BACKSPACE') or bbck) and not selectedBeginSong and allowVerticalScroll and selectedUnderlayOpacitySettings then
-		selectedUnderlaySettings = true
-		selectedUnderlayOpacitySettings = false
-		allowHorizontalScroll = false
-	end
-
-
-	if (keyPress('UP') or bup) and allowVerticalScroll and selectedBeginSong then
-		selectedBeginSong = false
-		selectedUnderlaySettings = true
-	elseif (keyPress('UP') or bup) and allowVerticalScroll and selectedUnderlaySettings then
-		selectedBeginSong = true
-		selectedUnderlaySettings = false
-
-		elseif (keyPress('UP') or bup) and allowVerticalScroll and selectedUnderlayTypeSettings then
-			selectedUnderlayTypeSettings = false
-			selectedUnderlayOpacitySettings = true
-		elseif (keyPress('UP') or bup) and allowVerticalScroll and selectedUnderlayOpacitySettings then
-			selectedUnderlayTypeSettings = true
-			selectedUnderlayOpacitySettings = false
-
-	elseif (keyPress('DOWN') or bdwn) and allowVerticalScroll and selectedBeginSong then
-		selectedBeginSong = false
-		selectedUnderlaySettings = true
-	elseif (keyPress('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlaySettings then
-		selectedBeginSong = true
-		selectedUnderlaySettings = false
-
-		elseif (keyPress('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlayTypeSettings then
-			selectedUnderlayTypeSettings = false
-			selectedUnderlayOpacitySettings = true
-		elseif (keyPress('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlayOpacitySettings then
-			selectedUnderlayTypeSettings = true
-			selectedUnderlayOpacitySettings = false
-
-
-	elseif (keyPress('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'None' then
-		underlayTypeSettings = 'Player and Opponent'
-	elseif (keyPress('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player and Opponent' then
-		underlayTypeSettings = 'Player Only'
-	elseif (keyPress('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player Only' then
-		underlayTypeSettings = 'None'
-
-		elseif (keyPress('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayOpacitySettings then
-			visualLaneOpacity = (visualLaneOpacity - (0.1 * 100))
-			if visualLaneOpacity < (0.1 * 100) then
-				visualLaneOpacity = 0
+		if not allowCountdown then
+    	    buttonStuff()
+			if selectedBeginSong or selectedUnderlaySettings then
+				if keyPressM('LEFT') or blft then
+					callScript("scripts/ratings", "ratingPosFunc",{0})
+					blft = false
+					brgh = false
+				elseif keyPressM('RIGHT') or brgh then
+					callScript("scripts/ratings", "ratingPosFunc",{1})
+					brgh = false
+					blft = false
+				end
 			end
-		elseif (keyPress('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayOpacitySettings then
-			visualLaneOpacity = (visualLaneOpacity + (0.1 * 100))
-			if visualLaneOpacity > (0.9 * 100) then
-				visualLaneOpacity = 100
+			if (keyPressM('SHIFT') or spc) and selectedBeginSong then
+				for _, value in pairs({'uiStatement','txtuiBn','txtcamBn','txtup','testCaption','txtdown','txtleft','txtright','txtback','txtspace','txtcc','captiontxt','ifso','keyy','keyyInv','invertxt','txtinv'}) do
+    		        removeLuaText(value)
+    		    end
+    		    for _, value in pairs({'uiBn','camBn','up','down','left','right','back','space','cc','invert'}) do
+    		        removeLuaSprite(value)
+    		    end
+
+				if inv == 'center' then
+					callScript("scripts/makeCaption", "middcs", {true})
+					callScript("scripts/makeCaptionbystep", "middcs", {true})
+					callScript("scripts/makeCaption", "invt", {false})
+					callScript("scripts/makeCaptionbystep", "invt", {false})
+				else
+					callScript("scripts/makeCaption", "middcs", {false})
+					callScript("scripts/makeCaptionbystep", "middcs", {false})
+					callScript("scripts/makeCaption", "invt", {inv})
+					callScript("scripts/makeCaptionbystep", "invt", {inv})
+				end
+				callScript("scripts/makeCaption", "captionson",{captions})
+				callScript("scripts/makeCaptionbystep", "captionson",{captions})
+				callScript("scripts/script", "capps",{captions})
+				callScript("scripts/ratings", "rtsSetup",{cam,ui})
+				allowCountdown = true
+				startCountdown()
+
+			elseif (keyPressM('SHIFT') or spc) and allowVerticalScroll and selectedUnderlaySettings then
+				selectedUnderlaySettings = false
+				selectedUnderlayTypeSettings = true
+				allowHorizontalScroll = true
+
+			elseif (keyPressM('BACKSPACE') or bbck) and not selectedBeginSong and allowVerticalScroll and selectedUnderlayTypeSettings then
+				selectedUnderlaySettings = true
+				selectedUnderlayTypeSettings = false
+				allowHorizontalScroll = false
+			elseif (keyPressM('BACKSPACE') or bbck) and not selectedBeginSong and allowVerticalScroll and selectedUnderlayOpacitySettings then
+				selectedUnderlaySettings = true
+				selectedUnderlayOpacitySettings = false
+				allowHorizontalScroll = false
 			end
 
-	elseif (keyPress('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'None' then
-		underlayTypeSettings = 'Player Only'
-	elseif (keyPress('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player Only' then
-		underlayTypeSettings = 'Player and Opponent'
-	elseif (keyPress('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player and Opponent' then
-		underlayTypeSettings = 'None'
-	end
 
+			if (keyPressM('UP') or bup) and allowVerticalScroll and selectedBeginSong then
+				selectedBeginSong = false
+				selectedUnderlaySettings = true
+			elseif (keyPressM('UP') or bup) and allowVerticalScroll and selectedUnderlaySettings then
+				selectedBeginSong = true
+				selectedUnderlaySettings = false
 
-	if selectedBeginSong then
-		setTextString('Song Start', '> Begin Song? <')
-		setProperty('Song Start.alpha', 1)
-		setTextString('AssistText', '(Select to begin the song!)')
-		setProperty('AssistText.y', getProperty('Song Start.y') + 80)
-	elseif not selectedBeginSong then
-		setTextString('Song Start', 'Begin Song?')
-		setProperty('Song Start.alpha', 0.5)
-	end
+				elseif (keyPressM('UP') or bup) and allowVerticalScroll and selectedUnderlayTypeSettings then
+					selectedUnderlayTypeSettings = false
+					selectedUnderlayOpacitySettings = true
+				elseif (keyPressM('UP') or bup) and allowVerticalScroll and selectedUnderlayOpacitySettings then
+					selectedUnderlayTypeSettings = true
+					selectedUnderlayOpacitySettings = false
 
-
-	if selectedUnderlaySettings then
-		setTextString('UnderLaySettingsHeader', '> UnderLay Settings <')
-		setProperty('UnderLaySettingsHeader.alpha', 1)
-		setTextString('AssistText', '(Select to edit the Underlay Settings!)')
-		setProperty('AssistText.y', getProperty('UnderLaySettingsHeader.y') + 80)
-	elseif not selectedUnderlaySettings then
-		setTextString('UnderLaySettingsHeader', 'UnderLay Settings')
-		setProperty('UnderLaySettingsHeader.alpha', 0.5)
-	end
-
-		if selectedUnderlayTypeSettings then
-			setTextString('UnderLayTypeSetting', '> UnderLay Type: [ '..underlayTypeSettings..' ] <')
-			setProperty('UnderLayTypeSetting.alpha', 1)
-			setTextString('AssistText', '(Choose the UnderLay Type!)')
-			setProperty('AssistText.y', getProperty('UnderLayTypeSetting.y') + 50)
-		elseif not selectedUnderlayTypeSettings then
-			setTextString('UnderLayTypeSetting', 'UnderLay Type: [ '..underlayTypeSettings..' ]')
-			setProperty('UnderLayTypeSetting.alpha', 0.5)
-		end
-
-		realLaneOpacity = visualLaneOpacity / 100
-
+			elseif (keyPressM('DOWN') or bdwn) and allowVerticalScroll and selectedBeginSong then
+				selectedBeginSong = false
+				selectedUnderlaySettings = true
+			elseif (keyPressM('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlaySettings then
+				selectedBeginSong = true
+				selectedUnderlaySettings = false
+			elseif (keyPressM('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlayTypeSettings then
+				selectedUnderlayTypeSettings = false
+				selectedUnderlayOpacitySettings = true
+			elseif (keyPressM('DOWN') or bdwn) and allowVerticalScroll and selectedUnderlayOpacitySettings then
+				selectedUnderlayTypeSettings = true
+				selectedUnderlayOpacitySettings = false
+			elseif (keyPressM('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'None' then
+				underlayTypeSettings = 'Player and Opponent'
+			elseif (keyPressM('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player and Opponent' then
+				underlayTypeSettings = 'Player Only'
+			elseif (keyPressM('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player Only' then
+			underlayTypeSettings = 'None'
+			elseif (keyPressM('LEFT') or blft) and allowHorizontalScroll and selectedUnderlayOpacitySettings then
+				visualLaneOpacity = (visualLaneOpacity - (0.1 * 100))
+				if visualLaneOpacity < (0.1 * 100) then
+					visualLaneOpacity = 0
+				end
+			elseif (keyPressM('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayOpacitySettings then
+				visualLaneOpacity = (visualLaneOpacity + (0.1 * 100))
+				if visualLaneOpacity > (0.9 * 100) then
+					visualLaneOpacity = 100
+				end
+			elseif (keyPressM('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'None' then
+				underlayTypeSettings = 'Player Only'
+			elseif (keyPressM('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player Only' then
+				underlayTypeSettings = 'Player and Opponent'
+			elseif (keyPressM('RIGHT') or brgh) and allowHorizontalScroll and selectedUnderlayTypeSettings and underlayTypeSettings == 'Player and Opponent' then
+				underlayTypeSettings = 'None'
+			end
+			if selectedBeginSong then
+				setTextString('Song Start', '> Begin Song? <')
+				setProperty('Song Start.alpha', 1)
+				setTextString('AssistText', '(Select to begin the song!)')
+				setProperty('AssistText.y', getProperty('Song Start.y') + 80)
+			elseif not selectedBeginSong then
+				setTextString('Song Start', 'Begin Song?')
+				setProperty('Song Start.alpha', 0.5)
+			end
+			if selectedUnderlaySettings then
+				setTextString('UnderLaySettingsHeader', '> UnderLay Settings <')
+				setProperty('UnderLaySettingsHeader.alpha', 1)
+				setTextString('AssistText', '(Select to edit the Underlay Settings!)')
+				setProperty('AssistText.y', getProperty('UnderLaySettingsHeader.y') + 80)
+			elseif not selectedUnderlaySettings then
+				setTextString('UnderLaySettingsHeader', 'UnderLay Settings')
+				setProperty('UnderLaySettingsHeader.alpha', 0.5)
+			end
+			if selectedUnderlayTypeSettings then
+				setTextString('UnderLayTypeSetting', '> UnderLay Type: [ '..underlayTypeSettings..' ] <')
+				setProperty('UnderLayTypeSetting.alpha', 1)
+				setTextString('AssistText', '(Choose the UnderLay Type!)')
+				setProperty('AssistText.y', getProperty('UnderLayTypeSetting.y') + 50)
+			elseif not selectedUnderlayTypeSettings then
+				setTextString('UnderLayTypeSetting', 'UnderLay Type: [ '..underlayTypeSettings..' ]')
+				setProperty('UnderLayTypeSetting.alpha', 0.5)
+			end
+			realLaneOpacity = visualLaneOpacity / 100
 			if underlayTypeSettings == 'None' then
 				for Strums = 0,3 do
 					removeLuaSprite('UnderLayOpponent'..Strums)
@@ -538,7 +525,6 @@ function onUpdate()
 				for Strums = 4,7 do
 					removeLuaSprite('UnderLayPlayer'..Strums)
 				end
-
 			elseif underlayTypeSettings == 'Player Only' then
 				for Strums = 4,7 do
 					simpleishGraphic('UnderLayPlayer'..Strums, getPropertyFromGroup('strumLineNotes', Strums, 'x'), 0, 112, screenHeight, '000000', 'hud')
@@ -547,7 +533,6 @@ function onUpdate()
 				for Strums = 0,3 do
 					removeLuaSprite('UnderLayOpponent'..Strums)
 				end
-
 			elseif underlayTypeSettings == 'Player and Opponent' then
 				for Strums = 0,3 do
 					simpleishGraphic('UnderLayOpponent'..Strums, getPropertyFromGroup('strumLineNotes', Strums, 'x'), 0, 112, screenHeight, '000000', 'hud')
@@ -558,43 +543,35 @@ function onUpdate()
 					setProperty('UnderLayPlayer'..Strums..'.alpha', realLaneOpacity)
 				end
 			end
+			if selectedUnderlayOpacitySettings then
+				setTextString('UnderLayOpacitySetting','> UnderLay Opacity: [ '..visualLaneOpacity..'% ] <')
+				setProperty('UnderLayOpacitySetting.alpha', 1)
+				setTextString('AssistText', "(Choose the UnderLay's opacity!)")
+				setProperty('AssistText.y', getProperty('UnderLayOpacitySetting.y') + 50)
+			elseif not selectedUnderlayOpacitySettings then
+				setTextString('UnderLayOpacitySetting','UnderLay Opacity: [ '..visualLaneOpacity..'% ]')
+				setProperty('UnderLayOpacitySetting.alpha', 0.5)
+			end
+			if allowCountdown then
 
-		if selectedUnderlayOpacitySettings then
-			setTextString('UnderLayOpacitySetting','> UnderLay Opacity: [ '..visualLaneOpacity..'% ] <')
-			setProperty('UnderLayOpacitySetting.alpha', 1)
-			setTextString('AssistText', "(Choose the UnderLay's opacity!)")
-			setProperty('AssistText.y', getProperty('UnderLayOpacitySetting.y') + 50)
-		elseif not selectedUnderlayOpacitySettings then
-			setTextString('UnderLayOpacitySetting','UnderLay Opacity: [ '..visualLaneOpacity..'% ]')
-			setProperty('UnderLayOpacitySetting.alpha', 0.5)
+				allowVerticalScroll = false
+				allowHorizontalScroll = false
+				doTweenAlpha('BG', 'BG', 0, 1)
+
+				setProperty('Song Start.visible', false)
+				setProperty('UnderLaySettingsHeader.visible', false)
+				setProperty('UnderLayTypeSetting.visible', false)
+				setProperty('UnderLayOpacitySetting.visible', false)
+				setProperty('AssistText.visible', false)
+				setProperty('NavigationText.visible', false)
+
+			end
+			bup = false
+			bdwn = false
+			brgh = false
+			blft = false
+			spc = false
+			bbck = false
 		end
-
-		if allowCountdown then
-
-			allowVerticalScroll = false
-			allowHorizontalScroll = false
-			doTweenAlpha('BG', 'BG', 0, 1)
-
-			setProperty('Song Start.visible', false)
-			setProperty('UnderLaySettingsHeader.visible', false)
-			setProperty('UnderLayTypeSetting.visible', false)
-			setProperty('UnderLayOpacitySetting.visible', false)
-			setProperty('AssistText.visible', false)
-			setProperty('NavigationText.visible', false)
-
-		end
-		bup = false
-		bdwn = false
-		brgh = false
-		blft = false
-		spc = false
-		bbck = false
 	end
-end
-end
-
-function onSongStart()
-	callScript("custom_events/DodgeForBF", "cdal", {allowCountdown})
-	callScript("custom_events/DodgeEvent", "cdal", {allowCountdown})
-	close()
 end

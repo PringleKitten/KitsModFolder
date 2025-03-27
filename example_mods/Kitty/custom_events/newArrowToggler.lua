@@ -1,4 +1,3 @@
-
 local script = false
 function onCreatePost()
     if getPropertyFromClass('backend.ClientPrefs', 'data.assetMovement') then
@@ -35,6 +34,7 @@ function onSongStart()
     dpsy2 = defaultPlayerStrumY2
     dpsy3 = defaultPlayerStrumY3
     curtwm = curtwm
+    runTimer('lagLess', 0.1)
 end
 function onUpdate()
     if lk then
@@ -547,5 +547,32 @@ function onEvent(name, value1, value2)
                 noteTweenY("nAdefaultPlayerStrumY3",7,defaultPlayerStrumY3,value2,curtwm);
             end
         end
+    end
+end
+
+function onTimerCompleted(tag)
+    if tag == 'lagLess' then
+        for i = 0, getProperty('unspawnNotes.length') - 1 do
+            if dscrol or getPropertyFromGroup('playerStrums',1,'downScroll') then
+                if getPropertyFromGroup('notes',i,'isSustainNote') then
+                    setPropertyFromGroup('notes',i,'flipY',true)
+                    setPropertyFromGroup('notes', i, 'correctionOffset', 0)
+                end
+                if getPropertyFromGroup('unspawnNotes',i,'isSustainNote') then
+                    setPropertyFromGroup('unspawnNotes',i,'flipY',true)
+                    setPropertyFromGroup('unspawnNotes', i, 'correctionOffset', 0)
+                end
+            elseif not dscrol or not getPropertyFromGroup('playerStrums',1,'downScroll') then
+                if getPropertyFromGroup('notes',i,'isSustainNote') then
+                    setPropertyFromGroup('notes',i,'flipY',false)
+                    setPropertyFromGroup('notes', i, 'correctionOffset', 50)
+                end
+                if getPropertyFromGroup('unspawnNotes',i,'isSustainNote') then
+                    setPropertyFromGroup('unspawnNotes',i,'flipY',false)
+                    setPropertyFromGroup('unspawnNotes', i, 'correctionOffset', 50)
+                end
+            end
+        end
+        runTimer('lagLess', 0.07)
     end
 end

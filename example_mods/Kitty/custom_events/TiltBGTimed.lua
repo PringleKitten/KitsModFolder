@@ -64,6 +64,8 @@ function onEvent(name, value1, value2)
 end
 
 function onBeatHit()
-    thing2 = -thing2
-    doTweenAngle('bgrotate', 'camGame', thing2 * 5, crochet / 1000, 'quadInOut')
+    if v1 then
+        thing2 = -thing2
+        doTweenAngle('bgrotate', 'camGame', thing2 * 5, crochet / 1000, 'quadInOut')
+    end
 end

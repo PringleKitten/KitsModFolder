@@ -1,3 +1,7 @@
+if songName == 'final-boss' then
+	close()
+end
+
 local position = 1 -- 1 is Left | 2 is Right
 local uiType = 0 -- 0 is Psych UI | 1 is IFE UI | 2 is a Mix of both | 3 Is both but doesn't show "Perfects" and uses only health bar
 local uiFollowsHideUIEvent = false -- For separate songs, make a lua script that calls this script to change this to true
@@ -170,7 +174,7 @@ function txtSet(tag,w,a,t,o)
 end
 
 function onCreatePost()
-    health = (getProperty('health')*50)
+    health = (getHealth()*50)
     nr = (math.floor(rating*10000)/100)
     --Text Basics!
     luatxt("msText", 'ms', 0, 0, 0, 'other', 20, 'FFFFFF', '.', 'left', '.')
@@ -239,62 +243,68 @@ function txtShit()
     end
 end
 
+function onSongStart()
+    local objects = {'mainP', 'mainS', 'mainG', 'mainB', 'mainVB', 'mainMss', 'mainhp', 'mainbeat'}
+    if uiType == 0 then
+        setProperty('healthBar.alpha', 1);
+        setProperty('healthBarBG.alpha', 1);
+        setProperty('iconP1.alpha', 1);
+        setProperty('iconP2.alpha', 1);
+        setProperty('scoreTxt.alpha', 1);
+        setProperty('timeBar.visible', true)
+        setProperty('timeTxt.y', tTy)
+        setObjectCamera("timeTxt", 'hud')
+
+        for _, obj in ipairs(wholeUI) do
+            removeLuaText(obj)
+            removeLuaSprite(obj)
+        end
+        runTimer('closeScript', 0.2)
+    elseif uiType == 1 then
+        setProperty('healthBar.alpha', 0);
+        setProperty('healthBarBG.alpha', 0);
+        setProperty('iconP1.alpha', 0);
+        setProperty('iconP2.alpha', 0);
+        setProperty('scoreTxt.alpha', 0);
+        setProperty('timeBar.visible', false)
+
+        for _, obj in ipairs(objects) do
+            setProperty(obj .. ".alpha", 1)
+        end
+    elseif uiType == 2 then
+        setProperty('healthBar.alpha', 1);
+        setProperty('healthBarBG.alpha', 1);
+        setProperty('iconP1.alpha', 1);
+        setProperty('iconP2.alpha', 1);
+        setProperty('scoreTxt.alpha', 1);
+        setProperty('timeBar.visible', true)
+        setProperty('timeTxt.visible', true)
+        setProperty('timeTxt.y', tTy)
+        for _, obj in ipairs(objects) do
+            setProperty(obj .. ".alpha", 1)
+        end
+        setObjectCamera("timeLeftText", 'hud')
+    elseif uiType == 3 then
+        setProperty('healthBar.alpha', 1);
+        setProperty('healthBarBG.alpha', 1);
+        setProperty('iconP1.alpha', 1);
+        setProperty('iconP2.alpha', 1);
+        setProperty('scoreTxt.alpha', 0);
+        setProperty('timeBar.visible', false)
+        setProperty('timeTxt.visible', false)
+        for _, obj in pairs({'mainP', 'mainS', 'mainG', 'mainB', 'mainVB', 'mainhp'}) do
+            removeLuaText(obj)
+        end
+        removeLuaSprite("mainbeat")
+    end
+    allowCountdown = true
+end
+
 --This moves the rating text forward based on when the credits text show up, positions vary for the length of the credit names
 function onCountdownTick(counter)
     allowCountdown = true
-    local objects = {'mainP', 'mainS', 'mainG', 'mainB', 'mainVB', 'mainMss', 'mainhp', 'mainbeat'}
-    if counter == 0 then
-        if uiType == 0 then
-            setProperty('healthBar.alpha', 1);
-            setProperty('healthBarBG.alpha', 1);
-            setProperty('iconP1.alpha', 1);
-            setProperty('iconP2.alpha', 1);
-            setProperty('scoreTxt.alpha', 1);
-            setProperty('timeBar.visible', true)
-            setProperty('timeTxt.y', tTy)
-            setObjectCamera("timeTxt", 'hud')
-
-            for _, obj in ipairs(wholeUI) do
-                removeLuaText(obj)
-                removeLuaSprite(obj)
-            end
-        elseif uiType == 1 then
-            setProperty('healthBar.alpha', 0);
-            setProperty('healthBarBG.alpha', 0);
-            setProperty('iconP1.alpha', 0);
-            setProperty('iconP2.alpha', 0);
-            setProperty('scoreTxt.alpha', 0);
-            setProperty('timeBar.visible', false)
-
-            for _, obj in ipairs(objects) do
-                setProperty(obj .. ".alpha", 1)
-            end
-        elseif uiType == 2 then
-            setProperty('healthBar.alpha', 1);
-            setProperty('healthBarBG.alpha', 1);
-            setProperty('iconP1.alpha', 1);
-            setProperty('iconP2.alpha', 1);
-            setProperty('scoreTxt.alpha', 1);
-            setProperty('timeBar.visible', true)
-            setProperty('timeTxt.visible', true)
-            setProperty('timeTxt.y', tTy)
-            for _, obj in ipairs(objects) do
-                setProperty(obj .. ".alpha", 1)
-            end
-            setObjectCamera("timeLeftText", 'hud')
-        elseif uiType == 3 then
-            setProperty('healthBar.alpha', 1);
-            setProperty('healthBarBG.alpha', 1);
-            setProperty('iconP1.alpha', 1);
-            setProperty('iconP2.alpha', 1);
-            setProperty('scoreTxt.alpha', 0);
-            setProperty('timeBar.visible', false)
-            setProperty('timeTxt.visible', false)
-            for _, obj in pairs({'mainP', 'mainS', 'mainG', 'mainB', 'mainVB', 'mainhp'}) do
-                removeLuaText(obj)
-            end
-            removeLuaSprite("mainbeat")
-        end
+    if counter == 2 and uiType == 0 then
+        close()
     end
 end
 function customRatingThing(m)
@@ -327,7 +337,7 @@ end
 
 function updHP()
     if allowCountdown then
-        health = (getProperty('health')*50)
+        health = (getHealth()*50)
         if health >= 100 then
             health = 100
         end
@@ -460,6 +470,9 @@ end
 
 --When using credits, This makes the text go back after the credits.lua normal time length.
 function onTimerCompleted(tag, loops, loopsLeft)
+    if tag == 'closeScript' then
+        close()
+    end
     if tag == 'hideMS' then
         setProperty("msText.alpha", 0)
     end

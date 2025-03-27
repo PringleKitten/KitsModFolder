@@ -13,7 +13,6 @@ function offnewch(ossf)
 end
 
 function onCreatePost()
-    setProperty('camZoomingMult',1)
     callScript("scripts/makeCaption", "invt", {ls})
     callScript("scripts/makeCaption", "middcs", {mdsc})
     callScript("scripts/makeCaptionbystep", "invt", {ls})

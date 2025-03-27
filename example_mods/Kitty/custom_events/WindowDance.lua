@@ -15,30 +15,16 @@ function onEvent(name, value1, value2)
         value1 = tonumber(value1);
         value2 = tonumber(value2);
         v2 = tonumber(value2);
-        x = screenWidth/3.75
-        y = screenHeight/3.5
-        if value1 == 1 then
+        if value1 == 1 or value1 == 2 then
             dance = true
-            fcc = true
-        else
+            setPropertyFromClass('openfl.Lib', 'application.window.x', 320)
+            setPropertyFromClass('openfl.Lib', 'application.window.y', 180)
+        elseif value1 == -1 then
             dance = false
-            fcc = true
-            setPropertyFromClass('openfl.Lib', 'application.window.maximized', false)
-            setPropertyFromClass("openfl.Lib", "application.window.width", 1280)
-            setPropertyFromClass("openfl.Lib", "application.window.height", 720)
-        end
-        if value1 == 2 then
-            setPropertyFromClass('openfl.Lib', 'application.window.maximized', false)
-            setPropertyFromClass("openfl.Lib", "application.window.width", 1280)
-            setPropertyFromClass("openfl.Lib", "application.window.height", 720)
-            dance = true
             fcc = false
-        elseif value1 ~= 1 then
+        elseif value1 == 0 then
             dance = false
             fcc = true
-            setPropertyFromClass('openfl.Lib', 'application.window.maximized', false)
-            setPropertyFromClass("openfl.Lib", "application.window.width", 1280)
-            setPropertyFromClass("openfl.Lib", "application.window.height", 720)
         end
     end
 end
@@ -50,8 +36,8 @@ function onUpdatePost(elapsed)
             setPropertyFromClass('openfl.Lib', 'application.window.maximized', false)
             setPropertyFromClass("openfl.Lib", "application.window.width", 1280)
             setPropertyFromClass("openfl.Lib", "application.window.height", 720)
-            setPropertyFromClass("openfl.Lib", "application.window.x", 1000*math.cos(Elap)/10+x)
-            setPropertyFromClass("openfl.Lib", "application.window.y", 1000*math.sin(Elap)/10+y)
+            setPropertyFromClass("openfl.Lib", "application.window.x", 1000*math.cos(Elap)/10+320)
+            setPropertyFromClass("openfl.Lib", "application.window.y", 1000*math.sin(Elap)/10+180)
         elseif fcc then
             setPropertyFromClass('openfl.Lib', 'application.window.maximized', false)
             setPropertyFromClass("openfl.Lib", "application.window.fullscreen", true)
@@ -60,6 +46,8 @@ function onUpdatePost(elapsed)
             setPropertyFromClass('openfl.Lib', 'application.window.maximized', false)
             setPropertyFromClass("openfl.Lib", "application.window.width", 1280)
             setPropertyFromClass("openfl.Lib", "application.window.height", 720)
+            setPropertyFromClass('openfl.Lib', 'application.window.x', 320)
+            setPropertyFromClass('openfl.Lib', 'application.window.y', 180)
         end
         if Elap == 0 then
             a = false

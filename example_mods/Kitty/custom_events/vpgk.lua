@@ -1,9 +1,9 @@
 local hiding = true
 local gO = false
-function onCreate()
+function onCreatePost()
     if shadersEnabled then
-        luaSprite('vignettepgk', 0, 0, 12,12, 0, 0, 'game', 'xy', 100)
-        luaSprite('blackScreen', 0, 0, 4,4, 0, 0, 'other', 'n', 101)
+        luaSprite('vignettepgk', 0, 0, 12,12, 0, 0, 'game', 'xy', 1000)
+        luaSprite('blackScreen', 0, 0, 4,4, 0, 0, 'other', 'n', 1001)
 
         luaGraphic('vignetOuterTop', getProperty('lS-vignettepgk.x')-1500, 0, 7500, 2500, '000000')
         luaGraphic('vignetOuterLeft', 0, getProperty('vignetOuterTop.y'), 3400, 5000, '000000')

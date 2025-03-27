@@ -565,7 +565,6 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.25;
 		scoreTxt.visible = !ClientPrefs.data.hideHud;
-		updateScore(false);
 		uiGroup.add(scoreTxt);
 
 		botplayTxt = new FlxText(400, healthBar.y - 90, FlxG.width - 800, Language.getPhrase("Botplay").toUpperCase(), 32);
@@ -632,7 +631,7 @@ class PlayState extends MusicBeatState
 		}
 
 		startCallback();
-		RecalculateRating();
+		RecalculateRating(false, false);
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
@@ -1592,7 +1591,6 @@ class PlayState extends MusicBeatState
 	{
 		var strumLineX:Float = ClientPrefs.data.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X;
 		var strumLineY:Float = ClientPrefs.data.downScroll ? (FlxG.height - 150) : 50;
-
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
@@ -3725,11 +3723,12 @@ class PlayState extends MusicBeatState
 
 	#if (!flash && sys)
 	public var runtimeShaders:Map<String, Array<String>> = new Map<String, Array<String>>();
+	#end
 	public function createRuntimeShader(shaderName:String):ErrorHandledRuntimeShader
 	{
+		#if (!flash && sys)
 		if(!ClientPrefs.data.shaders) return new ErrorHandledRuntimeShader(shaderName);
 
-		#if (!flash && MODS_ALLOWED && sys)
 		if(!runtimeShaders.exists(shaderName) && !initLuaShader(shaderName))
 		{
 			FlxG.log.warn('Shader $shaderName is missing!');
@@ -3748,7 +3747,7 @@ class PlayState extends MusicBeatState
 	{
 		if(!ClientPrefs.data.shaders) return false;
 
-		#if (MODS_ALLOWED && !flash && sys)
+		#if (!flash && sys)
 		if(runtimeShaders.exists(name))
 		{
 			FlxG.log.warn('Shader $name was already initialized!');
@@ -3791,5 +3790,4 @@ class PlayState extends MusicBeatState
 		#end
 		return false;
 	}
-	#end
 }
