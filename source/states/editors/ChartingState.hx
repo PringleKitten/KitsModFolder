@@ -1789,6 +1789,12 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		Conductor.bpm = PlayState.SONG.bpm;
 	}
 
+	function fixRPC() {
+		var curTime:String = FlxStringUtil.formatTime(Conductor.songPosition / 1000, true);
+		var songLength:String = (FlxG.sound.music != null) ? FlxStringUtil.formatTime(FlxG.sound.music.length / 1000, true) : '???';
+		DiscordClient.changePresence('Chart Editor | Song: ' + PlayState.SONG.song, 'Progress: ' + '$curTime / $songLength');
+	}
+
 	function loadMusic(?killAudio:Bool = false)
 	{
 		setSongPlaying(false);
@@ -1854,9 +1860,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			catch (e:Dynamic) {}
 		}
 
-		#if DISCORD_ALLOWED
-		DiscordClient.changePresence('Chart Editor', 'Song: ' + PlayState.SONG.song);
-		#end
+		fixRPC();
 
 		updateAudioVolume();
 		setPitch();
@@ -1948,6 +1952,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 		trace('Note count: ${notes.length}');
 		trace('Events count: ${events.length}');
+		fixRPC();
 		loadSection();
 	}
 
@@ -1979,6 +1984,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		swagNote.active = false;
 		positionNoteXByData(swagNote);
 		positionNoteYOnTime(swagNote, secNum);
+		fixRPC();
 		return swagNote;
 	}
 
@@ -1998,6 +2004,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			secNum++;
 		}
 		positionNoteYOnTime(swagEvent, secNum);
+		fixRPC();
 		return swagEvent;
 	}
 
@@ -4989,6 +4996,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		showOutput('Undo #${currentUndo+1}: ${action.action}');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 		currentUndo++;
+		fixRPC();
 	}
 	function redo()
 	{
@@ -5021,6 +5029,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		}
 		showOutput('Redo #${currentUndo+1}: ${action.action}');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		fixRPC();
 	}
 
 	function actionPushNotes(dataNotes:Array<MetaNote>, dataEvents:Array<EventMetaNote>)

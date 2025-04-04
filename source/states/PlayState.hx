@@ -353,7 +353,7 @@ class PlayState extends MusicBeatState
 		curStage = SONG.stage;
 
 		var stageData:StageFile = StageData.getStageFile(curStage);
-		if (!Math.isNaN(stageData.defaultUIZoom))
+		if (stageData.defaultUIZoom != null)
 			defaultCamUIZoom = stageData.defaultUIZoom;
 		else
 			defaultCamUIZoom = 1;
@@ -1670,26 +1670,6 @@ class PlayState extends MusicBeatState
 			resetRPC(startTimer != null && startTimer.finished);
 		}
 	}
-
-	#if DISCORD_ALLOWED
-	override public function onFocus():Void
-	{
-		super.onFocus();
-		if (!paused && health > 0)
-		{
-			resetRPC(Conductor.songPosition > 0.0);
-		}
-	}
-
-	override public function onFocusLost():Void
-	{
-		super.onFocusLost();
-		if (!paused && health > 0 && autoUpdateRPC)
-		{
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
-		}
-	}
-	#end
 
 	// Updating Discord Rich Presence.
 	public var autoUpdateRPC:Bool = true; //performance setting for custom RPC things
@@ -3107,6 +3087,7 @@ class PlayState extends MusicBeatState
 				gf.specialAnim = true;
 			}
 		}
+		if(autoUpdateRPC) DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true, songLength);
 		vocals.volume = 0;
 	}
 
@@ -3167,6 +3148,7 @@ class PlayState extends MusicBeatState
 		var leData:Int = Math.round(Math.abs(note.noteData));
 		var leType:String = note.noteType;
 
+		if(autoUpdateRPC) DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true, songLength);
 		var result:Dynamic = callOnLuas('goodNoteHitPre', [notes.members.indexOf(note), leData, leType, isSus]);
 		if(result != LuaUtils.Function_Stop && result != LuaUtils.Function_StopHScript && result != LuaUtils.Function_StopAll) result = callOnHScript('goodNoteHitPre', [note]);
 
