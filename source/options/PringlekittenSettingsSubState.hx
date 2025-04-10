@@ -4,13 +4,24 @@ class PringlekittenSettingsSubState extends BaseOptionsMenu
 {
 	public function new()
 	{
-		rpcTitle = 'Pringlekitten\'s Settings Menu'; //for Discord Rich Presence
+		rpcTitle = 'Pringlekitten\'s Settings Menu';
 
-		//I'd suggest using "Downscroll" as an example for making your own option since it is the simplest here
-		var option:Option = new Option('Asset Movement', //Name
-			'If checked, allows scripts to move parts of the game.', //Description
-			'assetMovement', //Save data variable name
-			BOOL); //Variable type
+		var option:Option = new Option('Asset Movement',
+			'If checked, allows scripts to move parts of the game.',
+			'assetMovement',
+			BOOL);
+		addOption(option);
+
+		var option:Option = new Option('Even Lower Quality',
+			"If checked, the game will run with even less objects\n When combined with Low Quality",
+			'ldm',
+			BOOL);
+		addOption(option);
+
+		var option:Option = new Option('Camera Movement',
+			"If unchecked, the camera wont move when hitting notes",
+			'camMovement',
+			BOOL);
 		addOption(option);
 
 		var option:Option = new Option('Dodging',
@@ -32,8 +43,14 @@ class PringlekittenSettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Bad Rating Penalty',
-			"If checked, your health will change based on\n how accurate you hit(Kade Engine).",
+			"If checked, your health will hurt more\n the worse rating you hit for a note(Kade Engine).\n (+50 Score Each Hit)",
 			'ratingPenalty',
+			BOOL);
+		addOption(option);
+
+		var option:Option = new Option('Low Accuracy Penalty',
+			"If checked, your health will hurt more\n the lower your Accuracy is.\n (+30 Score Each Hit)",
+			'lowPercentHurt',
 			BOOL);
 		addOption(option);
 

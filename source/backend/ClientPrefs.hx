@@ -27,6 +27,7 @@ import states.TitleState;
 	public var assetMovement:Bool = true;
 	public var healthDrain:Bool = true;
 	public var ratingPenalty:Bool = true;
+	public var lowPercentHurt:Bool = true;
 	public var osuSustainInput:Bool = true;
 	public var mechanics:Bool = true;
 	public var mechanicsAgain:Bool = true;
@@ -68,6 +69,7 @@ import states.TitleState;
 		// just fine. but I wont implement it because I don't know how you handle sustains and other stuff like that.
 		// oh yeah when you calculate the bps divide it by the songSpeed or rate because it wont scroll correctly when speeds exist.
 		// -kade
+		'camMoveMult' => 15,
 		'songspeed' => 1.0,
 		'healthgain' => 1.0,
 		'healthloss' => 1.0,
@@ -79,7 +81,7 @@ import states.TitleState;
 
 	public var comboOffset:Array<Int> = [0, 0, 0, 0];
 	public var ratingOffset:Int = 0;
-	public var perfectWindow:Float = 25.0;
+	public var perfectWindow:Float = 22.5;
 	public var sickWindow:Float = 45.0;
 	public var goodWindow:Float = 90.0;
 	public var badWindow:Float = 135.0;
@@ -88,6 +90,16 @@ import states.TitleState;
 	public var discordRPC:Bool = true;
 	public var loadingScreen:Bool = true;
 	public var language:String = 'en-US';
+
+	public var camMovement:Bool = false;
+
+	public var ldm:Bool = false;
+
+	//public var songIntroScript:Bool = false;
+	//public var uilook:String = 'Psych';
+	//public var menuButtons:String = 'Middle'; 
+	//public var watermark:Bool = false;
+	//public var randomMenuThings:Bool = false;
 }
 
 class ClientPrefs {

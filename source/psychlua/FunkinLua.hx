@@ -198,10 +198,12 @@ class FunkinLua {
 		set('healthDrain', ClientPrefs.data.healthDrain);
 		set('osuSustainInput', ClientPrefs.data.osuSustainInput);
 		set('ratingPenalty', ClientPrefs.data.ratingPenalty);
+		set('lowPercentHurt', ClientPrefs.data.lowPercentHurt);
 		set('mechanics', ClientPrefs.data.mechanics);
 		set('mechanicsAgain', ClientPrefs.data.mechanicsAgain);
 		set('mobileMechanics', ClientPrefs.data.mobileMechanics);
 		set('mobileChoice', ClientPrefs.data.mobileChoice);
+		set('camMovement', ClientPrefs.data.camMovement);
 		//End
 		set('flashingLights', ClientPrefs.data.flashing);
 		set('noteOffset', ClientPrefs.data.noteOffset);
@@ -583,6 +585,8 @@ class FunkinLua {
 				case 'camgame' | 'game': camera = 'camGame';
 				case 'camhud' | 'hud': camera = 'camHUD';
 				case 'camother' | 'other': camera = 'camOther';
+				case 'camone' | 'one': camera = 'camOne';
+				case 'camtwo' | 'two': camera = 'camTwo';
 				default:
 					var cam:FlxCamera = MusicBeatState.getVariables().get(camera);
 					if (cam == null || !Std.isOfType(cam, FlxCamera)) camera = 'camGame';
