@@ -193,7 +193,15 @@ class PlayState extends MusicBeatState
 	//IFE
 	public var camZoomsHud:Bool = true;
 	public var camZoomsBg:Bool = true;
-	//end
+	public var defaultCamUIZoom:Float = 1;
+	public var dontDestroy:Bool = false;
+
+	private var sustains:Array<Null<Float>> = [null, null, null, null];
+	private final COYOTE_TIME:Float = 1.0; // (60 FPS) forgiveness frames [ 0 + ]
+	private final STEP_TIME:Float = 0.5; // stepCrochet forgiveness multiplier [ 0 to 1 ]
+	private final STRETCH:Float = 0.5; // distance multiplier, more value = more forgiving [ 0 to 1 ]
+	final DIRECTIONS:Array<String> = ['left', 'down', 'up', 'right'];
+
 	public var healthGain:Float = 1;
 	public var healthLoss:Float = 1;
 
@@ -232,9 +240,6 @@ class PlayState extends MusicBeatState
 	public static var deathCounter:Int = 0;
 
 	public var defaultCamZoom:Float = 1.05;
-	// IFE CUSTOMS
-	public var defaultCamUIZoom:Float = 1;
-	public var dontDestroy:Bool = false;
 
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
@@ -362,9 +367,10 @@ class PlayState extends MusicBeatState
 
 		var stageData:StageFile = StageData.getStageFile(curStage);
 
-		defaultCamUIZoom = 1;
-		if (!Math.isNaN(stageData.defaultUIZoom))
+		if (stageData.defaultUIZoom != null) // Thanks lazyremixman idk why Im so stupid
 			defaultCamUIZoom = stageData.defaultUIZoom;
+		else
+			defaultCamUIZoom = 1;
 
 		stageUI = "normal";
 		if (stageData.stageUI != null && stageData.stageUI.trim().length > 0)
@@ -715,7 +721,7 @@ class PlayState extends MusicBeatState
 		#end
 		setOnScripts('playbackRate', playbackRate);
 		#else
-		playbackRate = 1.0; // ensuring -Crow
+		playbackRate = 1.0;
 		#end
 		return playbackRate;
 	}
@@ -1161,8 +1167,6 @@ class PlayState extends MusicBeatState
 
 	// fun fact: Dynamic Functions can be overriden by just doing this
 	// `updateScore = function(miss:Bool = false) { ... }
-	// its like if it was a variable but its just a function!
-	// cool right? -Crow
 	public dynamic function updateScore(miss:Bool = false, scoreBop:Bool = true)
 	{
 		var ret:Dynamic = callOnScripts('preUpdateScore', [miss], true);
@@ -1808,50 +1812,6 @@ class PlayState extends MusicBeatState
 		setOnScripts('curDecStep', curDecStep);
 		setOnScripts('curDecBeat', curDecBeat);
 
-		// Until I figure out how to make this Osu Input System work,
-		// this is commented out, but here for anyone who knows what they're doing
-		// Cause I do NOT know what I'm doing at all.
-
-//		if (ClientPrefs.data.osuSustainInput) {
-//			notes.forEach(function(note:Note) {
-//				if (note.wasGoodHit && note.isSustainNote && note.mustPress && !note.tooLate && !note.goodRelease) {
-//					var key = switch (note.noteData)
-//					{
-//						case 0: "note_left";
-//						case 1: "note_down";
-//						case 2: "note_up";
-//						case 3: "note_right";
-//						default: "";
-//					}
-//					var keyPressed:Bool = controls.pressed(key);
-//					var keyReleased:Bool = controls.justReleased(key);
-//					var currentTime:Float = Conductor.songPosition;
-//					var sustainReleaseTime = currentTime + (note.sustainLength / playbackRate);
-//					note.remember = true;
-//					dontDestroy = true;
-//
-//					trace('Key: ' + key + '||' + 'Holding?: ' + keyPressed + '|' + keyReleased + '|' + sustainReleaseTime);
-//
-//					if (keyPressed && currentTime >= sustainReleaseTime + 200) {
-//						// Held longer than should have
-//						noteMiss(note);
-//						note.destroy();
-//						dontDestroy = false;
-//						note.tooLate = true;
-//						note.remember = false;
-//					}
-//					else if (keyReleased && currentTime >= sustainReleaseTime && currentTime < sustainReleaseTime + 200) {
-//						// Released on time
-//						goodNoteHit(note);
-//						note.destroy();
-//						dontDestroy = false;
-//												note.remember = false;
-//						note.goodRelease = true;
-//		            }
-//				}
-//			});
-//		}
-
 		if(botplayTxt != null && botplayTxt.visible) {
 			botplaySine += 180 * elapsed;
 			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
@@ -2010,11 +1970,7 @@ class PlayState extends MusicBeatState
 						notes.forEachAlive(function(daNote:Note)
 						{
 							daNote.canBeHit = false;
-							//if ((ClientPrefs.data.osuSustainInput && !daNote.remember) || !ClientPrefs.data.osuSustainInput) Osu Input System thingy
-								daNote.wasGoodHit = false;
-
-							//daNote.goodRelease = false; Osu Input System thingy
-							//daNote.earlyRelease = false;
+							daNote.wasGoodHit = false;
 						});
 					}
 				}
@@ -2036,6 +1992,28 @@ class PlayState extends MusicBeatState
 		#end
 
 		setOnScripts('botPlay', cpuControlled);
+		if (ClientPrefs.data.osuSustainInput) {// Thank you so much @josephjr05
+			for (i in 0...sustains.length) {
+				if (sustains[i] != null) {
+					if (controls.justReleased(keysArray[i])) { // Josephjr05 here, this is the line i changed up, try it out and see if it works for you
+						var myStrum:StrumNote = playerStrums.members[i];
+						var strumAnim:String = myStrum.animation.curAnim.name;
+					
+						var compareNote:Float = sustains[i] + (COYOTE_TIME / 60 * 1000) + Conductor.stepCrochet * STEP_TIME;
+						var compareStrum:Float = lerp(Conductor.songPosition, sustains[i], STRETCH);
+					
+						var imagineDiff:Float = Math.max(0, compareStrum - compareNote); // you can release early, all good
+						// debugPrint('diff = ' + imagineDiff);
+					
+						var uwu:Note = new Note(Conductor.songPosition + imagineDiff, i);
+						uwu.noAnimation = true;
+						goodNoteHit(uwu);
+						myStrum.playAnim(strumAnim);
+						sustains[i] = null;
+					}
+				}
+			}
+		}
 		callOnScripts('onUpdatePost', [elapsed]);
 	}
 
@@ -3120,10 +3098,7 @@ class PlayState extends MusicBeatState
 				note.missed = true;
 				note.canBeHit = false;
 
-				//subtract += 0.385; // you take more damage if playing with this gameplay changer enabled.
-				// i mean its fair :p -Crow
 				subtract *= note.tail.length + 1;
-				// i think it would be fair if damage multiplied based on how long the sustain is -Tahir
 			}
 
 			if (note.missed)
@@ -3241,6 +3216,25 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	private function getSustainHit(note:Note):Bool {// Thank you so much @josephjr05
+        	if (note == null || note.tail == null) return false;
+
+        	for (tailSegment in note.tail) {
+			
+        	     if (!tailSegment.wasGoodHit) {
+        	        	return false;
+        	     }
+        	}
+        	if (!note.wasGoodHit) {
+        	    	return false;
+        	}
+        	return true;
+    	}
+    
+    private function lerp(from:Float, to:Float, i:Float):Float {
+        return from + (to - from) * i;
+    }
+
 	public function goodNoteHit(note:Note):Void
 	{
 		if(note.wasGoodHit) return;
@@ -3256,6 +3250,14 @@ class PlayState extends MusicBeatState
 		if(result == LuaUtils.Function_Stop) return;
 
 		note.wasGoodHit = true;
+
+		if (ClientPrefs.data.osuSustainInput) { // Thank you so much @josephjr05
+			if (note.isSustainNote) {
+				// debugPrint(getSustainHit(note.parent));
+				sustains[note.parent.noteData] = null; // Josephjr05 here again, here's a simplified version of the sustain check
+				sustains[note.noteData] = getSustainHit(note.parent) ? note.strumTime : null;
+			}
+		}
 
 		if (note.hitsoundVolume > 0 && !note.hitsoundDisabled)
 			FlxG.sound.play(Paths.sound(note.hitsound), note.hitsoundVolume);

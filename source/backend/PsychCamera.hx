@@ -1,6 +1,6 @@
 package backend;
 
-// PsychCamera handles followLerp based on elapsed
+// Camera handles followLerp based on elapsed
 // and stops camera from snapping at higher framerates
 
 class PsychCamera extends FlxCamera

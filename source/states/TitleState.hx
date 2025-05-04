@@ -440,14 +440,14 @@ class TitleState extends MusicBeatState
 				case 4:
 					createCoolText(['Completely made for fun'], -40);
 				case 5:
-					addMoreText('PSYCH BUT COOL LIKE OSU!', -40);
+					addMoreText('COOL LIKE OSU!', -40);
 				case 6:
 					addMoreText('shut up bro', -40);
 				case 8:
 					deleteCoolText();
 					addMoreText('PringleKitten\'s');
 				case 9:
-					addMoreText('Modded Psych Engine');
+					addMoreText('Modded Engine');
 				case 10:
 					addMoreText('Friday Night Funkin!!!!');
 				case 11:

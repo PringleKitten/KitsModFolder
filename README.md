@@ -28,26 +28,6 @@ For this you can head over to [the wiki](https://shadowmario.github.io/psychengi
 
 There you can learn how to use the 212 PlayState funcions in your mod!
 
-## Credits:
-* Shadow Mario - Main Programmer and Head of Psych Engine.
-* Riveren - Main Artist/Animator of Psych Engine.
-
-### Special Thanks
-* bbpanzu - Ex-Team Member (Programmer).
-* crowplexus - HScript Iris, Input System v3, and Other PRs.
-* Kamizeta - Creator of Pessy, Psych Engine's mascot.
-* MaxNeton - Loading Screen Easter Egg Artist/Animator.
-* Keoiki - Note Splash Animations and Latin Alphabet.
-* SqirraRNG - Crash Handler and Base code for Chart Editor's Waveform.
-* EliteMasterEric - Runtime Shaders support and Other PRs.
-* MAJigsaw77 - .MP4 Video Loader Library (hxvlc).
-* iFlicky - Composer of Psync, Tea Time and some sound effects.
-* KadeDev - Fixed some issues on Chart Editor and Other PRs.
-* superpowers04 - LUA JIT Fork.
-* CheemsAndFriends - Creator of FlxAnimate.
-* Ezhalt - Pessy's Easter Egg Jingle.
-* MaliciousBunny - Video for the Final Update.
-
 ***
 
 # Features
@@ -131,4 +111,4 @@ There you can learn how to use the 212 PlayState funcions in your mod!
 * You can enable "Combo Stacking" in Gameplay Options. This causes the combo sprites to just be one sprite with an animation rather than sprites spawning each note hit.
 
 
-#### Psych Engine by ShadowMario, Friday Night Funkin' by ninjamuffin99
+#### Modified Engine by PringleKitten, Friday Night Funkin' by ninjamuffin99

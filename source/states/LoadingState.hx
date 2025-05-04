@@ -68,14 +68,7 @@ class LoadingState extends MusicBeatState
 	var curPercent:Float = 0;
 	var stateChangeDelay:Float = 0;
 
-	#if PSYCH_WATERMARKS
-	var logo:FlxSprite;
-	var loadingText:FlxText;
-
-	var timePassed:Float;
-	#else
 	var funkay:FlxSprite;
-	#end
 
 	#if HSCRIPT_ALLOWED
 	var hscript:HScript;
@@ -135,29 +128,6 @@ class LoadingState extends MusicBeatState
 		}
 		#end
 
-		#if PSYCH_WATERMARKS // PSYCH LOADING SCREEN
-		var bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.data.antialiasing;
-		bg.setGraphicSize(Std.int(FlxG.width));
-		bg.color = 0xFFD16FFF;
-		bg.updateHitbox();
-		addBehindBar(bg);
-	
-		loadingText = new FlxText(520, 600, 400, Language.getPhrase('now_loading', 'Now Loading', ['...']), 32);
-		loadingText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, OUTLINE_FAST, FlxColor.BLACK);
-		loadingText.borderSize = 2;
-		addBehindBar(loadingText);
-	
-		logo = new FlxSprite(0, 0).loadGraphic(Paths.image('loading_screen/icon'));
-		logo.antialiasing = ClientPrefs.data.antialiasing;
-		logo.scale.set(0.75, 0.75);
-		logo.updateHitbox();
-		logo.screenCenter();
-		logo.x -= 50;
-		logo.y -= 40;
-		addBehindBar(logo);
-
-		#else // BASE GAME LOADING SCREEN
 		var bg = new FlxSprite().makeGraphic(1, 1, 0xFFCAFF4D);
 		bg.scale.set(FlxG.width, FlxG.height);
 		bg.updateHitbox();
@@ -169,7 +139,7 @@ class LoadingState extends MusicBeatState
 		funkay.setGraphicSize(0, FlxG.height);
 		funkay.updateHitbox();
 		addBehindBar(funkay);
-		#end
+
 		super.create();
 
 		if (stateChangeDelay <= 0 && checkLoaded())
@@ -220,21 +190,6 @@ class LoadingState extends MusicBeatState
 			if(hscript.exists('onUpdate')) hscript.call('onUpdate', [elapsed]);
 			return;
 		}
-		#end
-
-		#if PSYCH_WATERMARKS // PSYCH LOADING SCREEN
-		timePassed += elapsed;
-		var dots:String = '';
-		switch(Math.floor(timePassed % 1 * 3))
-		{
-			case 0:
-				dots = '.';
-			case 1:
-				dots = '..';
-			case 2:
-				dots = '...';
-		}
-		loadingText.text = Language.getPhrase('now_loading', 'Now Loading{1}', [dots]);
 		#end
 	}
 

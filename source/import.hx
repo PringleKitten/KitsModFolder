@@ -4,7 +4,6 @@
 import backend.Discord;
 #end
 
-//Psych
 #if LUA_ALLOWED
 import llua.*;
 import llua.Lua;
@@ -34,7 +33,7 @@ import backend.Difficulty;
 import backend.Mods;
 import backend.Language;
 
-import backend.ui.*; //Psych-UI
+import backend.ui.*;
 
 import objects.Alphabet;
 import objects.BGSprite;

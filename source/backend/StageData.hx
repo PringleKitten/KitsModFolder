@@ -8,7 +8,7 @@ import psychlua.ModchartSprite;
 typedef StageFile = {
 	var directory:String;
 	var defaultZoom:Float;
-	var defaultUIZoom:Float;
+	var defaultUIZoom:Null<Float>;
 	@:optional var isPixelStage:Null<Bool>;
 	var stageUI:String;
 
