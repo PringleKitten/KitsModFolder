@@ -57,10 +57,8 @@ class Note extends FlxSprite
 	public var mustPress:Bool = false;
 	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
-	//public var sustainReleaseTime:Float = -1; Osu Input System thingy
-	//public var earlyRelease:Bool = false;
-	//public var goodRelease:Bool = false;
-	//public var remember:Bool = false;
+
+	public var isSustainReleaseNote:Bool = false;
 
 	public var wasGoodHit:Bool = false;
 	public var missed:Bool = false;

@@ -199,7 +199,7 @@ class PlayState extends MusicBeatState
 	private var sustains:Array<Null<Float>> = [null, null, null, null];
 	private final COYOTE_TIME:Float = 1.0; // (60 FPS) forgiveness frames [ 0 + ]
 	private final STEP_TIME:Float = 0.5; // stepCrochet forgiveness multiplier [ 0 to 1 ]
-	private final STRETCH:Float = 0.5; // distance multiplier, more value = more forgiving [ 0 to 1 ]
+	private final STRETCH:Float = 1; // distance multiplier, more value = more forgiving [ 0 to 1 ]
 	final DIRECTIONS:Array<String> = ['left', 'down', 'up', 'right'];
 
 	public var healthGain:Float = 1;
@@ -1992,28 +1992,37 @@ class PlayState extends MusicBeatState
 		#end
 
 		setOnScripts('botPlay', cpuControlled);
-		if (ClientPrefs.data.osuSustainInput) {// Thank you so much @josephjr05
-			for (i in 0...sustains.length) {
-				if (sustains[i] != null) {
-					if (controls.justReleased(keysArray[i])) { // Josephjr05 here, this is the line i changed up, try it out and see if it works for you
-						var myStrum:StrumNote = playerStrums.members[i];
-						var strumAnim:String = myStrum.animation.curAnim.name;
-					
-						var compareNote:Float = sustains[i] + (COYOTE_TIME / 60 * 1000) + Conductor.stepCrochet * STEP_TIME;
-						var compareStrum:Float = lerp(Conductor.songPosition, sustains[i], STRETCH);
-					
-						var imagineDiff:Float = Math.max(0, compareStrum - compareNote); // you can release early, all good
-						// debugPrint('diff = ' + imagineDiff);
-					
-						var uwu:Note = new Note(Conductor.songPosition + imagineDiff, i);
-						uwu.noAnimation = true;
-						goodNoteHit(uwu);
-						myStrum.playAnim(strumAnim);
-						sustains[i] = null;
+        if (ClientPrefs.data.osuSustainInput)
+			{
+				for (i in 0...sustains.length) {
+					if (sustains[i] != null) {
+						if (controls.justReleased(keysArray[i])) {
+							var myStrum:StrumNote = playerStrums.members[i];
+							var strumAnim:String = (myStrum != null) ? myStrum.animation.curAnim.name : 'static';
+	
+							var lastHitTime:Float = sustains[i];
+							var compareNote:Float = lastHitTime + (COYOTE_TIME / 60 * 1000) + Conductor.stepCrochet * STEP_TIME;
+							var compareStrum:Float = FlxMath.lerp(Conductor.songPosition, lastHitTime, STRETCH);
+							var imagineDiff:Float = Math.max(0, compareStrum - compareNote);
+	
+							var fakeReleaseNote:Note = new Note(Conductor.songPosition + imagineDiff, i);
+							fakeReleaseNote.isSustainReleaseNote = true;
+							fakeReleaseNote.mustPress = true;
+							fakeReleaseNote.canBeHit = true;
+							fakeReleaseNote.noAnimation = true;
+	
+							goodNoteHit(fakeReleaseNote);
+	
+							if (myStrum != null && myStrum.animation.curAnim.name != strumAnim) {
+								myStrum.playAnim(strumAnim);
+								// myStrum.resetAnim = 0; If the 'confirm' anim persists
+							}
+	
+							sustains[i] = null; // Stop tracking the sustain for this lane
+						}
 					}
 				}
 			}
-		}
 		callOnScripts('onUpdatePost', [elapsed]);
 	}
 
