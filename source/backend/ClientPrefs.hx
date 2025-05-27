@@ -28,7 +28,7 @@ import states.TitleState;
 	public var healthDrain:Bool = true;
 	public var ratingPenalty:Bool = true;
 	public var lowPercentHurt:Bool = true;
-	public var osuSustainInput:Bool = true;
+	public var osuSustainInput:Bool = false;
 	public var mechanics:Bool = true;
 	public var mechanicsAgain:Bool = true;
 	public var mobileMechanics:Bool = false;

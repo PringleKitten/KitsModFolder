@@ -31,7 +31,7 @@ class MusicPlayer extends FlxGroup
 	var wasPlaying:Bool;
 
 	var holdPitchTime:Float = 0;
-	var playbackRate(default, set):Float = 1;
+	public var playbackRate(default, set):Float = 1;
 
 	public function new(instance:FreeplayState)
 	{

@@ -3,6 +3,7 @@ package states;
 import backend.WeekData;
 import backend.Highscore;
 import backend.Song;
+import backend.Conductor;
 
 import objects.HealthIcon;
 import objects.MusicPlayer;
@@ -26,6 +27,8 @@ class FreeplayState extends MusicBeatState
 	var lerpSelected:Float = 0;
 	var curDifficulty:Int = -1;
 	private static var lastDifficultyName:String = Difficulty.getDefault();
+
+	var beatTimer:Float = 0;
 
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
@@ -409,9 +412,11 @@ class FreeplayState extends MusicBeatState
 						opponentVocals = FlxDestroyUtil.destroy(opponentVocals);
 					}
 				}
-
+				Conductor.bpm = PlayState.SONG.bpm;
+				Conductor.songPosition = 0;
 				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.8);
 				FlxG.sound.music.pause();
+
 				instPlaying = curSelected;
 
 				player.playingMusic = true;
@@ -479,11 +484,31 @@ class FreeplayState extends MusicBeatState
 			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 		}
-
+		if (player.playingMusic){
+			if (FlxG.sound.music != null && FlxG.sound.music.playing)
+			{
+			    beatTimer += elapsed*1.05;
+			    var secondsPerBeat:Float = 60 / (Conductor.bpm*player.playbackRate);
+			    if (beatTimer >= secondsPerBeat)
+			    {
+			        beatTimer -= secondsPerBeat;
+			        curBeat++;
+			        beatHit(); // Custom function for screen bop
+			    }
+			}
+		}
 		updateTexts(elapsed);
 		super.update(elapsed);
 	}
-	
+
+	override function beatHit()
+	{
+		super.beatHit();
+		FlxG.camera.zoom = 1.05;
+		FlxTween.tween(FlxG.camera, {zoom: 1}, 0.2/(player.playbackRate), {ease: FlxEase.quadOut});
+	}
+
+
 	function getVocalFromCharacter(char:String)
 	{
 		try
