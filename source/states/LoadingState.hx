@@ -261,9 +261,7 @@ class LoadingState extends MusicBeatState
 	static var isIntrusive:Bool = false;
 	static function getNextState(target:FlxState, stopMusic = false, intrusive:Bool = true):FlxState
 	{
-		#if !SHOW_LOADING_SCREEN
 		intrusive = false;
-		#end
 
 		LoadingState.isIntrusive = intrusive;
 		_startPool();
@@ -302,12 +300,7 @@ class LoadingState extends MusicBeatState
 	static var dontPreloadDefaultVoices:Bool = false;
 	static function _startPool()
 	{
-		#if MULTITHREADED_LOADING
-		// Due to the Main thread and Discord thread, we decrease it by 2.
-		var threadCount:Int = Std.int(Math.max(1, getCPUThreadsCount() - #if DISCORD_ALLOWED 2 #else 1 #end));
-		#else
-		var threadCount:Int = 1;
-		#end
+		var threadCount:Int = 2;
 		threadPool = new FixedThreadPool(threadCount);
 	}
 

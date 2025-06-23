@@ -27,9 +27,6 @@
 	<define name="DISCORD_ALLOWED" />
 	<define name="TRANSLATIONS_ALLOWED" />
 	<define name="IRIS_DEBUG"/>
-	
-	<define name="MULTITHREADED_LOADING" /> <!-- UNCOMMENTING THIS LINE WILL ENABLE MULTITHREADED LOADING, WHICH IMPROVES LOADING TIMES, BUT APPARENTLY CAN FREEZE THE GAME ON SONG LOAD IN OLDER PCs? -->
-	<define name="SHOW_LOADING_SCREEN" />
 	<define name="VIDEOS_ALLOWED" if="windows || linux || android || mac" unless="32bits"/>
 
 	<!-- ____________________________ Window Settings ___________________________ -->
@@ -175,8 +172,6 @@
 	<haxedef name="hscriptPos" if="HSCRIPT_ALLOWED" />
 
 	<!-- _________________________________ Custom _______________________________ -->
-	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
-
 	<assets path='art/icons/iconOG.png' rename='icon.png' if="linux || mac" />
 	
 	<icon path="art/icons/icon16.png" size='16'/>
