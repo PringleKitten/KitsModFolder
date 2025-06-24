@@ -225,16 +225,16 @@ class PlayState extends MusicBeatState
 	public var camTwo:FlxCamera;
 	public var cameraSpeed:Float = 1;
 
-	public var songScore:Int = 0;
+	public var songScore:Float = 0;
 	public var songCheated:Int = -1;
-	public var cheatMult:Float = 1;
+	public var sMult:Float = 1;
 	public var songHits:Int = 0;
 	public var songMisses:Int = 0;
 	public var scoreTxt:FlxText;
 	var timeTxt:FlxText;
 	var scoreTxtTween:FlxTween;
 
-	public static var campaignScore:Int = 0;
+	public static var campaignScore:Float = 0;
 	public static var campaignMisses:Int = 0;
 	public static var seenCutscene:Bool = false;
 	public static var deathCounter:Int = 0;
@@ -1310,24 +1310,11 @@ class PlayState extends MusicBeatState
 		if(!practiceMode && !cpuControlled)
 		{
 			songCheated = -1;
-			cheatMult = 1;
 		}
-		if(!practiceMode && cpuControlled)
+		if(practiceMode || cpuControlled)
 		{
 			songCheated = 1;
-			cheatMult = 0.1;
 		}
-		if(practiceMode && !cpuControlled)
-		{
-			songCheated = 1;
-			cheatMult = 0.1;
-		}
-		if(practiceMode && cpuControlled)
-		{
-			songCheated = 1;
-			cheatMult = 0.1;
-		}
-		cheatMult = Math.abs(((0.25*(playbackRate-1))+1)*cheatMult);
 
 		stagesFunc(function(stage:BaseStage) stage.startSong());
 
@@ -2733,7 +2720,7 @@ class PlayState extends MusicBeatState
 
 		var placement:Float = FlxG.width * 0.35;
 		var rating:FlxSprite = new FlxSprite();
-		var score:Int = 350;
+		var score:Float = 350;
 
 		//tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(ratingsData, noteDiff / playbackRate);
@@ -2742,21 +2729,38 @@ class PlayState extends MusicBeatState
 		note.ratingMod = daRating.ratingMod;
 		if(!note.ratingDisabled) daRating.hits++;
 		note.rating = daRating.name;
-		score = daRating.score;
+		var scoreAdd:Float = 0;
+		var scoreAdd1:Float = 0;
+		var scoreAdd2:Float = 0;
+		var pbMult:Float = 1;
+		pbMult = Math.abs(((0.25*(playbackRate-1))+1));
+		if (songCheated == 1)
+		{
+			if (practiceMode) {
+				sMult = 0.1;
+				if (ClientPrefs.data.ratingPenalty) scoreAdd1 = 4;
+				if (ClientPrefs.data.lowPercentHurt) scoreAdd2 = 2;
+			}
+			if (cpuControlled) {
+				pbMult = 1;
+				score = 1;
+				if (ClientPrefs.data.ratingPenalty) scoreAdd1 = 0;
+				if (ClientPrefs.data.lowPercentHurt) scoreAdd2 = 0;
+			}
+		}
+		else
+		{
+			score = daRating.score;
+			if (ClientPrefs.data.ratingPenalty) scoreAdd1 = 40;
+			if (ClientPrefs.data.lowPercentHurt) scoreAdd2 = 20;
+		}
 
 		if(daRating.noteSplash && !note.noteSplashData.disabled)
 			spawnNoteSplashOnNote(note);
 
-		var scoreAdd:Int = 0;
-		var scoreAdd1:Int = 0;
-		var scoreAdd2:Int = 0;
-
-		if (ClientPrefs.data.ratingPenalty) scoreAdd1 = 40;
-		
-		if (ClientPrefs.data.lowPercentHurt) scoreAdd2 = 20;
 
 		scoreAdd = (scoreAdd1 + scoreAdd2);
-		songScore += Std.int((score + scoreAdd)*cheatMult);
+		songScore += (score + scoreAdd)*pbMult*sMult;
 
 		if(!note.ratingDisabled)
 		{

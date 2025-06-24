@@ -33,11 +33,11 @@ class FreeplayState extends MusicBeatState
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
 	var diffText:FlxText;
-	var lerpScore:Int = 0;
+	var lerpScore:Float = 0;
 	var lerpRating:Float = 0;
-	var intendedScore:Int = 0;
+	var intendedScore:Float = 0;
 	var intendedRating:Float = 0;
-	var recentScore:Int = 0;
+	var recentScore:Float = 0;
 	var recentRating:Float = 0;
 	var cheatedSC:Int = -1;
 	var rcheaT:Int = -1;
