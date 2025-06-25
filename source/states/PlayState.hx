@@ -326,18 +326,18 @@ class PlayState extends MusicBeatState
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = initPsychCamera();
 		camHUD = new FlxCamera();
-		camOther = new FlxCamera();
 		camOne = new FlxCamera();
 		camTwo = new FlxCamera();
+		camOther = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
-		camOther.bgColor.alpha = 0;
 		camOne.bgColor.alpha = 0;
 		camTwo.bgColor.alpha = 0;
+		camOther.bgColor.alpha = 0;
 
 		FlxG.cameras.add(camHUD, false);
-		FlxG.cameras.add(camOther, false);
 		FlxG.cameras.add(camOne,false); 
 		FlxG.cameras.add(camTwo,false); 
+		FlxG.cameras.add(camOther, false);
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1340,7 +1340,7 @@ class PlayState extends MusicBeatState
 		if(ClientPrefs.data.ldm) {
 			FlxG.cameras.remove(camGame,false);
 			FlxG.cameras.remove(camHUD,false);
-			FlxG.cameras.remove(camOther,false);
+			FlxG.cameras.remove(camTwo,false);
 
 			timeTxt.cameras = [camOne];
 			scoreTxt.cameras = [camOne];
