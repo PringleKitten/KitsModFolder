@@ -22,6 +22,7 @@ import states.TitleState;
 import crowplexus.iris.Iris;
 import psychlua.HScript.HScriptInfos;
 #end
+import openfl.events.KeyboardEvent;
 
 #if (linux || mac)
 import lime.graphics.Image;
@@ -187,6 +188,8 @@ class Main extends Sprite
 		#if DISCORD_ALLOWED
 		DiscordClient.prepare();
 		#end
+		
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, toggleFullScreen);
 
 		// shader coords fix
 		FlxG.signals.gameResized.add(function (w, h) {
@@ -209,8 +212,10 @@ class Main extends Sprite
 		}
 	}
 
-	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
-	// very cool person for real they don't get enough credit for their work
+	function toggleFullScreen(event:KeyboardEvent) {
+		if (Controls.instance.justReleased('fullscreen'))
+			FlxG.fullscreen = !FlxG.fullscreen;
+	}
 	#if CRASH_HANDLER
 	function onCrash(e:UncaughtErrorEvent):Void
 	{

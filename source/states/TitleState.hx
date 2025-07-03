@@ -55,10 +55,6 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
-	var mustUpdate:Bool = false;
-
-	public static var updateVersion:String = '';
-
 	override public function create():Void
 	{
 		Paths.clearStoredMemory();
@@ -279,16 +275,6 @@ class TitleState extends MusicBeatState
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
-
-		#if mobile
-		for (touch in FlxG.touches.list)
-		{
-			if (touch.justPressed)
-			{
-				pressedEnter = true;
-			}
-		}
-		#end
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 

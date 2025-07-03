@@ -8,10 +8,12 @@ import states.TitleState;
 
 // Add a variable here and it will get automatically saved
 @:structInit class SaveVariables {
+	public var popUpRating:Bool = true;
+	public var vsync:Bool = false;
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
 	public var opponentStrums:Bool = true;
-	public var showFPS:Bool = false;
+	public var showFPS:Bool = true;
 	public var flashing:Bool = true;
 	public var autoPause:Bool = true;
 	public var antialiasing:Bool = true;
@@ -35,7 +37,7 @@ import states.TitleState;
 	public var mobileChoice:Int = 2;
 	//end
 	public var hideHud:Bool = false;
-	public var noteOffset:Int = 90;
+	public var noteOffset:Int = 100;
 	public var arrowRGB:Array<Array<FlxColor>> = [
 		[0xFFC24B99, 0xFFFFFFFF, 0xFF3C1F56],
 		[0xFF00FFFF, 0xFFFFFFFF, 0xFF1542B7],
@@ -94,12 +96,6 @@ import states.TitleState;
 	public var camMovement:Bool = false;
 
 	public var ldm:Bool = false;
-
-	//public var songIntroScript:Bool = false;
-	//public var uilook:String = 'Psych';
-	//public var menuButtons:String = 'Middle'; 
-	//public var watermark:Bool = false;
-	//public var randomMenuThings:Bool = false;
 }
 
 class ClientPrefs {
@@ -129,7 +125,9 @@ class ClientPrefs {
 		'volume_down'	=> [NUMPADMINUS, MINUS],
 		
 		'debug_1'		=> [SEVEN],
-		'debug_2'		=> [EIGHT]
+		'debug_2'		=> [EIGHT],
+		
+		'fullscreen'	=> [F11]
 	];
 	public static var gamepadBinds:Map<String, Array<FlxGamepadInputID>> = [
 		'note_up'		=> [DPAD_UP, Y],

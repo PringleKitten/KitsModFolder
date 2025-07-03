@@ -664,6 +664,18 @@ class PlayState extends MusicBeatState
 
 		resetRPC();
 
+		var wasItMobile:Bool = ClientPrefs.data.mobileMechanics;
+
+		if (ClientPrefs.data.mobileChoice == 0) {
+			ClientPrefs.data.mobileMechanics = false;
+		}
+		else if(ClientPrefs.data.mobileChoice == 1) {
+			ClientPrefs.data.mobileMechanics = true;
+		}
+		else if(ClientPrefs.data.mobileChoice == 2) {
+			ClientPrefs.data.mobileMechanics = wasItMobile;
+		}
+
 		stagesFunc(function(stage:BaseStage) stage.createPost());
 		callOnScripts('onCreatePost');
 		
@@ -2090,7 +2102,7 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	function openChartEditor()
+	public function openChartEditor()
 	{
 		canResync = false;
 		FlxG.camera.followLerp = 0;
@@ -2777,6 +2789,8 @@ class PlayState extends MusicBeatState
 			antialias = !isPixelStage;
 		}
 
+		if (ClientPrefs.data.popUpRating)
+		{
 		rating.loadGraphic(Paths.image(uiFolder + daRating.image + uiPostfix));
 		rating.screenCenter();
 		rating.x = placement - 40;
@@ -2867,6 +2881,7 @@ class PlayState extends MusicBeatState
 			},
 			startDelay: Conductor.crochet * 0.002 / playbackRate
 		});
+		}
 	}
 
 	public var strumsBlocked:Array<Bool> = [];
