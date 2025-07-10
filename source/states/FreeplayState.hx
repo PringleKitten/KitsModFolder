@@ -21,6 +21,7 @@ import haxe.Json;
 class FreeplayState extends MusicBeatState
 {
 	var songs:Array<SongMetadata> = [];
+	var lastBeatTriggered:Int = -1;
 
 	var selector:FlxText;
 	private static var curSelected:Int = 0;
@@ -358,6 +359,7 @@ class FreeplayState extends MusicBeatState
 			{
 				destroyFreeplayVocals();
 				FlxG.sound.music.volume = 0;
+				lastBeatTriggered = -1;
 
 				Mods.currentModDirectory = songs[curSelected].folder;
 				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
@@ -485,29 +487,24 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 		}
 		if (player.playingMusic){
-			if (FlxG.sound.music != null && FlxG.sound.music.playing)
-			{
-			    beatTimer += elapsed*1.05;
-			    var secondsPerBeat:Float = 60 / (Conductor.bpm*player.playbackRate);
-			    if (beatTimer >= secondsPerBeat)
-			    {
-			        beatTimer -= secondsPerBeat;
-			        curBeat++;
-			        beatHit(); // Custom function for screen bop
-			    }
+			if (FlxG.sound.music != null && FlxG.sound.music.playing){
+				Conductor.songPosition = FlxG.sound.music.time;
+				var correctedSongPos:Float = Conductor.songPosition + ClientPrefs.data.noteOffset;			
+				var beatLength:Float = 60000 / (Conductor.bpm * player.playbackRate);
+				var curBeat:Int = Math.floor(correctedSongPos / beatLength);
+
+				if (curBeat > lastBeatTriggered)
+				{
+					lastBeatTriggered = curBeat;
+					trace('curBeat: ' + curBeat + ' | curSection: ' + curSection + ' | curBPM: ' + Conductor.bpm);
+					FlxG.camera.zoom = 1.1;
+					FlxTween.tween(FlxG.camera, {zoom: 1}, (0.2 / player.playbackRate) - (Conductor.bpm / 3200), {ease: FlxEase.sineIn});
+				}
 			}
 		}
 		updateTexts(elapsed);
 		super.update(elapsed);
 	}
-
-	override function beatHit()
-	{
-		super.beatHit();
-		FlxG.camera.zoom = 1.05;
-		FlxTween.tween(FlxG.camera, {zoom: 1}, 0.2/(player.playbackRate), {ease: FlxEase.quadOut});
-	}
-
 
 	function getVocalFromCharacter(char:String)
 	{
