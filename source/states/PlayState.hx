@@ -195,6 +195,7 @@ class PlayState extends MusicBeatState
 	public var camZoomsBg:Bool = true;
 	public var defaultCamUIZoom:Float = 1;
 	public var dontDestroy:Bool = false;
+	public var wasItMobile:Bool = false;
 
 	private var sustains:Array<Null<Float>> = [null, null, null, null];
 	private final COYOTE_TIME:Float = 1.0; // (60 FPS) forgiveness frames [ 0 + ]
@@ -663,8 +664,6 @@ class PlayState extends MusicBeatState
 			Paths.music(Paths.formatToSongPath(ClientPrefs.data.pauseMusic));
 
 		resetRPC();
-
-		var wasItMobile:Bool = ClientPrefs.data.mobileMechanics;
 
 		if (ClientPrefs.data.mobileChoice == 0) {
 			ClientPrefs.data.mobileMechanics = false;
