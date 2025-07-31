@@ -2771,7 +2771,7 @@ class PlayState extends MusicBeatState
 
 
 		scoreAdd = (scoreAdd1 + scoreAdd2);
-		songScore += (score + scoreAdd)*pbMult*sMult;
+		songScore += Math.floor((score + scoreAdd) * pbMult * 10) / 10;
 
 		if(!note.ratingDisabled)
 		{
