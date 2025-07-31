@@ -3478,6 +3478,7 @@ class PlayState extends MusicBeatState
 		backend.NoteTypesConfig.clearNoteTypesData();
 
 		NoteSplash.configs.clear();
+		ClientPrefs.data.mobileMechanics = wasItMobile;
 		instance = null;
 		super.destroy();
 	}
