@@ -1798,7 +1798,8 @@ class PlayState extends MusicBeatState
 
 		timer += elapsed;
 
-		if (timer >= 1) {
+		if (timer >= 2) {
+			trace('UPDATED');
 			resetRPC(true);
 			timer = 0;
 		}
