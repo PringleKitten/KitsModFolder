@@ -113,7 +113,7 @@ class Highscore
 		return Paths.formatToSongPath(song) + Difficulty.getFilePath(diff);
 	}
 
-	public static function getScore(song:String, diff:Int):Float
+	public static function getScore(song:String, diff:Int):Int
 	{
 		var daSong:String = formatSong(song, diff);
 		if (!songScores.exists(daSong))
@@ -122,7 +122,7 @@ class Highscore
 		return songScores.get(daSong).score;
 	}
 
-	public static function getRScore(song:String, diff:Int):Float
+	public static function getRScore(song:String, diff:Int):Int
 		{
 			var daSong:String = formatSong(song, diff);
 			if (!songScores.exists(daSong))
@@ -166,7 +166,7 @@ class Highscore
 		return songRating.get(daSong).recentRate;
 	}
 
-	public static function getWeekScore(week:String, diff:Int):Float
+	public static function getWeekScore(week:String, diff:Int):Int
 	{
 		var daWeek:String = formatSong(week, diff);
 		if (!weekScores.exists(daWeek))
