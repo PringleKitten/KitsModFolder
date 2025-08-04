@@ -2,8 +2,8 @@ package backend;
 
 class Highscore
 {
-	public static var weekScores:Map<String, {score:Float, cheated:Int}> = new Map();
-	public static var songScores:Map<String, {score:Float, cheated:Int, recentScore:Float, rcheat:Int}> = new Map();
+	public static var weekScores:Map<String, {score:Int, cheated:Int}> = new Map();
+	public static var songScores:Map<String, {score:Int, cheated:Int, recentScore:Int, rcheat:Int}> = new Map();
 	public static var songRating:Map<String, {rating:Float, recentRating:Float, rate:Float, recentRate:Float}> = new Map<String, {rating:Float, recentRating:Float, rate:Float, recentRate:Float}>();
 
 	public static function resetSong(song:String, diff:Int = 0):Void
@@ -19,7 +19,7 @@ class Highscore
 		setWeekScore(daWeek, 0, -1);
 	}
 
-	public static function saveScore(song:String, songCheatedSave:Int = -1, score:Float = 0, ?diff:Int = 0, ?rating:Float = -1, recentScore:Float = 0, recentRating:Float = 0, rate:Float = 1, recentRate:Float = 1, recC:Int = -1):Void
+	public static function saveScore(song:String, songCheatedSave:Int = -1, score:Int = 0, ?diff:Int = 0, ?rating:Float = -1, recentScore:Int = 0, recentRating:Float = 0, rate:Float = 1, recentRate:Float = 1, recC:Int = -1):Void
 	{
 		if(song == null) return;
 		var daSong:String = formatSong(song, diff);
@@ -47,7 +47,7 @@ class Highscore
 		}
 	}
 
-	public static function saveWeekScore(week:String, weekCheated:Int = -1, score:Float = 0, ?diff:Int = 0):Void
+	public static function saveWeekScore(week:String, weekCheated:Int = -1, score:Int = 0, ?diff:Int = 0):Void
 	{
 		var daWeek:String = formatSong(week, diff);
 
@@ -68,14 +68,14 @@ class Highscore
 	/**
 	 * YOU SHOULD FORMAT SONG WITH formatSong() BEFORE TOSSING IN SONG VARIABLE
 	 */
-	static function setScore(song:String, score:Float, songCheatedSave:Int, recentScore:Float, recC:Int):Void
+	static function setScore(song:String, score:Int, songCheatedSave:Int, recentScore:Int, recC:Int):Void
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
 		songScores.set(song, {score: score, cheated: songCheatedSave, recentScore: recentScore, rcheat: recC});
 		FlxG.save.data.songScores = songScores;
 		FlxG.save.flush();
 	}
-	static function setWeekScore(week:String, score:Float, weekCheated:Int):Void
+	static function setWeekScore(week:String, score:Int, weekCheated:Int):Void
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
 		weekScores.set(week, {score: score, cheated: weekCheated});

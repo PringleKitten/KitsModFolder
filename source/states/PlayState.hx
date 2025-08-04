@@ -226,7 +226,7 @@ class PlayState extends MusicBeatState
 	public var camTwo:FlxCamera;
 	public var cameraSpeed:Float = 1;
 
-	public var songScore:Float = 0;
+	public var songScore:Int = 0;
 	public var songCheated:Int = -1;
 	public var sMult:Float = 1;
 	public var songHits:Int = 0;
@@ -235,7 +235,7 @@ class PlayState extends MusicBeatState
 	var timeTxt:FlxText;
 	var scoreTxtTween:FlxTween;
 
-	public static var campaignScore:Float = 0;
+	public static var campaignScore:Int = 0;
 	public static var campaignMisses:Int = 0;
 	public static var seenCutscene:Bool = false;
 	public static var deathCounter:Int = 0;
@@ -1731,7 +1731,6 @@ class PlayState extends MusicBeatState
 		var timeLeft:Float = (songLength - Conductor.songPosition) / 1000; // convert from milliseconds to seconds
 		var minutes:Int = Math.floor(timeLeft / 60);
 		var seconds:Int = Math.floor(timeLeft % 60);
-
 		var formattedTime:String = minutes + ":" + (seconds < 10 ? "0" + Std.string(seconds) : Std.string(seconds));
 
 		#if DISCORD_ALLOWED
@@ -2731,7 +2730,7 @@ class PlayState extends MusicBeatState
 
 		var placement:Float = FlxG.width * 0.35;
 		var rating:FlxSprite = new FlxSprite();
-		var score:Float = 350;
+		var score:Int = 350;
 
 		//tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(ratingsData, noteDiff / playbackRate);
@@ -2747,13 +2746,14 @@ class PlayState extends MusicBeatState
 		pbMult = Math.abs(((0.25*(playbackRate-1))+1));
 		if (songCheated == 1)
 		{
-			if (practiceMode) {
+			if (!cpuControlled && practiceMode) {
 				sMult = 0.1;
 				if (ClientPrefs.data.ratingPenalty) scoreAdd1 = 4;
 				if (ClientPrefs.data.lowPercentHurt) scoreAdd2 = 2;
 			}
 			if (cpuControlled) {
 				pbMult = 1;
+				sMult = 1;
 				score = 1;
 				if (ClientPrefs.data.ratingPenalty) scoreAdd1 = 0;
 				if (ClientPrefs.data.lowPercentHurt) scoreAdd2 = 0;
@@ -2769,9 +2769,8 @@ class PlayState extends MusicBeatState
 		if(daRating.noteSplash && !note.noteSplashData.disabled)
 			spawnNoteSplashOnNote(note);
 
-
 		scoreAdd = (scoreAdd1 + scoreAdd2);
-		songScore += (Math.floor(((score + scoreAdd) * pbMult * sMult)*10) / 10);
+		songScore += Math.floor((score + scoreAdd) * pbMult * sMult);
 
 		if(!note.ratingDisabled)
 		{
