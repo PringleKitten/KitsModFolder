@@ -899,7 +899,7 @@ class PlayState extends MusicBeatState
 		if (foundFile)
 		{
 			videoCutscene = new VideoSprite(fileName, forMidSong, canSkip, loop);
-			if(forMidSong) videoCutscene.videoSprite.bitmap.rate = playbackRate;
+			videoCutscene.videoSprite.bitmap.rate = playbackRate;
 
 			// Finish callback
 			if (!forMidSong)
