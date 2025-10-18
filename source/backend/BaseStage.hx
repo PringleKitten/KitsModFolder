@@ -45,6 +45,7 @@ class BaseStage extends FlxBasic
 	public var camOther(get, never):FlxCamera;
 	public var camOne(get, never):FlxCamera;
 	public var camTwo(get, never):FlxCamera;
+	public var camThree(get, never):FlxCamera;
 
 	public var defaultCamZoom(get, set):Float;
 	public var camFollow(get, never):FlxObject;
@@ -173,6 +174,7 @@ class BaseStage extends FlxBasic
 	inline private function get_camOther():FlxCamera return game.camOther;
 	inline private function get_camOne():FlxCamera return game.camOne;
 	inline private function get_camTwo():FlxCamera return game.camTwo;
+	inline private function get_camThree():FlxCamera return game.camThree;
 
 	inline private function get_defaultCamZoom():Float return game.defaultCamZoom;
 	inline private function set_defaultCamZoom(value:Float):Float

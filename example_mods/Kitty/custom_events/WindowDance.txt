@@ -1,5 +1,0 @@
-	      V1:
-1=ON  |  0=OFF Fullscreen | -1=OFF Windowed
-
-	      V2:
-Speed of window movement(4 is normal)

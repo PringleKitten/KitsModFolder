@@ -1,3 +1,0 @@
-V1: 2/1/0 = FullScreen+On/On/Off
-
-V2: Color to Green Screen/Make transparent

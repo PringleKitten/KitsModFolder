@@ -1,7 +1,0 @@
-Move HP Bar
-
-v1(x) can be:
-"left" | "center" | "right"
-
-Also Supports Custom X AND Y Value
-v2(y) CUSTOM

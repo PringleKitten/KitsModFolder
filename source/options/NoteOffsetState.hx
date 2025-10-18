@@ -18,6 +18,7 @@ class NoteOffsetState extends MusicBeatState
 	public var camOther:FlxCamera;
 	public var camOne:FlxCamera;
 	public var camTwo:FlxCamera;
+	public var camThree:FlxCamera;
 
 	var coolText:FlxText;
 	var rating:FlxSprite;
@@ -61,6 +62,10 @@ class NoteOffsetState extends MusicBeatState
 		camTwo = new FlxCamera();
 		camTwo.bgColor.alpha = 0;
 		FlxG.cameras.add(camTwo, false);
+
+		camThree = new FlxCamera();
+		camThree.bgColor.alpha = 0;
+		FlxG.cameras.add(camThree, false);
 
 		FlxG.camera.scroll.set(120, 130);
 

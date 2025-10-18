@@ -516,6 +516,7 @@ class LuaUtils
 			case 'camother' | 'other': return PlayState.instance.camOther;
 			case 'camone' | 'one': return PlayState.instance.camOne;
 			case 'camtwo' | 'two': return PlayState.instance.camTwo;
+			case 'camthree' | 'three': return PlayState.instance.camThree;
 		}
 		var camera:FlxCamera = MusicBeatState.getVariables().get(cam);
 		if (camera == null || !Std.isOfType(camera, FlxCamera)) camera = PlayState.instance.camGame;

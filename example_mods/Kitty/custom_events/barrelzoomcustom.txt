@@ -1,2 +1,0 @@
-value1: zoom
-value2: time

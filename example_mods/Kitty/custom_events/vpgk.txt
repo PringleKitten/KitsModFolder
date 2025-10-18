@@ -1,1 +1,0 @@
-v1 = size(bigger = less -> 2 is default)v1/2 "hide" hides it (put v1 as 12 AS WELL for cooler effect)v2: 'black' 'blacktween' 'noblack' 'noblacktween' v1: time

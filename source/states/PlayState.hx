@@ -224,6 +224,7 @@ class PlayState extends MusicBeatState
 	public var camOther:FlxCamera;
 	public var camOne:FlxCamera;
 	public var camTwo:FlxCamera;
+	public var camThree:FlxCamera;
 	public var cameraSpeed:Float = 1;
 
 	public var songScore:Int = 0;
@@ -329,15 +330,18 @@ class PlayState extends MusicBeatState
 		camHUD = new FlxCamera();
 		camOne = new FlxCamera();
 		camTwo = new FlxCamera();
+		camThree = new FlxCamera();
 		camOther = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 		camOne.bgColor.alpha = 0;
 		camTwo.bgColor.alpha = 0;
+		camThree.bgColor.alpha = 0;
 		camOther.bgColor.alpha = 0;
 
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.add(camOne,false); 
-		FlxG.cameras.add(camTwo,false); 
+		FlxG.cameras.add(camTwo,false);
+		FlxG.cameras.add(camThree,false);
 		FlxG.cameras.add(camOther, false);
 
 		persistentUpdate = true;
@@ -1352,6 +1356,7 @@ class PlayState extends MusicBeatState
 			FlxG.cameras.remove(camGame,false);
 			FlxG.cameras.remove(camHUD,false);
 			FlxG.cameras.remove(camTwo,false);
+			FlxG.cameras.remove(camThree,false);
 
 			timeTxt.cameras = [camOne];
 			scoreTxt.cameras = [camOne];

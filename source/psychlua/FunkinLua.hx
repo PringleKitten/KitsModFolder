@@ -586,6 +586,7 @@ class FunkinLua {
 				case 'camother' | 'other': camera = 'camOther';
 				case 'camone' | 'one': camera = 'camOne';
 				case 'camtwo' | 'two': camera = 'camTwo';
+				case 'camthree' | 'three': camera = 'camThree';
 				default:
 					var cam:FlxCamera = MusicBeatState.getVariables().get(camera);
 					if (cam == null || !Std.isOfType(cam, FlxCamera)) camera = 'camGame';
