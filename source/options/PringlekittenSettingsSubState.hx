@@ -6,12 +6,6 @@ class PringlekittenSettingsSubState extends BaseOptionsMenu
 	{
 		rpcTitle = 'Pringlekitten\'s Settings Menu';
 
-		var option:Option = new Option('Asset Movement',
-			'Allows scripts to move parts of the game.',
-			'assetMovement',
-			BOOL);
-		addOption(option);
-
 		var option:Option = new Option('Even Lower Quality',
 			"Game will run with even less objects\n Even when combined with Low Quality",
 			'ldm',
@@ -24,15 +18,21 @@ class PringlekittenSettingsSubState extends BaseOptionsMenu
 			BOOL);
 		addOption(option);
 
-		var option:Option = new Option('Dodging',
-			'Dodging is enabled. (Special Songs that use it)',
-			'mechanics',
+		var option:Option = new Option('Asset Movement',
+			'Allows scripts to move parts of the game.',
+			'assetMovement',
 			BOOL);
 		addOption(option);
 
 		var option:Option = new Option('Extra Mechanics',
-			'Certain mechanics like HIT THAT KEY will be enabled.',
+			'This is usually SV Charting, or whatever extra bs there is.',
 			'mechanicsAgain',
+			BOOL);
+		addOption(option);
+
+		var option:Option = new Option('Dodging',
+			'Dodging is enabled. (Special Songs that use it)',
+			'mechanics',
 			BOOL);
 		addOption(option);
 
@@ -55,12 +55,12 @@ class PringlekittenSettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('Osu Sustain Input',
-			"Let go at the end of a hold note. (In the works)",
+			"Must let go at the end of a hold note. \n ( In the works/Doesn't work :c )",
 			'osuSustainInput',
 			BOOL);
 		addOption(option);
 		
-		var option:Option = new Option('Mobile Buttons',
+		var option:Option = new Option('Mobile Buttons(Kinda)',
 			'0 = Off, 1 = On, 2 = Default by Installation',
 			'mobileChoice',
 			INT);
