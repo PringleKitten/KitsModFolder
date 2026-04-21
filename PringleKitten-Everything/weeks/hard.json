@@ -18,8 +18,17 @@
 	],
 	"songs": [
 		[
+		    "adhd music 4f",
+		    "bf",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
 			"alan becker (sea shanty)",
-			"bf",
+			"gf-invis",
 			[
 				255,
 				136,
@@ -28,6 +37,24 @@
 		],
 		[
 			"alan becker (sea shanty edit)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"anjer remix (manifest)",
+			"sky-mani",
+			[
+				0,
+				0,
+				0
+			]
+		],
+		[
+			"busta nights",
 			"bf",
 			[
 				255,
@@ -36,6 +63,24 @@
 			]
 		],
 		[
+			"bofa us",
+			"t1nman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"carol of bells rockversion",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+				[
 			"crystallized",
 			"bf",
 			[
@@ -73,7 +118,7 @@
 		],
 		[
 			"cg5 (stuck inside)",
-			"bf",
+			"gf-invis",
 			[
 				255,
 				136,
@@ -82,6 +127,42 @@
 		],
 		[
 			"cg5 (superstitious foundation)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"crown jewel",
+			"t1nman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"davie504 (coffin dance)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"disco cat",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"dont mine at night",
 			"bf",
 			[
 				255,
@@ -94,22 +175,13 @@
 			"bf",
 			[
 				255,
-				36,
-				112
-			]
-		],
-		[
-			"electroman adventures",
-			"bf",
-			[
-				255,
-				36,
-				112
+				136,
+				0
 			]
 		],
 		[
 			"everytime we touch",
-			"bf",
+			"gf-invis",
 			[
 				255,
 				36,
@@ -117,8 +189,44 @@
 			]
 		],
 		[
+			"final zone final escape",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"fvrwvrd (ludicrous speed)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"final rush",
+			"dad",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"hello im tinny",
+			"t1nman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
 			"homiecough",
-			"bf",
+			"gf-invis",
 			[
 				150,
 				150,
@@ -127,7 +235,7 @@
 		],
 		[
 			"masked and wild",
-			"bf",
+			"gf-invis",
 			[
 				255,
 				136,
@@ -136,21 +244,12 @@
 		],
 		[
 			"m1llion pp",
-			"bf",
+			"gf-invis",
 			[
 				220,
 				82,
 				40
 			]
-		],
-		[
-		    "nekozuna (adhd music)",
-		    "bf",
-		    [
-		        255,
-		        255,
-		        0
-		    ]
 		],
 		[
 			"Octagon of Destiny",
@@ -162,8 +261,17 @@
 			]
 		],
 		[
+			"one shot wonder",
+			"t1nman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
 			"platypus",
-			"bf",
+			"gf-invis",
 			[
 				255,
 				81,
@@ -171,8 +279,35 @@
 			]
 		],
 		[
-			"remember",
+			"peaceful",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"rap god",
 			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"remember",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"rush e",
+			"gf-invis",
 			[
 				255,
 				136,
@@ -189,6 +324,24 @@
 			]
 		],
 		[
+			"revenge",
+			"dad",
+			[
+				2,
+				63,
+				124
+			]
+		],
+		[
+			"s3rl (pika girl)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
 			"sandstorm",
 			"bf",
 			[
@@ -199,7 +352,7 @@
 		],
 		[
 			"sonicwave",
-			"bf",
+			"gf-invis",
 			[
 				0,
 				170,
@@ -207,8 +360,26 @@
 			]
 		],
 		[
-			"spin-eternally",
+			"soviet connection",
 			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"spin eternally",
+			"gf-invis",
+			[
+				0,
+				229,
+				255
+			]
+		],
+		[
+			"TON GD Level",
+			"gf-invis",
 			[
 				0,
 				229,
@@ -223,25 +394,7 @@
 				113,
 				253
 			]
-		],
-		[
-			"revenge",
-			"dad",
-			[
-				2,
-				63,
-				124
-			]
-		],
-		[
-			"TON GD Level",
-			"bf",
-			[
-				0,
-				229,
-				255
-			]
 		]
 	],
-	"weekName": "only-hard"
+	"weekName": "only hard"
 }

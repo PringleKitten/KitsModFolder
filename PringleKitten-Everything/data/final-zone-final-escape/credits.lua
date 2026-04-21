@@ -1,6 +1,6 @@
 local people = {
     'PringleKitten', -- Gameplay
-    'Waterflame' -- Composer
+    'Rodri (on YouTube)' -- Composer
 }
 
 local credits = {
@@ -23,7 +23,7 @@ function onCreate()
     setObjectOrder("gameplayperson", 4)
 
     luaText('composerperson', 5, 685, 23, 'ffffff', '000000', people[2])
-    luaText('composertext', 5, 655, 23, 'ff0000', '000000', 'Composer')
+    luaText('composertext', 5, 655, 23, 'ff0000', '000000', 'Composer/Video')
     if getProperty("composertext.width") < getProperty("composerperson.width") then
         setProperty("composertext.x", getProperty("composerperson.x")+(getProperty("composerperson.width")-(getProperty("composerperson.width")/2)-(getProperty("composertext.width")/2)))
         luaGraphic('composerbg', 5, 655, getTextWidth("composerperson"), 60, '000000')

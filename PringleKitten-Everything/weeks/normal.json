@@ -1,12 +1,12 @@
 {
-	"storyName": "OG Charts I made for other mods",
-	"difficulties": "Hard",
+	"storyName": "sunshine",
+	"difficulties": "Normal",
 	"hideFreeplay": false,
 	"weekBackground": "",
 	"freeplayColor": [
-		146,
-		113,
-		253
+		0,
+		0,
+		0
 	],
 	"weekBefore": "tutorial",
 	"startUnlocked": true,
@@ -18,14 +18,14 @@
 	],
 	"songs": [
 		[
-			"anjer remix (manifest)",
-			"sky-mani",
+			"walking on sunshine",
+			"bf",
 			[
-				0,
-				0,
-				0
+				38,
+				38,
+				255
 			]
 		]
 	],
-	"weekName": "OG Charts I made for other mods"
+	"weekName": "sunshine"
 }

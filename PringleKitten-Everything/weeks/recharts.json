@@ -1,5 +1,5 @@
 {
-	"storyName": "Separator1",
+	"storyName": "recharts",
 	"difficulties": "Meow",
 	"hideFreeplay": false,
 	"weekBackground": "",
@@ -18,7 +18,7 @@
 	],
 	"songs": [
 		[
-			"----OLD_SONGS_BELOW----",
+			"----RECHARTS----",
 			"gf-invis",
 			[
 				0,
@@ -27,5 +27,5 @@
 			]
 		]
 	],
-	"weekName": "Separator1"
+	"weekName": "recharts"
 }

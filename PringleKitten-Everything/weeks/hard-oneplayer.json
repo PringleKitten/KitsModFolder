@@ -27,7 +27,52 @@
 			]
 		],
 		[
-			"how-bad-can-i-be",
+			"hearts a stereo",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"revenge",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"want for xmas is you",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"life is fun",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"wonderful christmas time",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"how bad can i be",
 			"monster",
 			[
 				255,
@@ -36,7 +81,7 @@
 			]
 		],
 		[
-			"say-it-(cover)",
+			"say it (cover)",
 			"bf",
 			[
 				22,
@@ -46,13 +91,49 @@
 		],
 		[
 			"youll be gone",
-			"bf",
+			"gf-invis",
 			[
 				22,
 				165,
 				221
 			]
+		],
+		[
+			"never getting back together",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"never going to the nether",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"everybody do the flop",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"party rock",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
 		]
 	],
-	"weekName": "hard-and-oneplayer"
+	"weekName": "hard and oneplayer"
 }

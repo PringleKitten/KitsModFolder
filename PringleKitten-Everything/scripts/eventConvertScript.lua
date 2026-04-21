@@ -305,7 +305,7 @@ function onBeatHit()
         triggerEvent('Add Camera Zoom', 0.24, 0.18);
         health = getProperty('health')
         setProperty('health', health- 0.08);
-        characterPlayAnim('bf', 'idle', true);
+        playAnim('bf', 'idle', true);
      end
      if camzoomS == true then
         triggerEvent('Add Camera Zoom', 0.08, 0.035);

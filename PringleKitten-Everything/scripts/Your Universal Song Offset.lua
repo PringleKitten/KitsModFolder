@@ -1,6 +1,6 @@
-offset = 100
+offset = 75
 local newOff = 0
-local c = true -- set to True to use custom offsets
+local c = false -- set to True to use custom offsets
 
 function onCreate()
     if not c then

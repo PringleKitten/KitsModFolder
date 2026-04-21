@@ -45,6 +45,15 @@
 			]
 		],
 		[
+			"payphone",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
 			"itsme",
 			"monster",
 			[
@@ -72,7 +81,7 @@
 			]
 		],
 		[
-			"losing-my-mind",
+			"losing my mind",
 			"bf",
 			[
 				125,
@@ -81,7 +90,7 @@
 			]
 		],
 		[
-			"speed-in-my-soul",
+			"speed in my soul",
 			"dad",
 			[
 				146,
@@ -126,7 +135,7 @@
 			]
 		],
 		[
-			"stayin-alive",
+			"stayin alive",
 			"pico",
 			[
 				125,
@@ -135,7 +144,16 @@
 			]
 		],
 		[
-			"surface-pressure",
+			"when doves cry",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"surface pressure",
 			"mom",
 			[
 				125,
@@ -162,7 +180,7 @@
 			]
 		],
 		[
-			"speed-in-my-soul",
+			"speed in my soul",
 			"dad",
 			[
 				125,

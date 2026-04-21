@@ -19,7 +19,7 @@
 	"songs": [
 		[
 			"alan becker (rush e)",
-			"bf",
+			"gf-invis",
 			[
 				125,
 				0,
@@ -37,7 +37,7 @@
 		],
 		[
 			"the living tombstone (FNaF1)",
-			"bf",
+			"gf-invis",
 			[
 				125,
 				0,
@@ -54,5 +54,5 @@
 			]
 		]
 	],
-	"weekName": "hard-and-harder"
+	"weekName": "hard and harder"
 }
