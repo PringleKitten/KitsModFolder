@@ -4,7 +4,7 @@
 	"defaultUIZoom": 1,
 	"isPixelStage": false,
 
-	"boyfriend": [770, 100],
-	"girlfriend": [400, 130],
-	"opponent": [100, 100]
+	"boyfriend": [0, 0],
+	"girlfriend": [0, 0],
+	"opponent": [0, 0]
 }

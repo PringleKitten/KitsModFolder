@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="speakers.png">
-	<!-- Created with Adobe Animate version 21.0.7.42652 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="speakers0000" x="0" y="0" width="703" height="352"/>
 	<SubTexture name="speakers0001" x="703" y="0" width="703" height="352"/>
 	<SubTexture name="speakers0002" x="1406" y="0" width="699" height="352" frameX="-2" frameY="0" frameWidth="703" frameHeight="352"/>

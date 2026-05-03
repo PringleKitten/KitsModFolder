@@ -43,7 +43,7 @@ function onUpdate()
 				hitkey = 'False'
 			end
 			if FinalBeat - curBeat <= 0 and hitkey == 'True' then
-				setProperty('health', -1)
+				setProperty('health', getProperty('health')-2)
 			end
 		else
 			setProperty('pressit.alpha', 0)

@@ -18,8 +18,26 @@
 	],
 	"songs": [
 		[
+		    "abcdefu(angrier remix)",
+		    "gf-invis",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
 		    "adhd music 4f",
 		    "bf",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
+		    "airborne robots",
+		    "gf-invis",
 		    [
 		        255,
 		        255,
@@ -54,6 +72,15 @@
 			]
 		],
 		[
+		    "avenger",
+		    "gf-invis",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
 			"busta nights",
 			"bf",
 			[
@@ -72,39 +99,21 @@
 			]
 		],
 		[
+		    "candyland (tobu)",
+		    "gf-invis",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
 			"carol of bells rockversion",
 			"bf",
 			[
 				255,
 				136,
 				0
-			]
-		],
-				[
-			"crystallized",
-			"bf",
-			[
-				161,
-				29,
-				204
-			]
-		],
-		[
-			"classical vip",
-			"bf",
-			[
-				255,
-				36,
-				112
-			]
-		],
-		[
-			"cloud 9",
-			"bf",
-			[
-				255,
-				36,
-				112
 			]
 		],
 		[
@@ -135,11 +144,56 @@
 			]
 		],
 		[
+			"classical vip",
+			"bf",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
+			"close to me",
+			"gf-invis",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
+			"cloud 9",
+			"bf",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
 			"crown jewel",
 			"t1nman",
 			[
 				255,
 				136,
+				0
+			]
+		],
+		[
+			"crystallized",
+			"bf",
+			[
+				161,
+				29,
+				204
+			]
+		],
+		[
+			"dancin (cg5)",
+			"cg5-elika",
+			[
+				125,
+				0,
 				0
 			]
 		],
@@ -216,6 +270,15 @@
 			]
 		],
 		[
+			"gangham style",
+			"bf",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
 			"hello im tinny",
 			"t1nman",
 			[
@@ -231,6 +294,24 @@
 				150,
 				150,
 				150
+			]
+		],
+		[
+			"ievan polkka (composerily)",
+			"bf",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"ludicrous speed (fvrwvrd)",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
 			]
 		],
 		[
@@ -316,7 +397,7 @@
 		],
 		[
 			"run run",
-			"springbonnie-pixel",
+			"suitedAftonPanic",
 			[
 				245,
 				123,
@@ -351,6 +432,15 @@
 			]
 		],
 		[
+			"shucks [with morshu]",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
 			"sonicwave",
 			"gf-invis",
 			[
@@ -369,6 +459,24 @@
 			]
 		],
 		[
+			"space battle",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"spear of justice (toby fox)",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
 			"spin eternally",
 			"gf-invis",
 			[
@@ -378,12 +486,30 @@
 			]
 		],
 		[
+			"the seven seas",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
 			"TON GD Level",
 			"gf-invis",
 			[
 				0,
 				229,
 				255
+			]
+		],
+		[
+			"we like to party",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
 			]
 		],
 		[

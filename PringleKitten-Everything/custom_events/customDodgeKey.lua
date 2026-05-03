@@ -26,7 +26,7 @@ function onUpdate()
     if myKeyReleased and Doge and youDoge == false then
         youDoge = false
         Doge = false
-        setProperty('health', setProperty('health', 0))
+        setProperty('health', getProperty('health')-2)
     end
     if myKeyReleased and youDoge then
         youDoge = true
@@ -38,7 +38,7 @@ end
 function onTimerCompleted(tag, loops, loopsLeft)
         if dodgingmech then
         if tag == 'Dbed' and youDoge == false then
-            setProperty('health', 0)
+            setProperty('health', getProperty('health')-2)
         end
     end
 end

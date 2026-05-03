@@ -1,4 +1,4 @@
-offset = 75
+offset = 100
 local newOff = 0
 local c = false -- set to True to use custom offsets
 
@@ -68,8 +68,6 @@ function onCreatePost()
 end
 
 function onDestroy()
-    if c then
-        setPropertyFromClass('backend.ClientPrefs','data.noteOffset',offset)
-    end
+    setPropertyFromClass('backend.ClientPrefs','data.noteOffset',offset)
     close(true)
 end

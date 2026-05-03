@@ -8,5 +8,5 @@ function onCreate()
     addLuaSprite('floor')
     addAnimationByPrefix('floor','bump','sky/floorManifest',24)
     objectPlayAnimation('floor','bump',true)
-    close(true)
+    close()
 end

@@ -1,3 +1,6 @@
+callScript("scripts/shader", "noShadersBoy")
+callScript("scripts/videoSprite", "performanceD")
+setProperty('camGame.visible', false)
 local people = {
     'PringleKitten', -- Gameplay
     'Camellia' -- Composer
@@ -47,13 +50,22 @@ function onCountdownStarted()
         setProperty(credits .. '.alpha', 1)
         doTweenY(credits..'move', credits, getProperty(credits .. '.y')+800, 0.5, "expoOut")
     end
+    setPropertyFromGroup('playerStrums',0,'x',defaultPlayerStrumX0-310)
+    setPropertyFromGroup('playerStrums',1,'x',defaultPlayerStrumX1-310)
+    setPropertyFromGroup('playerStrums',2,'x',defaultPlayerStrumX2-310)
+    setPropertyFromGroup('playerStrums',3,'x',defaultPlayerStrumX3-310)
+for i = 0, 3 do
+        setPropertyFromGroup('strumLineNotes', i, 'alpha', 0)
+        setPropertyFromGroup('opponentStrums',i,'visible',false)
+    end
 end
 
 function onBeatHit()
-    if curBeat == 5 then
+    if curBeat >= 5 and not r then
         for _, credits in ipairs(credits) do
             doTweenX(credits..'away', credits, getProperty(credits .. '.x')+1500, 1, "expoIn")
         end
+        r = true
     end
 end
 
@@ -61,8 +73,14 @@ function onTweenCompleted(tag)
     for _, credits in ipairs(credits) do
         if tag == credits..'away' then
             removeLuaSprite(credits)
-            close(true)
+            runTimer('no', 0.01)
         end
+    end
+end
+
+function onTimerCompleted(tag)
+    if tag == 'no' then
+        close()
     end
 end
 

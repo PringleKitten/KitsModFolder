@@ -18,7 +18,16 @@
 	],
 	"songs": [
 		[
-			"tanger (pp breaker)",
+		    "bike (tanger)",
+		    "gf-invis",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
+			"pp breaker (tanger)",
 			"gf-invis",
 			[
 				125,
