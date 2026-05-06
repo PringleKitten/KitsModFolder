@@ -1,0 +1,193 @@
+{
+	"storyName": "One Difficulty",
+	"difficulties": "Hard",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"abcdefu(angrier remix)",
+			"gf-invis",
+			[
+				0,
+				0,
+				100
+			]
+		],
+		[
+			"airborne robots",
+			"gf-invis",
+			[
+				0,
+				0,
+				100
+			]
+		],
+		[
+			"avenger",
+			"gf-invis",
+			[
+				50,
+				0,
+				100
+			]
+		],
+		[
+			"candyland (tobu)",
+			"bf",
+			[
+				150,
+				0,
+				100
+			]
+		],
+		[
+			"close to me",
+			"gf-invis",
+			[
+				150,
+				0,
+				120
+			]
+		],
+		[
+			"dancin (cg5)",
+			"bf",
+			[
+				0,
+				0,
+				110
+			]
+		],
+		[
+			"from the islands",
+			"bf",
+			[
+				0,
+				0,
+				110
+			]
+		],
+		[
+			"gangham style",
+			"bf",
+			[
+				150,
+				0,
+				120
+			]
+		],
+		[
+			"ievan polkka (composerily)",
+			"bf",
+			[
+				80,
+				0,
+				100
+			]
+		],
+		[
+			"knockout (metal cover)",
+			"AngryCuphead",
+			[
+				120,
+				0,
+				100
+			]
+		],
+		[
+			"ludicrous speed (fvrwvrd)",
+			"gf-invis",
+			[
+				200,
+				0,
+				100
+			]
+		],
+		[
+			"masked and wild",
+			"gf-invis",
+			[
+				20,
+				0,
+				100
+			]
+		],
+		[
+			"remember",
+			"gf-invis",
+			[
+				180,
+				0,
+				0
+			]
+		],
+		[
+			"shucks [with morshu]",
+			"morshu",
+			[
+				70,
+				0,
+				100
+			]
+		],
+		[
+			"space battle",
+			"gf-invis",
+			[
+				170,
+				0,
+				100
+			]
+		],
+		[
+			"spear of justice (toby fox)",
+			"gf-invis",
+			[
+				160,
+				0,
+				100
+			]
+		],
+		[
+			"spin eternally",
+			"gf-invis",
+			[
+				185,
+				0,
+				100
+			]
+		],
+		[
+			"the seven seas",
+			"gf-invis",
+			[
+				110,
+				0,
+				100
+			]
+		],
+		[
+			"we like to party",
+			"gf-invis",
+			[
+				140,
+				0,
+				100
+			]
+		]
+	],
+	"weekName": "one"
+}

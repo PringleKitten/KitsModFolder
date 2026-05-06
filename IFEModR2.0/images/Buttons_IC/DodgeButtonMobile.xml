@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="DodgeButtonMobile.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+    <SubTexture name="Dodge 10000" x="0" y="0" width="128" height="135" frameWidth="132" frameHeight="135"/>
+	<SubTexture name="Dodge 10001" x="128" y="0" width="132" height="135" frameX="0" frameY="0" frameWidth="132" frameHeight="135"/>
+</TextureAtlas>

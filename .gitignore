@@ -1,0 +1,12 @@
+do NOT readme.txt
+icon.ico
+libvlc.dll
+libvlccore.dll
+lime.ndll
+PsychEngine.exe
+plugins/
+manifest/
+assets/
+.haxelib/
+export/
+example_mods/IFEModR2.0

@@ -1,0 +1,177 @@
+{
+	"animations": [
+		{
+			"loop": true,
+			"offsets": [
+				0,
+				-390
+			],
+			"anim": "idle",
+			"fps": 24,
+			"name": "1",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				128,
+				-398
+			],
+			"anim": "singLEFT",
+			"fps": 24,
+			"name": "Left",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				-18,
+				-430
+			],
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "Down",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				42,
+				-265
+			],
+			"anim": "singUP",
+			"fps": 24,
+			"name": "Up",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				-2,
+				-362
+			],
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "Right",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				121,
+				-428
+			],
+			"anim": "pewLEFT",
+			"fps": 24,
+			"name": "Pewleft instance 1",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				-14,
+				-427
+			],
+			"anim": "PewDOWN",
+			"fps": 24,
+			"name": "pewdown instance 1",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				50,
+				-310
+			],
+			"anim": "pewUP",
+			"fps": 24,
+			"name": "PewUp instance 1",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				0,
+				-363
+			],
+			"anim": "pewRIGHT",
+			"fps": 24,
+			"name": "PewRight instance 1",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				348,
+				-116
+			],
+			"anim": "big shot",
+			"fps": 22,
+			"name": "Hadoken!!",
+			"indices": []
+		},
+		{
+			"loop": true,
+			"offsets": [
+				6,
+				-404
+			],
+			"anim": "shotting",
+			"fps": 24,
+			"name": "DIE BITCH",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				120,
+				-420
+			],
+			"anim": "hurt",
+			"fps": 24,
+			"name": "Ouch instance 1",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				-10,
+				-430
+			],
+			"anim": "phase 2",
+			"fps": 24,
+			"name": "Phase 2 starts instance 1",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				21,
+				-389
+			],
+			"anim": "RoundAttack",
+			"fps": 24,
+			"name": "Roundattack instance 1",
+			"indices": []
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/cuphead/Cuphead Pissed",
+	"position": [
+		0,
+		0
+	],
+	"healthicon": "AngryCuphead",
+	"flip_x": false,
+	"healthbar_colors": [
+		171,
+		22,
+		74
+	],
+	"camera_position": [
+		-50,
+		300
+	],
+	"sing_duration": 4,
+	"scale": 1.7
+}
