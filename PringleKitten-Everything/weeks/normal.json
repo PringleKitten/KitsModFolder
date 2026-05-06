@@ -1,0 +1,31 @@
+{
+	"storyName": "sunshine",
+	"difficulties": "Normal",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		0,
+		0,
+		0
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"walking on sunshine",
+			"bf",
+			[
+				38,
+				38,
+				255
+			]
+		]
+	],
+	"weekName": "sunshine"
+}

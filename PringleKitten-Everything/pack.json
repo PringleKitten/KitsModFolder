@@ -1,0 +1,7 @@
+{
+	"name": "PringleKitten-Everything 2.6.1[beta release]",
+	"description": "All Charts I've ever made",
+	"restart": true,
+	"runsGlobally": true,
+	"color": [251, 77, 155]
+}

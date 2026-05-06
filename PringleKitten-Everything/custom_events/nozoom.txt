@@ -1,0 +1,10 @@
+On my engine this works
+Value1 - 
+If 1, then NO Background ZOOM
+2 is same but can use add cam zoom and such
+0 = zooms normally
+
+Value2 - 
+If 1, then NO UI ZOOM
+2 is same but can use add cam zoom and such
+0 = zooms normally

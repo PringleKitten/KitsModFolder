@@ -1,0 +1,526 @@
+{
+	"storyName": "Songs with ONLY hard mode",
+	"difficulties": "Hard",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+		    "abcdefu(angrier remix)",
+		    "gf-invis",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
+		    "adhd music 4f",
+		    "bf",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
+		    "airborne robots",
+		    "gf-invis",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
+			"alan becker (sea shanty)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"alan becker (sea shanty edit)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"anjer remix (manifest)",
+			"sky-mani",
+			[
+				0,
+				0,
+				0
+			]
+		],
+		[
+		    "avenger",
+		    "gf-invis",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
+			"busta nights",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"bofa us",
+			"t1nman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+		    "candyland (tobu)",
+		    "gf-invis",
+		    [
+		        255,
+		        255,
+		        0
+		    ]
+		],
+		[
+			"carol of bells rockversion",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"cg5 (drop the bass)",
+			"cg5-elika",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
+			"cg5 (stuck inside)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"cg5 (superstitious foundation)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"classical vip",
+			"bf",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
+			"close to me",
+			"gf-invis",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
+			"cloud 9",
+			"bf",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
+			"crown jewel",
+			"t1nman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"crystallized",
+			"bf",
+			[
+				161,
+				29,
+				204
+			]
+		],
+		[
+			"dancin (cg5)",
+			"cg5-elika",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"davie504 (coffin dance)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"disco cat",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"dont mine at night",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"electrodynamix",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"everytime we touch",
+			"gf-invis",
+			[
+				255,
+				36,
+				112
+			]
+		],
+		[
+			"final zone final escape",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"fvrwvrd (ludicrous speed)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"final rush",
+			"dad",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"gangham style",
+			"bf",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"hello im tinny",
+			"t1nman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"homiecough",
+			"gf-invis",
+			[
+				150,
+				150,
+				150
+			]
+		],
+		[
+			"ievan polkka (composerily)",
+			"bf",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"ludicrous speed (fvrwvrd)",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"masked and wild",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"m1llion pp",
+			"gf-invis",
+			[
+				220,
+				82,
+				40
+			]
+		],
+		[
+			"Octagon of Destiny",
+			"octoman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"one shot wonder",
+			"t1nman",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"platypus",
+			"gf-invis",
+			[
+				255,
+				81,
+				0
+			]
+		],
+		[
+			"peaceful",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"rap god",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"remember",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"rush e",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"run run",
+			"suitedAftonPanic",
+			[
+				245,
+				123,
+				2
+			]
+		],
+		[
+			"revenge",
+			"dad",
+			[
+				2,
+				63,
+				124
+			]
+		],
+		[
+			"s3rl (pika girl)",
+			"gf-invis",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"sandstorm",
+			"bf",
+			[
+				205,
+				189,
+				68
+			]
+		],
+		[
+			"shucks [with morshu]",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"sonicwave",
+			"gf-invis",
+			[
+				0,
+				170,
+				255
+			]
+		],
+		[
+			"soviet connection",
+			"bf",
+			[
+				255,
+				136,
+				0
+			]
+		],
+		[
+			"space battle",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"spear of justice (toby fox)",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"spin eternally",
+			"gf-invis",
+			[
+				0,
+				229,
+				255
+			]
+		],
+		[
+			"the seven seas",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"TON GD Level",
+			"gf-invis",
+			[
+				0,
+				229,
+				255
+			]
+		],
+		[
+			"we like to party",
+			"gf-invis",
+			[
+				125,
+				0,
+				0
+			]
+		],
+		[
+			"xmas in the hood",
+			"bf",
+			[
+				146,
+				113,
+				253
+			]
+		]
+	],
+	"weekName": "only hard"
+}

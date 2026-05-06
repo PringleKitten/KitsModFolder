@@ -1,0 +1,5 @@
+Scale HP Bar
+
+v1(Degrees Rotation)
+
+v2(Time to Rotate)

@@ -1,0 +1,10 @@
+	V1: 
+1=Xaxis 2=Yaxis
+3=FullScreen 4=Borderless
+9090 forces
+8080 allows player to change
+
+	V2:
+*Y Coordinates are additive to current*
+     Settings:
+1=True  |  AnythingElse/Empty=False

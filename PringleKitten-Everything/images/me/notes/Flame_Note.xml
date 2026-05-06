@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Flame_Note.png">
+<SubTexture name="A0000" x="0" y="159" width="160" height="146" frameX="0" frameY="0" frameWidth="161" frameHeight="146" />
+<SubTexture name="A hold0000" x="210" y="159" width="50" height="46" frameX="0" frameY="0" frameWidth="50" frameHeight="46" />
+<SubTexture name="A tail0000" x="160" y="159" width="50" height="67" frameX="-2" frameY="0" frameWidth="54" frameHeight="69" />
+<SubTexture name="B0000" x="0" y="0" width="146" height="159" frameX="0" frameY="0" frameWidth="146" frameHeight="159" />
+<SubTexture name="B hold0000" x="210" y="159" width="50" height="46" frameX="0" frameY="0" frameWidth="50" frameHeight="46" />
+<SubTexture name="B tail0001" x="160" y="159" width="50" height="67" frameX="-2" frameY="0" frameWidth="54" frameHeight="69" />
+<SubTexture name="C0000" x="293" y="0" width="160" height="148" frameX="-2" frameY="0" frameWidth="162" frameHeight="150" />
+<SubTexture name="C hold0000" x="210" y="159" width="50" height="46" frameX="0" frameY="0" frameWidth="50" frameHeight="46" />
+<SubTexture name="C tail0000" x="160" y="159" width="50" height="67" frameX="-2" frameY="0" frameWidth="54" frameHeight="69" />
+<SubTexture name="D0000" x="146" y="0" width="147" height="159" frameX="0" frameY="0" frameWidth="147" frameHeight="159" />
+<SubTexture name="D hold0000" x="210" y="159" width="50" height="46" frameX="0" frameY="0" frameWidth="50" frameHeight="46" />
+<SubTexture name="D tail0000" x="160" y="159" width="50" height="67" frameX="-2" frameY="0" frameWidth="54" frameHeight="69" />
+</TextureAtlas>

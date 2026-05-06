@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="TheDarkLord.png">
+	<!-- Created with Adobe Animate version 21.0.5.40714 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="TDL Down Export0000" x="25" y="25" width="486" height="398" frameX="-45" frameY="-105" frameWidth="781" frameHeight="503"/>
+	<SubTexture name="TDL Down Export0001" x="536" y="25" width="460" height="440" frameX="-58" frameY="-61" frameWidth="781" frameHeight="503"/>
+	<SubTexture name="TDL Down Export0002" x="1021" y="25" width="442" height="469" frameX="-67" frameY="-31" frameWidth="781" frameHeight="503"/>
+	<SubTexture name="TDL Down Export0003" x="1488" y="25" width="781" height="490" frameX="0" frameY="-13" frameWidth="781" frameHeight="503"/>
+	<SubTexture name="TDL Down Export0004" x="2294" y="25" width="781" height="499" frameX="0" frameY="-4" frameWidth="781" frameHeight="503"/>
+	<SubTexture name="TDL Down Export0005" x="3100" y="25" width="781" height="502" frameX="0" frameY="-1" frameWidth="781" frameHeight="503"/>
+	<SubTexture name="TDL Down Export0006" x="3906" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0007" x="4712" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0008" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0009" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0010" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0011" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0012" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0013" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0014" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0015" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0016" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0017" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0018" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0019" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0020" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0021" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0022" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0023" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0024" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0025" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0026" x="5518" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Down Export0027" x="6324" y="25" width="781" height="503"/>
+	<SubTexture name="TDL Idle Export0000" x="7130" y="25" width="372" height="608" frameX="0" frameY="-67" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0001" x="7527" y="25" width="354" height="634" frameX="-5" frameY="-40" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0002" x="25" y="684" width="344" height="653" frameX="-7" frameY="-21" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0003" x="394" y="684" width="336" height="664" frameX="-9" frameY="-10" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0004" x="755" y="684" width="332" height="670" frameX="-10" frameY="-4" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0005" x="1112" y="684" width="331" height="673" frameX="-10" frameY="-1" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0006" x="1468" y="684" width="331" height="674" frameX="-10" frameY="0" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0007" x="1824" y="684" width="331" height="674" frameX="-10" frameY="0" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0008" x="1468" y="684" width="331" height="674" frameX="-10" frameY="0" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0009" x="1824" y="684" width="331" height="674" frameX="-10" frameY="0" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0010" x="1468" y="684" width="331" height="674" frameX="-10" frameY="0" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0011" x="1824" y="684" width="331" height="674" frameX="-10" frameY="0" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0012" x="1468" y="684" width="331" height="674" frameX="-10" frameY="0" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Idle Export0013" x="1824" y="684" width="331" height="674" frameX="-10" frameY="0" frameWidth="372" frameHeight="675"/>
+	<SubTexture name="TDL Left Export0000" x="2180" y="684" width="628" height="597" frameX="0" frameY="-8" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0001" x="2833" y="684" width="620" height="599" frameX="-8" frameY="-5" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0002" x="3478" y="684" width="619" height="602" frameX="-9" frameY="-3" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0003" x="4122" y="684" width="614" height="603" frameX="-14" frameY="-1" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0004" x="4761" y="684" width="616" height="604" frameX="-12" frameY="-1" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0005" x="5402" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0006" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0007" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0008" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0009" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0010" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0011" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0012" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0013" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0014" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0015" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0016" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0017" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0018" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0019" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0020" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0021" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0022" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0023" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0024" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0025" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0026" x="6039" y="684" width="615" height="605" frameX="-13" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Left Export0027" x="6679" y="684" width="612" height="604" frameX="-16" frameY="0" frameWidth="628" frameHeight="605"/>
+	<SubTexture name="TDL Right Export0000" x="7316" y="684" width="656" height="572" frameX="0" frameY="-45" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0001" x="25" y="1383" width="627" height="589" frameX="0" frameY="-27" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0002" x="677" y="1383" width="609" height="604" frameX="0" frameY="-13" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0003" x="1311" y="1383" width="598" height="610" frameX="0" frameY="-6" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0004" x="1934" y="1383" width="592" height="616" frameX="0" frameY="-1" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0005" x="2551" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0006" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0007" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0008" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0009" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0010" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0011" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0012" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0013" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0014" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0015" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0016" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0017" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0018" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0019" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0020" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0021" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0022" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0023" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0024" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0025" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0026" x="3166" y="1383" width="590" height="617" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Right Export0027" x="3781" y="1383" width="590" height="616" frameX="0" frameY="0" frameWidth="656" frameHeight="617"/>
+	<SubTexture name="TDL Up Export0000" x="4396" y="1383" width="359" height="753" frameX="-24" frameY="0" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0001" x="4780" y="1383" width="384" height="740" frameX="-14" frameY="-13" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0002" x="5189" y="1383" width="392" height="732" frameX="-7" frameY="-21" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0003" x="5606" y="1383" width="394" height="726" frameX="-5" frameY="-27" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0004" x="6025" y="1383" width="407" height="724" frameX="-2" frameY="-29" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0005" x="6457" y="1383" width="404" height="723" frameX="0" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0006" x="6886" y="1383" width="400" height="723" frameX="-2" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0007" x="7311" y="1383" width="409" height="723" frameX="-1" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0008" x="7745" y="1383" width="404" height="723" frameX="0" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0009" x="25" y="2161" width="400" height="723" frameX="-2" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0010" x="450" y="2161" width="409" height="723" frameX="-1" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0011" x="884" y="2161" width="404" height="723" frameX="0" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0012" x="6886" y="1383" width="400" height="723" frameX="-2" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0013" x="7311" y="1383" width="409" height="723" frameX="-1" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0014" x="7745" y="1383" width="404" height="723" frameX="0" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0015" x="25" y="2161" width="400" height="723" frameX="-2" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0016" x="450" y="2161" width="409" height="723" frameX="-1" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0017" x="884" y="2161" width="404" height="723" frameX="0" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0018" x="6886" y="1383" width="400" height="723" frameX="-2" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0019" x="7311" y="1383" width="409" height="723" frameX="-1" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0020" x="7745" y="1383" width="404" height="723" frameX="0" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0021" x="25" y="2161" width="400" height="723" frameX="-2" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0022" x="450" y="2161" width="409" height="723" frameX="-1" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0023" x="884" y="2161" width="404" height="723" frameX="0" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0024" x="6886" y="1383" width="400" height="723" frameX="-2" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0025" x="7311" y="1383" width="409" height="723" frameX="-1" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0026" x="7745" y="1383" width="404" height="723" frameX="0" frameY="-30" frameWidth="410" frameHeight="753"/>
+	<SubTexture name="TDL Up Export0027" x="25" y="2161" width="400" height="723" frameX="-2" frameY="-30" frameWidth="410" frameHeight="753"/>
+</TextureAtlas>

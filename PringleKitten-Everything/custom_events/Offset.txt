@@ -1,0 +1,4 @@
+	 VALUE 1:
+Set Note Offset for this song
+
+*Works Weird*
