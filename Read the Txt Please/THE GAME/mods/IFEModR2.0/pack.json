@@ -1,0 +1,7 @@
+{
+	"name": "Internet Favorites Rev2.6",
+	"description": "The new and optimized version. No events sorry. All scripts.",
+	"restart": true,
+	"runsGlobally": true,
+	"color": [255, 255, 0]
+}

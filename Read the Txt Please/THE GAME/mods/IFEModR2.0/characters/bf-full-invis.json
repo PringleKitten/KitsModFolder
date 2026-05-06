@@ -1,0 +1,22 @@
+{
+	"animations": [],
+	"no_antialiasing": true,
+	"image": "characters/gf-invis",
+	"position": [
+		0,
+		0
+	],
+	"healthicon": "gf-invis",
+	"flip_x": false,
+	"healthbar_colors": [
+		0,
+		100,
+		255
+	],
+	"camera_position": [
+		0,
+		0
+	],
+	"sing_duration": 1,
+	"scale": 0.0
+}

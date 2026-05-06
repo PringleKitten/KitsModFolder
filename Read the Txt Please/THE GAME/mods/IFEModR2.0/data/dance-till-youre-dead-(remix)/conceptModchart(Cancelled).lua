@@ -1,0 +1,494 @@
+function onCreatePost()
+    close()
+end
+--callScript("scripts/LaneUnderlay", "noChoice")
+--callScript("scripts/ratings", "noChoice")
+--
+--local timesRan = 0
+--local a = 0
+--local dSM = 1
+--function onStepHit()
+--    if curStep == 4 then
+--        setProperty('camHUD.zoom', 2)
+--        doTweenZoom('back', 'hud', 1, 0.2, 'expoOut')
+--    elseif curStep == 8 then
+--        setProperty('camOne.angle', 90)
+--        setProperty('camOne.x', getProperty('camOne.x')+(200*dSM))
+--        fixNote()
+--    elseif curStep == 11 then
+--        a = -180
+--        fixNote()
+--        noteTweenY('reverse4', 4, pY1+(750*dSM), 0.15, 'linear')
+--        noteTweenY('reverse5', 5, pY2+(750*dSM), 0.15, 'linear')
+--        noteTweenY('reverse6', 6, pY3+(750*dSM), 0.15, 'linear')
+--        noteTweenY('reverse7', 7, pY4+(750*dSM), 0.15, 'linear')
+--        doTweenX('onec', 'camOne', getProperty('camOne.x')-(200*dSM), 0.15, 'linear')
+--        runTimer('d', 0.1)
+--    elseif curStep == 14 then
+--        a = 180
+--        if not getPropertyFromClass('backend.ClientPrefs','data.downScroll') then setPropertyFromGroup('playerStrums',i,'downScroll',false) else setPropertyFromGroup('playerStrums',i,'downScroll',true) end
+--        setPropertyFromGroup('playerStrums',0,'y',pY1+(300*dSM))
+--        setPropertyFromGroup('playerStrums',1,'y',pY2+(300*dSM))
+--        setPropertyFromGroup('playerStrums',2,'y',pY3+(300*dSM))
+--        setPropertyFromGroup('playerStrums',3,'y',pY4+(300*dSM))
+--        noteTweenY('reverse4', 4, pY1, 0.2, 'linear')
+--        noteTweenY('reverse5', 5, pY2, 0.2, 'linear')
+--        noteTweenY('reverse6', 6, pY3, 0.2, 'linear')
+--        noteTweenY('reverse7', 7, pY4, 0.2, 'linear')
+--        setProperty('camOne.angle', 0)
+--        fixNote()
+--        runTimer('d', 0.2)  
+--    end
+--end
+--
+--function onEvent(n,v1,v2)
+--    if n == '' then
+--        if v1 == 'sStep' then
+--            timesRan = timesRan+1
+--            if timesRan == 1 then
+--                setPropertyFromGroup('playerStrums',0,'x',pX1+(-50))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2+(-30))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3+(30))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4+(50))
+--                setPropertyFromGroup('playerStrums',0,'y',pY1+(-50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',pY2+(-30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',pY3+(30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',pY4+(50*dSM))
+--            elseif timesRan == 2 then
+--                setPropertyFromGroup('playerStrums',0,'x',pX1+(50))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2+(30))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3+(-30))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4+(-50))
+--                setPropertyFromGroup('playerStrums',0,'y',pY1+(50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',pY2+(30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',pY3+(-30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',pY4+(-50*dSM))
+--            elseif timesRan == 3 then
+--                setPropertyFromGroup('playerStrums',0,'x',pX1+(50))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2+(30))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3+(30))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4+(50))
+--                setPropertyFromGroup('playerStrums',0,'y',pY1+(-50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',pY2+(-30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',pY3+(-30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',pY4+(-50*dSM))
+--            elseif timesRan == 4 then
+--                setPropertyFromGroup('playerStrums',0,'x',pX1+(-50))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2+(-30))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3+(-30))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4+(-50))
+--                setPropertyFromGroup('playerStrums',0,'y',pY1+(50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',pY2+(30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',pY3+(30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',pY4+(50*dSM))
+--            elseif timesRan == 5 then
+--                setPropertyFromGroup('playerStrums',0,'x',pX1)
+--                setPropertyFromGroup('playerStrums',1,'x',pX2)
+--                setPropertyFromGroup('playerStrums',2,'x',pX3)
+--                setPropertyFromGroup('playerStrums',3,'x',pX4)
+--                setPropertyFromGroup('playerStrums',0,'y',pY1)
+--                setPropertyFromGroup('playerStrums',1,'y',pY2)
+--                setPropertyFromGroup('playerStrums',2,'y',pY3)
+--                setPropertyFromGroup('playerStrums',3,'y',pY4)
+--            elseif timesRan == 6 then
+--                setProperty('camOne.angle', -45)
+--                setPropertyFromGroup('playerStrums',0,'x',pX1-(200*dSM))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2-(200*dSM))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3-(200*dSM))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4-(200*dSM))
+--                setPropertyFromGroup('playerStrums',0,'y',pY1-(200*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',pY2-(200*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',pY3-(200*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',pY4-(200*dSM))
+--            elseif timesRan == 7 then
+--                setProperty('camOne.angle', 45)
+--                setPropertyFromGroup('playerStrums',0,'x',pX1+(200*dSM))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2+(200*dSM))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3+(200*dSM))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4+(200*dSM))
+--            elseif timesRan == 8 then
+--                setProperty('camOne.angle', -135)
+--                setPropertyFromGroup('playerStrums',0,'x',pX1+200)
+--                setPropertyFromGroup('playerStrums',1,'x',pX2+200)
+--                setPropertyFromGroup('playerStrums',2,'x',pX3+200)
+--                setPropertyFromGroup('playerStrums',3,'x',pX4+200)
+--                setPropertyFromGroup('playerStrums',0,'x',cpX4)
+--                setPropertyFromGroup('playerStrums',1,'x',cpX3)
+--                setPropertyFromGroup('playerStrums',2,'x',cpX2)
+--                setPropertyFromGroup('playerStrums',3,'x',cpX1)
+--                setPropertyFromGroup('playerStrums',0,'angle',180)
+--                setPropertyFromGroup('playerStrums',1,'angle',180)
+--                setPropertyFromGroup('playerStrums',2,'angle',180)
+--                setPropertyFromGroup('playerStrums',3,'angle',180)
+--            elseif timesRan == 9 then
+--                setProperty('camOne.angle', 135)
+--                setPropertyFromGroup('playerStrums',0,'x',cpX1-(400*dSM))
+--                setPropertyFromGroup('playerStrums',1,'x',cpX2-(400*dSM))
+--                setPropertyFromGroup('playerStrums',2,'x',cpX3-(400*dSM))
+--                setPropertyFromGroup('playerStrums',3,'x',cpX4-(400*dSM))
+--            elseif timesRan == 10 then
+--                setProperty('camOne.angle', 0)
+--                setPropertyFromGroup('playerStrums',0,'x',pX1)
+--                setPropertyFromGroup('playerStrums',1,'x',pX2)
+--                setPropertyFromGroup('playerStrums',2,'x',pX3)
+--                setPropertyFromGroup('playerStrums',3,'x',pX4)
+--                setPropertyFromGroup('playerStrums',0,'y',pY1)
+--                setPropertyFromGroup('playerStrums',1,'y',pY2)
+--                setPropertyFromGroup('playerStrums',2,'y',pY3)
+--                setPropertyFromGroup('playerStrums',3,'y',pY4)
+--                setPropertyFromGroup('playerStrums',0,'angle',0)
+--                setPropertyFromGroup('playerStrums',1,'angle',0)
+--                setPropertyFromGroup('playerStrums',2,'angle',0)
+--                setPropertyFromGroup('playerStrums',3,'angle',0)
+--            elseif timesRan >= 11 and timesRan <= 13 then
+--                fixNote(true,true)
+--                setProperty('camTwo.y', getProperty('camTwo.y')+300)
+--                doTweenY('sv', 'camTwo', 0, 0.2, 'linear')
+--            elseif timesRan == 14 then
+--                fixNote(true,false)
+--                setPropertyFromGroup('playerStrums',0,'x',pX1+(-50))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2+(-30))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3+(-30))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4+(-50))
+--                setPropertyFromGroup('playerStrums',0,'y',pY1+(50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',pY2+(30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',pY3+(30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',pY4+(50*dSM))
+--                setPropertyFromGroup('playerStrums',0,'angle',20)
+--                setPropertyFromGroup('playerStrums',1,'angle',20)
+--                setPropertyFromGroup('playerStrums',2,'angle',20)
+--                setPropertyFromGroup('playerStrums',3,'angle',20)
+--            elseif timesRan == 15 then
+--                setPropertyFromGroup('playerStrums',0,'x',cpX1+(-50))
+--                setPropertyFromGroup('playerStrums',1,'x',cpX2+(-30))
+--                setPropertyFromGroup('playerStrums',2,'x',cpX3+(-30))
+--                setPropertyFromGroup('playerStrums',3,'x',cpX4+(-50))
+--                setPropertyFromGroup('playerStrums',0,'y',cpY1+(50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',cpY2+(30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',cpY3+(30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',cpY4+(50*dSM))
+--                setPropertyFromGroup('playerStrums',0,'angle',-20)
+--                setPropertyFromGroup('playerStrums',1,'angle',-20)
+--                setPropertyFromGroup('playerStrums',2,'angle',-20)
+--                setPropertyFromGroup('playerStrums',3,'angle',-20)
+--            elseif timesRan == 16 then
+--                setPropertyFromGroup('playerStrums',0,'x',pX1+(50))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2+(30))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3+(-30))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4+(-50))
+--                setPropertyFromGroup('playerStrums',0,'y',pY1+(50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',pY2+(30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',pY3+(-30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',pY4+(-50*dSM))
+--                setPropertyFromGroup('playerStrums',0,'angle',-20)
+--                setPropertyFromGroup('playerStrums',1,'angle',-40)
+--                setPropertyFromGroup('playerStrums',2,'angle',20)
+--                setPropertyFromGroup('playerStrums',3,'angle',40)
+--            elseif timesRan == 17 then
+--                setPropertyFromGroup('playerStrums',0,'x',cpX1+(50))
+--                setPropertyFromGroup('playerStrums',1,'x',cpX2+(30))
+--                setPropertyFromGroup('playerStrums',2,'x',cpX3+(-30))
+--                setPropertyFromGroup('playerStrums',3,'x',cpX4+(-50))
+--                setPropertyFromGroup('playerStrums',0,'y',cpY1+(50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',cpY2+(30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',cpY3+(-30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',cpY4+(-50*dSM))
+--                setPropertyFromGroup('playerStrums',0,'angle',30)
+--                setPropertyFromGroup('playerStrums',1,'angle',10)
+--                setPropertyFromGroup('playerStrums',2,'angle',-50)
+--                setPropertyFromGroup('playerStrums',3,'angle',-20)
+--            elseif timesRan == 18 then
+--                setPropertyFromGroup('playerStrums',0,'x',pX1-(50))
+--                setPropertyFromGroup('playerStrums',1,'x',pX2-(30))
+--                setPropertyFromGroup('playerStrums',2,'x',pX3-(-30))
+--                setPropertyFromGroup('playerStrums',3,'x',pX4-(-50))
+--                setPropertyFromGroup('playerStrums',0,'y',pY1-(50*dSM))
+--                setPropertyFromGroup('playerStrums',1,'y',pY2-(30*dSM))
+--                setPropertyFromGroup('playerStrums',2,'y',pY3-(-30*dSM))
+--                setPropertyFromGroup('playerStrums',3,'y',pY4-(-50*dSM))
+--                setPropertyFromGroup('playerStrums',0,'angle',-30)
+--                setPropertyFromGroup('playerStrums',1,'angle',-10)
+--                setPropertyFromGroup('playerStrums',2,'angle',50)
+--                setPropertyFromGroup('playerStrums',3,'angle',20)
+--            elseif timesRan == 19 then
+--                noteTweenY('noteMove1', 0+4, pY1, 0.2, 'sineIn')
+--                noteTweenY('noteMove2', 1+4, pY2, 0.2, 'sineIn')
+--                noteTweenY('noteMove3', 2+4, pY3, 0.2, 'sineIn')
+--                noteTweenY('noteMove4', 3+4, pY4, 0.2, 'sineIn')
+--                noteTweenX('noteMove5', 0+4, pX1, 0.2, 'sineIn')
+--                noteTweenX('noteMove6', 1+4, pX2, 0.2, 'sineIn')
+--                noteTweenX('noteMove7', 2+4, pX3, 0.2, 'sineIn')
+--                noteTweenX('noteMove8', 3+4, pX4, 0.2, 'sineIn')
+--                noteTweenAngle('noteAngle1', 0+4, 0, 0.2, 'sineIn')
+--                noteTweenAngle('noteAngle2', 1+4, 0, 0.2, 'sineIn')
+--                noteTweenAngle('noteAngle3', 2+4, 0, 0.2, 'sineIn')
+--                noteTweenAngle('noteAngle4', 3+4, 0, 0.2, 'sineIn')
+--            elseif timesRan >= 20 and timesRan <= 29 then
+--                fixNote(true,true)
+--                setProperty('camTwo.y', getProperty('camTwo.y')+300)
+--                doTweenY('sv', 'camTwo', 0, 0.06, 'linear')
+--            elseif timesRan == 30 then
+--                fixNote(false,true)
+--                fixNote(true,true)
+--                setProperty('camTwo.y', getProperty('camTwo.y')+300)
+--                setProperty('camHUD.zoom', 1.4)
+--                setProperty('camTwo.zoom', 1.4)
+--                doTweenZoom('zO1', 'hud', 1, 0.4, 'sineIn')
+--                doTweenZoom('zO2', 'two', 1, 0.4, 'sineIn')
+--            elseif timesRan == 31 then
+--                doTweenY('sv', 'camTwo', 0, 0.15, 'linear')
+--            elseif timesRan == 32 then
+--                fixNote(false,true)
+--                fixNote(true,true)
+--                setProperty('camTwo.y', getProperty('camTwo.y')+300)
+--                setProperty('camHUD.zoom', 1.3)
+--                setProperty('camTwo.zoom', 1.3)
+--                doTweenZoom('zO1', 'hud', 1, 0.4, 'sineIn')
+--                doTweenZoom('zO2', 'two', 1, 0.4, 'sineIn')
+--            elseif timesRan == 33 then
+--                doTweenY('sv', 'camTwo', 0, 0.15, 'linear')
+--            end
+--        end
+--    end
+--end
+--
+--function onTimerCompleted(n)
+--    if n == 'd' then
+--        for i = 0,3 do
+--            fixNote()
+--            if a == -180 then
+--                if not getPropertyFromClass('backend.ClientPrefs','data.downScroll') then setPropertyFromGroup('playerStrums',i,'downScroll',true) else setPropertyFromGroup('playerStrums',i,'downScroll',false) end
+--                setPropertyFromGroup('playerStrums',0,'x',cpX4)
+--                setPropertyFromGroup('playerStrums',1,'x',cpX3)
+--                setPropertyFromGroup('playerStrums',2,'x',cpX2)
+--                setPropertyFromGroup('playerStrums',3,'x',cpX1)
+--                setPropertyFromGroup('playerStrums',0,'angle',180)
+--                setPropertyFromGroup('playerStrums',1,'angle',180)
+--                setPropertyFromGroup('playerStrums',2,'angle',180)
+--                setPropertyFromGroup('playerStrums',3,'angle',180)
+--            elseif a == 180 then
+--                if not getPropertyFromClass('backend.ClientPrefs','data.downScroll') then setPropertyFromGroup('playerStrums',i,'downScroll',false) else setPropertyFromGroup('playerStrums',i,'downScroll',true) end
+--                setPropertyFromGroup('playerStrums',0,'x',pX1)
+--                setPropertyFromGroup('playerStrums',1,'x',pX2)
+--                setPropertyFromGroup('playerStrums',2,'x',pX3)
+--                setPropertyFromGroup('playerStrums',3,'x',pX4)
+--                setPropertyFromGroup('playerStrums',0,'angle',0)
+--                setPropertyFromGroup('playerStrums',1,'angle',0)
+--                setPropertyFromGroup('playerStrums',2,'angle',0)
+--                setPropertyFromGroup('playerStrums',3,'angle',0)
+--            end
+--        end
+--    end
+--    if n == 'lowLag' then
+--        for i = 0, getProperty('unspawnNotes.length') - 1 do
+--            if getPropertyFromGroup('playerStrums',1,'downScroll') then
+--                if getPropertyFromGroup('notes',i,'isSustainNote') then
+--                    setPropertyFromGroup('notes',i,'flipY',true)
+--                    setPropertyFromGroup('notes', i, 'correctionOffset', 0)
+--                end
+--                if getPropertyFromGroup('unspawnNotes',i,'isSustainNote') then
+--                    setPropertyFromGroup('unspawnNotes',i,'flipY',true)
+--                    setPropertyFromGroup('unspawnNotes', i, 'correctionOffset', 0)
+--                end
+--            else
+--                if getPropertyFromGroup('notes',i,'isSustainNote') then
+--                    setPropertyFromGroup('notes',i,'flipY',false)
+--                    setPropertyFromGroup('notes', i, 'correctionOffset', 50)
+--                end
+--                if getPropertyFromGroup('unspawnNotes',i,'isSustainNote') then
+--                    setPropertyFromGroup('unspawnNotes',i,'flipY',false)
+--                    setPropertyFromGroup('unspawnNotes', i, 'correctionOffset', 50)
+--                end
+--            end
+--        end
+--        runTimer('lowLag', 0.1)
+--    end
+--    if tag == 'hideMS' then
+--        setProperty("msText.alpha", 0)
+--    end
+--end
+--function fixNote(a,b)
+--    if not a then
+--        if b then
+--            runHaxeCode([[
+--                for (i in 4...8) {
+--                    PlayState.instance.strumLineNotes.members[i].camera = game.camHUD;
+--                }
+--            ]])
+--        else
+--            runHaxeCode([[
+--                for (i in 4...8) {
+--                    PlayState.instance.strumLineNotes.members[i].camera = game.camOne;
+--                }
+--                for (note in PlayState.instance.notes) {
+--                    if (note.mustPress) {
+--                        note.camera = game.camOne;
+--                    }
+--                }
+--            ]])
+--        end
+--    else
+--        if b then
+--            runHaxeCode([[
+--                for (note in notes) {
+--                    if (note.mustPress) {
+--                        note.cameras = [camTwo];
+--                    }
+--                }
+--            ]])
+--        else
+--            runHaxeCode([[
+--                for (note in notes) {
+--                    if (note.mustPress) {
+--                        note.cameras = [camOne];
+--                    }
+--                }
+--            ]])
+--        end
+--    end
+--end
+--function onSongStart()
+--    if getPropertyFromClass('backend.ClientPrefs','data.downScroll') then
+--        dSM = -1
+--    end
+--    runTimer('lowLag', 0.1)
+--    setProperty('camOne'..'.flashSprite.scaleX', 4)
+--    setProperty('camOne'..'.flashSprite.scaleY', 4)
+--    runHaxeCode("game."..'camOne'..".setScale(game."..'camOne'..".zoom / 4, game."..'camOne'..".zoom / 4);")
+--    pX1 = getPropertyFromGroup('playerStrums', 0, 'x')
+--    pX2 = getPropertyFromGroup('playerStrums', 1, 'x')
+--    pX3 = getPropertyFromGroup('playerStrums', 2, 'x')
+--    pX4 = getPropertyFromGroup('playerStrums', 3, 'x')
+--    pY1 = getPropertyFromGroup('playerStrums', 0, 'y')
+--    pY2 = getPropertyFromGroup('playerStrums', 1, 'y')
+--    pY3 = getPropertyFromGroup('playerStrums', 2, 'y')
+--    pY4 = getPropertyFromGroup('playerStrums', 3, 'y')
+--end
+--local letter = '?'
+--local nr = 0
+--local posXR = 0
+--local posYR = 0
+--function onCreatePost()
+--    health = (getHealth()*50)
+--    nr = (math.floor(rating*10000)/100)
+--    luatxt("mainacc", (letter..' - '..nr.."%"), 1280, 0, 0,'other',30,'.','.','right','.')
+--    luatxt("mainsc", score, 1280, 0, 30,'other',20,'.','.','right','.')
+--    luatxt("mainhp", ("[Health] "..health), 0, 555, 30,'other',20,'00AAFF','.','left','.')
+--    luatxt("timeLeftText", "0:00", 100, 0, -2, 'other', 32, 'FF00FF', '.', 'center', '.')
+--        screenCenter("timeLeftText", 'x')
+--        setProperty("timeLeftText.x", getProperty("timeLeftText.x")-7)
+--    luatxt("msText", 'ms', 0, 0, 0, 'other', 20, 'FFFFFF', '.', 'left', '.')
+--        screenCenter("msText",'xy')
+--        setProperty("msText.x", getProperty('msText.x')-50)
+--        setProperty("msText.alpha", 0)
+--
+--    setTextSize("botplayTxt", 25)
+--    setProperty('botplayTxt.x', 500)
+--    setProperty('botplayTxt.y', 0)
+--    setObjectCamera("botplayTxt",'other')
+--    setTextBorder('botplayTxt', 1, 'ff00ff')
+--    setTextColor('botplayTxt', '00ffff')
+--    setTextSize("practiceTxt", 25)
+--    setProperty('practiceTxt.x', 275)
+--    setProperty('practiceTxt.y', 0)
+--    setObjectCamera("practiceTxt",'other')
+--    setTextBorder('practiceTxt', 1, 'ff00ff')
+--    setTextColor('practiceTxt', 'ffff00')
+--end
+--function onUpdate()
+--    cpX1 = getPropertyFromGroup('playerStrums', 0, 'x')
+--    cpX2 = getPropertyFromGroup('playerStrums', 1, 'x')
+--    cpX3 = getPropertyFromGroup('playerStrums', 2, 'x')
+--    cpX4 = getPropertyFromGroup('playerStrums', 3, 'x')
+--    cpY1 = getPropertyFromGroup('playerStrums', 0, 'y')
+--    cpY2 = getPropertyFromGroup('playerStrums', 1, 'y')
+--    cpY3 = getPropertyFromGroup('playerStrums', 2, 'y')
+--    cpY4 = getPropertyFromGroup('playerStrums', 3, 'y')
+--    setTextString("timeLeftText", getProperty("timeTxt.text"))
+--end
+--function onCountdownStarted()
+--    setProperty('healthBar.alpha', hB);
+--    setProperty('healthBarBG.alpha', hB);
+--    setProperty('iconP1.alpha', 0);
+--    setProperty('iconP2.alpha', 0);
+--    setProperty('scoreTxt.alpha', 0);
+--    setProperty('timeBar.alpha', 0);
+--    setProperty('timeTxt.alpha', 0);
+--    setProperty('timeBar.visible', false)
+--    setProperty('timeBarBG.visible', false)
+--    setProperty('timeTxt.visible', false)
+--end
+--function luatxt(tag,txt,w,x,y,cam,ts,tc,sc,ali,f) -- set certain values to '.' for default or no value
+--    makeLuaText(tag,txt,w,x,y)
+--    setObjectCamera(tag,cam)
+--    setTextSize(tag, ts)
+--    if tc == '.' then
+--        tc = 'FFFFFF'
+--    end
+--    setTextColor(tag, tc)
+--    if sc ~= '.' then
+--        screenCenter(tag, sc)
+--    end
+--    if ali == '.' then
+--        ali = 'center'
+--    end
+--    setTextAlignment(tag, ali)
+--    if f == '.' then
+--        f = false
+--    end
+--    addLuaText(tag,f)
+--end
+--function txtSet(tag,w,a,t,o)
+--    setTextWidth(tag, w)
+--    setTextAlignment(tag,a)
+--    setTextString(tag, t)
+--    setObjectOrder(tag, o)
+--end
+--function customRatingThing(m)
+--    nr = math.floor(rating * 10000) / 100
+--    local ratingData = {
+--        {100, "00FFFF", "P"},
+--        {95, "FF00FF", "S"},
+--        {90, "00FF00", "A"},
+--        {80, "0075FF", "B"},
+--        {70, "FFFF00", "C"},
+--        {60, "FF7500", "D"},
+--        {0, "FF0000", "F"}
+--    }
+--    for _, data in ipairs(ratingData) do
+--        if nr >= data[1] then
+--            setTextColor("mainacc", data[2])
+--            letter = data[3]
+--            break
+--        end
+--    end
+--    setTextString("mainacc", string.format("%s - %.2f%%", letter, nr))
+--    setTextString("mainsc", score)
+--end
+--function goodNoteHit(id, noteData, noteType, isSustainNote)
+--    updHP()
+--    if not isSustainNote then
+--        customRatingThing(false)
+--        local ms = math.floor((getPropertyFromGroup('notes', id, 'strumTime') - getSongPosition() + getPropertyFromClass('backend.ClientPrefs', 'data.ratingOffset'))*100)/100
+--        setProperty("msText.alpha", 1)
+--        setProperty("msText.x", getProperty('msText.x')+posXR)
+--        setProperty("msText.y", getProperty('msText.y')+posYR)
+--        setTextString("msText", ms..'ms')
+--        runTimer('hideMS',1.5)
+--    end
+--end
+--function noteMiss(id, noteData, noteType, isSustainNote)
+--    updHP()
+--    if not isSustainNote then
+--        customRatingThing(true)
+--    end
+--end
+--function updHP()
+--    health = (getHealth()*50)
+--    if health >= 100 then
+--        health = 100
+--    end
+--    if health <= 100 then
+--        setTextString("mainhp", ("[Health] "..health))
+--    end
+--end

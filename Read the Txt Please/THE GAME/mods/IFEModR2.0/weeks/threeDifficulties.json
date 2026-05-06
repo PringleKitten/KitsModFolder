@@ -1,0 +1,40 @@
+{
+	"storyName": "Three Difficulties",
+	"difficulties": "Normal, Hard, Harder",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"bike (tanger)",
+			"gf-invis",
+			[
+				255,
+				0,
+				60
+			]
+		],
+		[
+			"pp breaker (tanger)",
+			"gf-invis",
+			[
+				255,
+				0,
+				60
+			]
+		]
+	],
+	"weekName": "three"
+}
