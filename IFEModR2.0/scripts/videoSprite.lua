@@ -4,7 +4,10 @@ end
 function onPause()
     callMethod('videoCutscene.pause')
 end
-function makeVideoSprite(tag, videoPath,camera,zoom)
+function makeVideoSprite(tag, videoPath,camera,zoom,alpha)
+    if alpha == nil then
+        alpha = 1
+    end
     startVideo(videoPath, false, true)
     setObjectCamera('videoCutscene',camera)
     if camera == 'hud' then
@@ -16,6 +19,7 @@ function makeVideoSprite(tag, videoPath,camera,zoom)
     elseif camera == 'other' then
         setProperty('camOther.zoom',zoom)
     end
+    setProperty('videoCutscene.alpha',alpha)
 end
 function onDestroy()
     close()
