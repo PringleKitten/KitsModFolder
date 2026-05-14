@@ -53,12 +53,6 @@ class PringlekittenSettingsSubState extends BaseOptionsMenu
 			'lowPercentHurt',
 			BOOL);
 		addOption(option);
-
-		var option:Option = new Option('Osu Sustain Input',
-			"Must let go at the end of a hold note. \n ( In the works/Doesn't work :c )",
-			'osuSustainInput',
-			BOOL);
-		addOption(option);
 		
 		var option:Option = new Option('Mobile Buttons(Kinda)',
 			'0 = Off, 1 = On, 2 = Default by Installation',
