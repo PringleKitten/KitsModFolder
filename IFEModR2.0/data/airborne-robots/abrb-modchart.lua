@@ -86,23 +86,6 @@ function onStepHit()
                 cancelTween('ttmBack'..(i+4))
                 setPropertyFromGroup('playerStrums', i, 'y', 50)
             end
-        elseif curStep % 2 == 0 and ((curStep >= 1168 and curStep < 1280) or (curStep >= 1296 and curStep < 1408) or (curStep >= 3104 and curStep < 3216) or (curStep >= 3232 and curStep < 3344)) then
-            objFlash(false)
-        elseif curStep % 2 == 0 and ((curStep >= 1280 and curStep < 1296) or (curStep >= 1408 and curStep < 1424) or (curStep >= 1664 and curStep < 1680) or (curStep >= 1792 and curStep < 1808) or (curStep >= 1920 and curStep < 1936) or (curStep >= 3216 and curStep < 3232) or (curStep >= 3344 and curStep < 3360)) then
-            objFlash(true)
-            if curStep == 1930 then
-                callScript('scripts/videoSprite', 'makeVideoSprite', {'abrbe2', 'abrbe2', 'other', 1})
-                setProperty('videoCutscene.alpha', 0)
-                doTweenAlpha('cutsceneFade', 'videoCutscene', 0.5, 5, 'linear')
-            end
-        elseif curStep == 1522 then
-            callScript('scripts/videoSprite', 'makeVideoSprite', {'abrbe1', 'abrbe1', 'other', 1})
-            setProperty('videoCutscene.alpha', 0)
-            doTweenAlpha('cutsceneFade', 'videoCutscene', 0.5, 5, 'linear')
-        elseif curStep == 2432 then
-            callScript('scripts/videoSprite', 'makeVideoSprite', {'abrbe3', 'abrbe3', 'other', 1})
-            setProperty('videoCutscene.alpha', 0)
-            doTweenAlpha('cutsceneFade', 'videoCutscene', 0.5, 5, 'linear')
         elseif curStep == 3488 then
             setWindow('-100', '-20', 1280, 720)
         elseif curStep == 3492 then
@@ -136,6 +119,24 @@ function onStepHit()
         elseif curStep == 3536 then
             setWindow('center', 'center', 1920, 1082)
         end
+    end
+    if curStep % 2 == 0 and ((curStep >= 1168 and curStep < 1280) or (curStep >= 1296 and curStep < 1408) or (curStep >= 3104 and curStep < 3216) or (curStep >= 3232 and curStep < 3344)) then
+        objFlash(false)
+    elseif curStep % 2 == 0 and ((curStep >= 1280 and curStep < 1296) or (curStep >= 1408 and curStep < 1424) or (curStep >= 1664 and curStep < 1680) or (curStep >= 1792 and curStep < 1808) or (curStep >= 1920 and curStep < 1936) or (curStep >= 3216 and curStep < 3232) or (curStep >= 3344 and curStep < 3360)) then
+        objFlash(true)
+        if curStep == 1930 then
+            callScript('scripts/videoSprite', 'makeVideoSprite', {'abrbe2', 'abrbe2', 'other', 1})
+            setProperty('videoCutscene.alpha', 0)
+            doTweenAlpha('cutsceneFade', 'videoCutscene', 0.5, 5, 'linear')
+        end
+    elseif curStep == 1522 then
+        callScript('scripts/videoSprite', 'makeVideoSprite', {'abrbe1', 'abrbe1', 'other', 1})
+        setProperty('videoCutscene.alpha', 0)
+        doTweenAlpha('cutsceneFade', 'videoCutscene', 0.5, 5, 'linear')
+    elseif curStep == 2432 then
+        callScript('scripts/videoSprite', 'makeVideoSprite', {'abrbe3', 'abrbe3', 'other', 1})
+        setProperty('videoCutscene.alpha', 0)
+        doTweenAlpha('cutsceneFade', 'videoCutscene', 0.5, 5, 'linear')
     end
 end
 function onEvent(e,a,b)
@@ -336,20 +337,6 @@ function onBeatHit()
     if assetMovement then
         if curBeat == 160 or curBeat == 644 then
             setWindow('center', 'center', 1920, 1082)
-        elseif curBeat == 280 or curBeat == 764 or curBeat == 868 then
-            if buildTarget ~= 'android' then
-                doTweenY('hud1', 'camOne', 220, 0.5, 'quadInOut')
-            end
-            doTweenY('hud2', 'camTwo', 220, 0.5, 'quadInOut')
-            doTweenY('hud3', 'camThree', 220, 0.5, 'quadInOut')
-            special = 220
-        elseif curBeat == 292 or curBeat == 776 or curBeat == 884 then
-            if buildTarget ~= 'android' then
-                doTweenY('hude1', 'camOne', 0, 0.1, 'quadInOut')
-            end
-            doTweenY('hude2', 'camTwo', 0, 0.1, 'quadInOut')
-            doTweenY('hude3', 'camThree', 0, 0.1, 'quadInOut')
-            special = 0
         elseif (curBeat >= 292 and curBeat < 320) or (curBeat >= 324 and curBeat < 352) or (curBeat >= 776 and curBeat < 804) or (curBeat >= 808 and curBeat < 836) then
             for i = 0,3 do
                 noteTweenY('ttms'..i,i+4,20,0.1,'sineOut')
@@ -359,6 +346,21 @@ function onBeatHit()
                 doTweenX('scaleBackX'..i, 'strumLineNotes.members['..(i+4)..'].scale', 0.7, 0.2, 'sineOut')
             end
         end
+    end
+    if curBeat == 280 or curBeat == 764 or curBeat == 868 then
+        if buildTarget ~= 'android' then
+            doTweenY('hud1', 'camOne', 220, 0.5, 'quadInOut')
+        end
+        doTweenY('hud2', 'camTwo', 220, 0.5, 'quadInOut')
+        doTweenY('hud3', 'camThree', 220, 0.5, 'quadInOut')
+        special = 220
+    elseif curBeat == 292 or curBeat == 776 or curBeat == 884 then
+        if buildTarget ~= 'android' then
+            doTweenY('hude1', 'camOne', 0, 0.1, 'quadInOut')
+        end
+        doTweenY('hude2', 'camTwo', 0, 0.1, 'quadInOut')
+        doTweenY('hude3', 'camThree', 0, 0.1, 'quadInOut')
+        special = 0
     end
 end
 function onPause()
@@ -529,7 +531,7 @@ function setWindow(x, y, w, h)
 end
 function onCountdownStarted()
     runTimer('preloadshit', 0.25)
-    if assetMovement and mechanicsAgain then
+    if mechanicsAgain then
         runHaxeCode([[
             comboGroup.cameras = [camOne];
             for (note in game.notes) {
@@ -606,32 +608,36 @@ function onCreatePost()
             os.execute('start "" /min powershell -ExecutionPolicy Bypass -File "' .. debug.getinfo(1).source:sub(2):gsub("[/\\][^/\\]*$", "") .. '/../../powerShell/hidePS.ps1"') 
         end
     end
-    makeLuaSprite('gradientBL', 'me/popup/flashObj', 0, -220)
-    makeLuaSprite('gradientTL', 'me/popup/flashObj', 0, 0)
-    makeLuaSprite('gradientTR', 'me/popup/flashObj', 330, 0)
-    makeLuaSprite('gradientBR', 'me/popup/flashObj', 330, -220)
-    setProperty('gradientTL.angle', 90)
-    setProperty('gradientTR.angle', 180)
-    setProperty('gradientBR.angle', 270)
-    setObjectCamera('gradientBL', 'camOther')
-    scaleObject('gradientBL', 3.8, 3.8)
-    addLuaSprite('gradientBL', true)
-    setObjectCamera('gradientTL', 'camOther')
-    scaleObject('gradientTL', 3.8, 3.8)
-    addLuaSprite('gradientTL', true)
-    setObjectCamera('gradientTR', 'camOther')
-    scaleObject('gradientTR', 3.8, 3.8)
-    addLuaSprite('gradientTR', true)
-    setObjectCamera('gradientBR', 'camOther')
-    scaleObject('gradientBR', 3.8, 3.8)
-    addLuaSprite('gradientBR', true)
-    setProperty('gradientBL.alpha', 0)
-    setProperty('gradientTL.alpha', 0)
-    setProperty('gradientTR.alpha', 0)
-    setProperty('gradientBR.alpha', 0)
+    if flashingLights then
+        makeLuaSprite('gradientBL', 'me/popup/flashObj', 0, -220)
+        makeLuaSprite('gradientTL', 'me/popup/flashObj', 0, 0)
+        makeLuaSprite('gradientTR', 'me/popup/flashObj', 330, 0)
+        makeLuaSprite('gradientBR', 'me/popup/flashObj', 330, -220)
+        setProperty('gradientTL.angle', 90)
+        setProperty('gradientTR.angle', 180)
+        setProperty('gradientBR.angle', 270)
+        setObjectCamera('gradientBL', 'camOther')
+        scaleObject('gradientBL', 3.8, 3.8)
+        addLuaSprite('gradientBL', true)
+        setObjectCamera('gradientTL', 'camOther')
+        scaleObject('gradientTL', 3.8, 3.8)
+        addLuaSprite('gradientTL', true)
+        setObjectCamera('gradientTR', 'camOther')
+        scaleObject('gradientTR', 3.8, 3.8)
+        addLuaSprite('gradientTR', true)
+        setObjectCamera('gradientBR', 'camOther')
+        scaleObject('gradientBR', 3.8, 3.8)
+        addLuaSprite('gradientBR', true)
+        setProperty('gradientBL.alpha', 0)
+        setProperty('gradientTL.alpha', 0)
+        setProperty('gradientTR.alpha', 0)
+        setProperty('gradientBR.alpha', 0)
+    end
 end
 function onDestroy()
-    setWindow('center', 'center', 1280, 720)
+    if assetMovement then
+        setWindow('center', 'center', 1280, 720)
+    end
     if buildTarget ~= 'android' and assetMovement then
         os.execute('start "" /min powershell -ExecutionPolicy Bypass -File "' .. debug.getinfo(1).source:sub(2):gsub("[/\\][^/\\]*$", "") .. '/../../powerShell/showPS.ps1"') 
     end
