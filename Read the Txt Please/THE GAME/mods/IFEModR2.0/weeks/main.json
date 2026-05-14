@@ -1,0 +1,85 @@
+{
+	"storyName": "The Main Stuff",
+	"difficulties": "Chillin, Partyhard, Star_of_the_show",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"weekBefore": "tutorial",
+	"startUnlocked": true,
+	"hideStoryMode": true,
+	"weekCharacters": [
+		"",
+		"",
+		""
+	],
+	"songs": [
+		[
+			"abcdefu(angrier remix)",
+			"gf-invis",
+			[
+				0,
+				0,
+				100
+			]
+		],
+		[
+			"airborne robots",
+			"gf-invis",
+			[
+				0,
+				0,
+				100
+			]
+		],
+		[
+			"avenger",
+			"gf-invis",
+			[
+				50,
+				0,
+				100
+			]
+		],
+		[
+			"candyland (tobu)",
+			"bf",
+			[
+				150,
+				0,
+				100
+			]
+		],
+		[
+			"close to me",
+			"gf-invis",
+			[
+				150,
+				0,
+				120
+			]
+		],
+		[
+			"dancin (cg5)",
+			"bf",
+			[
+				0,
+				0,
+				110
+			]
+		],
+		[
+			"from the islands",
+			"bf",
+			[
+				0,
+				0,
+				110
+			]
+		]
+	],
+	"weekName": "Main"
+}

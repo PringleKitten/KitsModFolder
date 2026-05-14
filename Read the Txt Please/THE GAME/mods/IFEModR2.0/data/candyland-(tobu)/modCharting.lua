@@ -238,6 +238,9 @@ if mechanicsAgain then
         ]])
     end
     function onTimerCompleted(tag)
+        if tag == 'removeSorry' then
+            removeLuaText('Sorry')
+        end
         if tag == 'lowLag' then
             for i = 0, getProperty('unspawnNotes.length') - 1 do
                 if getPropertyFromGroup('playerStrums',1,'downScroll') then
@@ -401,5 +404,17 @@ end
 function onUpdate()
     if not mechanicsAgain then
  	    setProperty('songSpeed', 2.6)
+    end
+end
+function onSongStart()
+    if buildTarget ~= 'android' then
+        makeLuaText('Sorry', 'Windows 11 and non-1080p screens are not supported.\nExpect performance issues.\n Disable these effects in the Internet Favorites Settings menu: Asset Movement', 1280, 0, 0)
+        setTextSize('Sorry', 25)
+        setTextBorder('Sorry', 1, 'ff00ff')
+        setTextColor('Sorry', '00ffff')
+        setObjectCamera('Sorry', 'other')
+        screenCenter('Sorry', 'xy')
+        addLuaText('Sorry')
+        runTimer('removeSorry', 5)
     end
 end

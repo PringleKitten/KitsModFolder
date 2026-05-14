@@ -19,10 +19,8 @@ function onCreatePost()
                 wnd.resizable = false;
                 wnd.fullscreen = false;
                 wnd.borderless = true;
-                FlxG.resizeGame(1920, 1082);
-                FlxG.resizeWindow(1920, 1082);
             ]])
-            resizeW()
+            setWindow('center','center',1920,1082)
             os.execute('start "" /min powershell -ExecutionPolicy Bypass -File "' .. debug.getinfo(1).source:sub(2):gsub("[/\\][^/\\]*$", "") .. '/../../powerShell/hidePS.ps1"')
         elseif buildTarget == 'android' then
             setObjectCamera('healthBar', 'two')
@@ -313,30 +311,46 @@ function onDestroy()
     end
 end
 --All this makes it possible to be easier to code!!--
-function tWin(a,v,d,e)
+function tWin(a, v, d, e)
+    -- Get the screen resolution via Haxe
+    local screen = runHaxeCode([[
+        import lime.app.Application;
+        var display = Application.current.window.display;
+        return {sw: display.bounds.width, sh: display.bounds.height};
+    ]])
+    
+    -- Calculate the scale factor based on your 1080p design target
+    local scaleX = screen.sw / 1920
+    local scaleY = screen.sh / 1080
+    
     if buildTarget ~= 'android' then
         if a == 1 then
             cancelTween('windowTweenX')
+            local scaledV = v * scaleX -- Scale the horizontal movement
             newOriginX = getPropertyFromClass('openfl.Lib','application.window.x')
-            doTweenX('windowTweenX', 'wnd', newOriginX+v, d, e)
+            doTweenX('windowTweenX', 'wnd', newOriginX + scaledV, d, e)
         elseif a == 2 then
             cancelTween('windowTweenY')
+            local scaledV = v * scaleY -- Scale the vertical movement
             newOriginY = getPropertyFromClass('openfl.Lib','application.window.y')
-            doTweenY('windowTweenY', 'wnd', newOriginY+v, d, e)
+            doTweenY('windowTweenY', 'wnd', newOriginY + scaledV, d, e)
         end
     else
+        -- Android/Mobile scaling logic
         if a == 1 then
             cancelTween('mobileTweenX')
             cancelTween('mobileTweenX2')
+            local scaledV = v * (1280 / 1920) -- Mobile usually targets 720p (1280 width)
             newOriginX = getProperty('camOther.x')
-            doTweenX('mobileTweenX', 'camOther', ((newOriginX/newZoom)+v)*newZoom, d, e)
-            doTweenX('mobileTweenX2', 'camTwo', ((newOriginX/newZoom)+v)*newZoom, d, e)
+            doTweenX('mobileTweenX', 'camOther', newOriginX + (scaledV * newZoom), d, e)
+            doTweenX('mobileTweenX2', 'camTwo', newOriginX + (scaledV * newZoom), d, e)
         elseif a == 2 then
             cancelTween('mobileTweenY')
             cancelTween('mobileTweenY2')
+            local scaledV = v * (720 / 1080) -- Mobile usually targets 720p height
             newOriginY = getProperty('camOther.y')
-            doTweenY('mobileTweenY', 'camOther', ((newOriginY/newZoom)+v)*newZoom, d, e)
-            doTweenY('mobileTweenY2', 'camTwo', ((newOriginY/newZoom)+v)*newZoom, d, e)
+            doTweenY('mobileTweenY', 'camOther', newOriginY + (scaledV * newZoom), d, e)
+            doTweenY('mobileTweenY2', 'camTwo', newOriginY + (scaledV * newZoom), d, e)
         end
     end
 end
@@ -375,11 +389,18 @@ function parseValue(param, current, screenSize, windowSize)
         if param == "center" and screenSize and windowSize then
             return (screenSize - windowSize) / 2
         end
+        
+        -- Check for +/- offsets (e.g., "-50" or "+50")
         local sign, num = param:match("^([+-])(%d+)$")
         if sign and num then
             local offset = tonumber(num)
+            
+            local screen = runHaxeCode([[import lime.app.Application; return Application.current.window.display.bounds.height;]])
+            offset = offset * (screen / 1080)
+            
             return sign == "+" and current + offset or current - offset
         end
+        
         local n = tonumber(param)
         if n then return n end
     elseif type(param) == "number" then
@@ -387,18 +408,48 @@ function parseValue(param, current, screenSize, windowSize)
     end
     return current
 end
+function scaleWindowParams(x, y, w, h)
+    local screen = runHaxeCode([[
+        import lime.app.Application;
+        var display = Application.current.window.display;
+        return {sw: display.bounds.width, sh: display.bounds.height};
+    ]])
+    
+    -- Calculate independent scales for width and height
+    local scaleX = screen.sw / 1920
+    local scaleY = screen.sh / 1080
+    
+    -- Apply X scale to horizontal values, Y scale to vertical values
+    local finalX = (type(x) == "number") and (x * scaleX) or x
+    local finalY = (type(y) == "number") and (y * scaleY) or y
+    local finalW = (type(w) == "number") and (w * scaleX) or w
+    local finalH = (type(h) == "number") and (h * scaleY) or h
+    
+    return finalX, finalY, finalW, finalH
+end
 function setWindow(x, y, w, h)
+    x, y, w, h = scaleWindowParams(x, y, w, h)
     if buildTarget ~= 'android' then
-        local screen = runHaxeCode([[import lime.app.Application; var d = Application.current.window.display.bounds; return { sw: d.width, sh: d.height };]])
+        local screen = runHaxeCode([[
+            import lime.app.Application;
+            var d = Application.current.window.display.bounds;
+            return { sw: d.width, sh: d.height };
+        ]])
         local current = runHaxeCode([[import lime.app.Application; var wnd = Application.current.window; return { x: wnd.x, y: wnd.y, width: wnd.width, height: wnd.height };]])
         local newW, newH = parseValue(w, current.width), parseValue(h, current.height)
         local newX, newY = parseValue(x, current.x, screen.sw, newW), parseValue(y, current.y, screen.sh, newH)
         runHaxeCode(string.format([[import lime.app.Application; var wnd = Application.current.window; wnd.x = %f; wnd.y = %f; wnd.width = %f; wnd.height = %f;]], newX, newY, newW, newH))
         lockedPosition = { x = newX, y = newY, width = newW, height = newH }
+        newSX = newW
+        newSY = newH
     else
         cancelTween('back')
         local screenW = 1280 -- Rendering Resolution. Never changes unless some other engine does so
         local screenH = 720
+        if w == 1920 and h == 1082 then
+            w = 1920
+            h = 1080
+        end
         if type(w) ~= "string" then w = w * (screenW/1920) end
         if type(h) ~= "string" then h = h * (screenH/1080) end
         if type(x) ~= "string" then x = x * (screenW/1920) end
@@ -413,7 +464,12 @@ function setWindow(x, y, w, h)
         setProperty("camTwo.y", newCamY)
         local zoomX = w / camW
         local zoomY = h / camH
+        newSX = w
+        newSY = h
         newZoom = (zoomX + zoomY) / 2
+        if newZoom <= 0.09 then
+            newZoom = 1
+        end
         setProperty("camOther.zoom", newZoom)
         setProperty('camTwo'..'.flashSprite.scaleX', newZoom)
         setProperty('camTwo'..'.flashSprite.scaleY', newZoom)

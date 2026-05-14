@@ -52,11 +52,6 @@ function onCreatePost()
 	setProperty('iconP1.alpha', 0);
 	setProperty('iconP2.alpha', 0);
 	setProperty('scoreTxt.alpha', 0);
-	makeLuaText('testCaption', 'Captions will be here unless song forces middlescroll', 600, 0,500)
-	addLuaText('testCaption')
-	setTextSize('testCaption', 35)
-	setTextAlignment('testCaption', 'center')
-	setObjectCamera('testCaption', 'other')
 	run1 = true
 	if not forceMobile then
     	forceMobile = getPropertyFromClass("backend.ClientPrefs", "data.mobileMechanics")
@@ -86,8 +81,6 @@ function onCreatePost()
 		luasprite('right','me/buttons/button',getProperty('up.x')+110,getProperty('up.y'),'two',0.5,0.5,0,0,'.',true)
 		luasprite('back','me/buttons/button',1125,560,'two',0.5,0.5,0,0,'.',true)
 		luasprite('space','me/buttons/button',50,75,'two',0.5,0.5,0,0,'.',true)
-		luasprite('cc','me/buttons/button',1000,50,'two',0.5,0.5,0,0,'.',true)
-		luasprite('invert','me/buttons/button',30,525,'two',0.5,0.5,0,0,'.',true)
 		luasprite('uiBn','me/buttons/button',950,450,'two',0.5,0.5,0,0,'.',true)
 		luasprite('camBn','me/buttons/button',950,560,'two',0.5,0.5,0,0,'.',true)
 
@@ -97,34 +90,18 @@ function onCreatePost()
 		luatxt('txtright','Right', 0,getProperty('right.x')+3,getProperty('right.y')+35,'two',screenWidth/39,'.','.',true)
 		luatxt('txtback','Back', 0,getProperty('back.x')+10,getProperty('back.y')+30,'two',screenWidth/39,'.','.',true)
 		luatxt('txtspace','Shift', 0,getProperty('space.x')+2,getProperty('space.y')+30,'two',screenWidth/39,'.','.',true)
-		luatxt('txtcc','CC', 0,getProperty('cc.x')+29,getProperty('cc.y')+33,'two',screenWidth/39,'.','.',true)
-		luatxt('txtinv','I', 0,getProperty('invert.x')+37,getProperty('invert.y')+30,'two',screenWidth/39,'.','.',true)
 		luatxt('txtuiBn','Ui?', 0,getProperty('uiBn.x')+22,getProperty('uiBn.y')+33,'two',screenWidth/39,'.','.',true)
 
-		luatxt('captiontxt','Captions: true', 0,getProperty('cc.x')-50,getProperty('cc.y')+100,'two',screenWidth/39,'00FF00','.',true)
-		luatxt('ifso','(If applicable)', 0,getProperty('captiontxt.x')+40,getProperty('captiontxt.y')+30,'two',screenWidth/80,'808080','.',true)
-		luatxt('keyy','PRESS C TO CHANGE',0,getProperty('ifso.x')-5,getProperty('ifso.y')+20,'two',screenWidth/80,'00FFFF','.',true)
-		luatxt('invertxt','Caption Placement: Opponent', 0,getProperty('invert.x')-20,getProperty('invert.y')+100,'two',screenWidth/39,'00FF00','.',true)
-		luatxt('keyyInv','PRESS I TO CHANGE', 0,getProperty('invert.x')-20,getProperty('invert.y')+130,'two',screenWidth/80,'00FFFF','.',true)
 		luatxt('uiStatement','UI: '..'Psych', 0,getProperty('txtuiBn.x')+80,getProperty('txtuiBn.y'),'two',screenWidth/80,'00FFFF','.',true)
 	else
-		luatxt('captiontxt','Captions: true', 0,950,150,'two',screenWidth/39,'00FF00','.',true)
-		luatxt('ifso','(If applicable)', 0,990,180,'two',screenWidth/80,'808080','.',true)
-		luatxt('keyy','PRESS C TO CHANGE',0,985,200,'two',screenWidth/80,'00FFFF','.',true)
-		luatxt('invertxt','Caption Placement: Opponent', 0,10,625,'two',screenWidth/39,'00FF00','.',true)
-		luatxt('keyyInv','PRESS I TO CHANGE', 0,10,655,'two',screenWidth/80,'00FFFF','.',true)
 		luatxt('uiStatement','UI: Psych', 0,1052,483,'two',screenWidth/80,'00FFFF','.',true)
 	end
 	luatxt('txtcamBn','Other', 0,952,593,'two',screenWidth/39,'.','.',true)
 	setTextSize("uiStatement", 18)
-	runTimer('disprCap',2)
 end
 	callScript("scripts/ratings", "ratingPosFunc")
 	callScript("scripts/ratings", "rtsSetup",{cam,ui})
 end
-
-local inv = false
-local captions = true
 
 function luatxt(tag,txt,w,x,y,cam,ts,tc,sc,f) -- set certain values to '.' for default or no value
     makeLuaText(tag,txt,w,x,y)
@@ -183,12 +160,6 @@ function mouseOverlaps(tag, camera)
     return (x > getProperty(tag..'.x') and y > getProperty(tag..'.y') and x < (getProperty(tag..'.x') + getProperty(tag..'.width')) and y < (getProperty(tag..'.y') + getProperty(tag..'.height')))
 end
 
-function onTimerCompleted(tag)
-	if tag == 'disprCap' then
-		setProperty("testCaption.alpha", 0)
-	end
-end
-
 function buttonStuff()
     if forceMobile then
     	if mouseOverlaps('space', 'camOther') and mouseClicked("left") then
@@ -227,53 +198,7 @@ function buttonStuff()
     	end
 	end
 	if forceMobile then
-		if ((mouseOverlaps('cc', 'camOther') and mouseClicked("left")) or keyPressM('C')) and not captions then
-			captions = true
-			doTweenAlpha("intxta", "invertxt", 1, 0.2, "linear")
-			doTweenAlpha("keyyInva", "keyyInv", 1, 0.2, "linear")
-			doTweenAlpha("intxtabtn", "txtinv", 1, 0.2, "linear")
-			doTweenAlpha("keyyInvabtn", "invert", 1, 0.2, "linear")
-			setTextColor("captiontxt", "00FF00")
-			setTextString('captiontxt','Captions: true')
-			makeLuaText('testCaption', 'Captions will be here unless song forces middlescroll', 600, 0,500)
-			addLuaText('testCaption')
-			setTextSize('testCaption', 35)
-			setTextAlignment('testCaption', 'center')
-			setProperty('testCaption.x', (screenWidth/2)-(getProperty('testCaption.width')/2))
-			setObjectCamera('testCaption', 'other')
-			setProperty("testCaption.alpha", 1)
-			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('cc', 'camOther') and mouseClicked("left")) or keyPressM('C')) and captions then
-			captions = false
-			doTweenAlpha("intxta", "invertxt", 0, 0.2, "linear")
-			doTweenAlpha("keyyInva", "keyyInv", 0, 0.2, "linear")
-			doTweenAlpha("intxtabtn", "txtinv", 0, 0.2, "linear")
-			doTweenAlpha("keyyInvabtn", "invert", 0, 0.2, "linear")
-			setTextColor("captiontxt", "FF0000")
-			setTextString('captiontxt','Captions: false')
-			removeLuaText("testCaption")
-		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPressM('I')) and inv == 'center' then
-			inv = true
-			callScript("scripts/eventsandOffset", "invt", {true})
-			setTextString('invertxt','Caption Placement: Player')
-			setProperty("testCaption.x", 630)
-			setProperty("testCaption.alpha", 1)
-			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPressM('I')) and inv then
-			inv = false
-			callScript("scripts/eventsandOffset", "invt", {false})
-			setTextString('invertxt','Caption Placement: Opponent')
-			setProperty("testCaption.x", 0)
-			setProperty("testCaption.alpha", 1)
-			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('invert', 'camOther') and mouseClicked("left")) or keyPressM('I')) and not inv then
-			inv = 'center'
-			callScript("scripts/eventsandOffset", "middcs", {true})
-			setTextString('invertxt','Caption Placement: Center')
-			screenCenter("testCaption", 'x')
-			setProperty("testCaption.alpha", 1)
-			runTimer('disprCap',2)
-		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPressM('U')) and ui == 0 then
+		if ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPressM('U')) and ui == 0 then
 			ui = 1
 			setTextString('uiStatement','UI: IFE')
 		elseif ((mouseOverlaps('uiBn', 'camOther') and mouseClicked("left")) or keyPressM('U')) and ui == 1 then
@@ -308,51 +233,6 @@ function buttonStuff()
 			callScript("scripts/ratings", "rtsSetup",{cam,ui})
 		end
 	else
-		if keyPressM('C') and not captions then
-			captions = true
-			doTweenAlpha("intxta", "invertxt", 1, 0.2, "linear")
-			doTweenAlpha("keyyInva", "keyyInv", 1, 0.2, "linear")
-			setTextColor("captiontxt", "00FF00")
-			setTextString('captiontxt','Captions: true')
-			makeLuaText('testCaption', 'Captions will be here unless song forces middlescroll', 600, 0,500)
-			addLuaText('testCaption')
-			setTextSize('testCaption', 35)
-			setTextAlignment('testCaption', 'center')
-			setProperty('testCaption.x', (screenWidth/2)-(getProperty('testCaption.width')/2))
-			setObjectCamera('testCaption', 'other')
-			setProperty("testCaption.alpha", 1)
-			runTimer('disprCap',2)
-		elseif keyPressM('C') and captions then
-			captions = false
-			doTweenAlpha("intxta", "invertxt", 0, 0.2, "linear")
-			doTweenAlpha("keyyInva", "keyyInv", 0, 0.2, "linear")
-			setTextColor("captiontxt", "FF0000")
-			setTextString('captiontxt','Captions: false')
-			removeLuaText("testCaption")
-		end
-		if keyPressM('I') and inv == 'center' then
-			inv = true
-			callScript("scripts/eventsandOffset", "invt", {true})
-			callScript("scripts/eventsandOffset", "middcs", {false})
-			setTextString('invertxt','Caption Placement: Player')
-			setProperty("testCaption.x", 630)
-			setProperty("testCaption.alpha", 1)
-			runTimer('disprCap',2)
-		elseif keyPressM('I') and inv then
-			inv = false
-			callScript("scripts/eventsandOffset", "middcs", {false})
-			setTextString('invertxt','Caption Placement: Opponent')
-			setProperty("testCaption.x", 0)
-			setProperty("testCaption.alpha", 1)
-			runTimer('disprCap',2)
-		elseif keyPressM('I') and not inv then
-			inv = 'center'
-			callScript("scripts/eventsandOffset", "middcs", {true})
-			setTextString('invertxt','Caption Placement: Center')
-			screenCenter("testCaption", 'x')
-			setProperty("testCaption.alpha", 1)
-			runTimer('disprCap',2)
-		end
 		if keyPressM('U') and ui == 0 then
 			ui = 1
 			setTextString('uiStatement','UI: IFE')
@@ -393,11 +273,9 @@ end
 
 function onUpdate()
 	if getProperty('inCutscene') and not doneIt2 then
-		setProperty("testCaption.alpha", 0)
         doneIt2 = true
     end
     if not getProperty('inCutscene') and doneIt2 then
-		setProperty("testCaption.alpha", 1)
         doneIt2 = false
     end
 	if not (getProperty('inCutscene') or (getProperty('videoCutscene') or getProperty('videoCutscene.isPlaying'))) then
@@ -415,27 +293,12 @@ function onUpdate()
 				end
 			end
 			if (keyPressM('SHIFT') or spc) and selectedBeginSong then
-				for _, value in pairs({'uiStatement','txtuiBn','txtcamBn','txtup','testCaption','txtdown','txtleft','txtright','txtback','txtspace','txtcc','captiontxt','ifso','keyy','keyyInv','invertxt','txtinv'}) do
+				for _, value in pairs({'uiStatement','txtuiBn','txtcamBn','txtup','txtdown','txtleft','txtright','txtback','txtspace','ifso','keyy'}) do
     		        removeLuaText(value)
     		    end
-    		    for _, value in pairs({'uiBn','camBn','up','down','left','right','back','space','cc','invert'}) do
+    		    for _, value in pairs({'uiBn','camBn','up','down','left','right','back','space'}) do
     		        removeLuaSprite(value)
     		    end
-
-				if inv == 'center' then
-					callScript("scripts/eventsandOffset", "middcs", {true})
-					callScript("scripts/eventsandOffsetbystep", "middcs", {true})
-					callScript("scripts/eventsandOffset", "invt", {false})
-					callScript("scripts/eventsandOffsetbystep", "invt", {false})
-				else
-					callScript("scripts/eventsandOffset", "middcs", {false})
-					callScript("scripts/eventsandOffsetbystep", "middcs", {false})
-					callScript("scripts/eventsandOffset", "invt", {inv})
-					callScript("scripts/eventsandOffsetbystep", "invt", {inv})
-				end
-				callScript("scripts/eventsandOffset", "captionson",{captions})
-				callScript("scripts/eventsandOffsetbystep", "captionson",{captions})
-				callScript("scripts/everything", "capps",{captions})
 				callScript("scripts/ratings", "rtsSetup",{cam,ui})
 				allowCountdown = true
 				startCountdown()

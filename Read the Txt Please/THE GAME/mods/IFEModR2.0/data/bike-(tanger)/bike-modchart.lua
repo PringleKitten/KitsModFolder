@@ -20,10 +20,7 @@ local shakeThing = 0
 local android = false
 local plz = false
 local was = false
--- --[[local mirrorCount = 1 -- Number of windows
--- local scaleFactor = 0.5 -- 0.5 for stability, 1 for quality
--- local desktopWidth = 1920
--- local desktopHeight = 1080]]
+local meowmeow = false
 function onEvent(n,a,b)
     if n == '' then
         if a == 'count' then
@@ -78,26 +75,6 @@ function onEvent(n,a,b)
     end
 end
 function onTimerCompleted(t)
---    --[[if t == 'startMirrors' then
---        initMirrors()
---        runHaxeCode([[
---            var newRate = 60;
---            FlxG.updateFramerate = newRate;
---            FlxG.drawFramerate = newRate;
---            if (FlxG.game != null)
---                FlxG.game.targetFramerate = newRate;
---
---            var window = Lib.current.window;
---            if (window != null)
---                window.vsync = false;
---        ] ])
---    end
---    if t == 'closeGame' then
---        os.exit()
---    end
---    if t == 'forceMainTopPS' then
---        os.execute('powershell -ExecutionPolicy Bypass -File "ForceTop.ps1"')
---    end]]
     if t == 'belh' then
         nyo = true
         cancelTimer('repeat')
@@ -106,26 +83,42 @@ function onTimerCompleted(t)
         bleh = bleh-1
     end
     if t == 'vib' then
-        if shakeThing > 0 then
-            local a = -shakeThing
-            local b = shakeThing
-            if a ~= 0 then
-                a = -shakeThing + 1
+        if buildTarget ~= 'android' then
+            if shakeThing > 0 then
+                runHaxeCode([[
+                    import lime.app.Application;
+                    var wnd = Application.current.window;
+                    var screenW = wnd.display.currentMode.width;
+                    var screenH = wnd.display.currentMode.height;
+                    
+                    // Always calculate from the absolute screen center
+                    var centerX = (screenW - wnd.width) / 2;
+                    var centerY = (screenH - wnd.height) / 2;
+                    
+                    var s = ]] .. shakeThing .. [[;
+                    var rx = (Math.random() * (s * 2)) - s;
+                    var ry = (Math.random() * (s * 2)) - s;
+                    
+                    wnd.x = Std.int(centerX + rx);
+                    wnd.y = Std.int(centerY + ry);
+                ]])
+
+                shakeThing = shakeThing - 1
+                runTimer('vib', 0.001)
+            else
+                setWindow('center', 'center', newSX, newSY)
             end
-            if b ~= 0 then
-                b = shakeThing - 1
-            end
-            setWindow(newOriginX+getRandomInt(a,b), newOriginY+getRandomInt(a,b), newSX, newSY)
-            shakeThing = shakeThing - 1
-            runTimer('vib', 0.0012)
         end
     end
 end
-----[[function onCreate()
---    runHaxeCode([[
---        setVar('mirrorActive', false);
---    ] ])
---end]]
+function updateTrueCenter()
+    local screenW = getPropertyFromClass('openfl.Lib', 'application.window.display.currentMode.width')
+    local screenH = getPropertyFromClass('openfl.Lib', 'application.window.display.currentMode.height')
+    
+    -- Using the design width (1280 or 1920) to find the anchor
+    newOriginX = (screenW - newSX) / 2
+    newOriginY = (screenH - newSY) / 2
+end
 function onCreatePost()
     --buildTarget = 'android'
     if not assetMovement then
@@ -141,10 +134,8 @@ function onCreatePost()
             var wnd = Application.current.window;
             wnd.resizable = false;
             wnd.fullscreen = false;
-            FlxG.resizeGame(1920, 1082);
-            FlxG.resizeWindow(1920, 1082);
         ]])
-        resizeW()
+        setWindow('center', 'center', 1920,1082)
         os.execute('start "" /min powershell -ExecutionPolicy Bypass -File "' .. debug.getinfo(1).source:sub(2):gsub("[/\\][^/\\]*$", "") .. '/../../powerShell/hidePS.ps1"')
     elseif buildTarget == 'android' then
         android = true
@@ -237,6 +228,7 @@ function func(p) -- pringlekiten's cool events/visuals
     elseif p == 45 then
         tWin(1, -300, 0.08, 'expoOut')
         tWin(2, -300, 0.08, 'expoOut')
+        meowmeow = false
         plz = true
     elseif p > 45 and p < 98 then
         local a = getSmartRandom()
@@ -249,8 +241,10 @@ function func(p) -- pringlekiten's cool events/visuals
 
         local b = dirs[a].b
         local c = dirs[a].c
-        plz = false
         setWindow('center','center',1280,720)
+        newOriginX = getPropertyFromClass('openfl.Lib','application.window.x')
+		newOriginY = getPropertyFromClass('openfl.Lib','application.window.y')
+        plz = false
         tWin(1, b, 0.07, 'sineOut')
         tWin(2, c, 0.07, 'sineOut')
     elseif p >= 98 and p < 107 then
@@ -271,9 +265,29 @@ function func(p) -- pringlekiten's cool events/visuals
             tWin(1, 200, 0.07, 'sineOut')
             tWin(2, -200, 0.07, 'sineOut')
             bleh = 0
-        end
+        end        
     elseif p > 107 and p < 179 then
-        setWindow(windowOriginX+getRandomInt(-150,-20), windowOriginY+getRandomInt(-150,-20), getRandomInt(1100,1600), getRandomInt(600,900))
+        if buildTarget ~= 'android' then
+            local rw = getRandomInt(1100, 1600)
+            local rh = getRandomInt(600, 900)
+            
+            runHaxeCode(string.format([[
+                import lime.app.Application;
+                var wnd = Application.current.window;
+                var screen = wnd.display.bounds;
+                
+                wnd.width = Std.int(%f);
+                wnd.height = Std.int(%f);
+                
+                // Calculate center AFTER setting new width/height
+                var centerX = (screen.width - wnd.width) / 2;
+                var centerY = (screen.height - wnd.height) / 2;
+                
+                // Shake relative to that perfect center
+                wnd.x = Std.int(centerX + (Math.random() * 260 - 130));
+                wnd.y = Std.int(centerY + (Math.random() * 260 - 130));
+            ]], rw, rh))
+        end
     elseif p == 179 then
         setWindow('center','center', 1280, 720)
     elseif p > 179 and p < 185 then
@@ -292,6 +306,7 @@ function func(p) -- pringlekiten's cool events/visuals
         end
     elseif p >= 185 and p < 219 then
         if bleh == 0 then
+            meowmeow = false
             plz = true
             was = true
             bleh = 1
@@ -395,6 +410,7 @@ function func(p) -- pringlekiten's cool events/visuals
         end
         bleh = bleh+1
     elseif p == 251 then
+        meowmeow = false
         plz = true
     elseif p >= 251 and p < 288 then
         bleh  = 0
@@ -442,7 +458,6 @@ function func(p) -- pringlekiten's cool events/visuals
     end
 end
 function onSongStart()
-    --runTimer('startMirrors', 2)
     p0x = getPropertyFromGroup('playerStrums',0,'x')
     p1x = getPropertyFromGroup('playerStrums',1,'x')
     p2x = getPropertyFromGroup('playerStrums',2,'x')
@@ -452,161 +467,31 @@ function onSongStart()
     p2y = getPropertyFromGroup('playerStrums',2,'y')
     p3y = getPropertyFromGroup('playerStrums',3,'y')
 end
-----[[function initMirrors()
---    runHaxeCode([[
---        import lime.app.Application;
---        import openfl.Lib;
---        import openfl.display.Bitmap;
---        import openfl.display.BitmapData;
---        import flixel.FlxG;
---
---        FlxG.autoPause = false;
---
---        var mainWindow = Lib.current.stage;
---        var totalMirrors = ] ] .. mirrorCount .. [[;
---        var mScale = ] ] .. scaleFactor .. [[;
---
---        var w = mainWindow.stageWidth;
---        var h = mainWindow.stageHeight;
---
---        setVar('myWindows', []);
---
---        for (i in 0...totalMirrors)
---        {
---            var bmpData = new BitmapData(w, h, false, 0xFF000000);
---            var winAttr = {
---                title: "Mirror " + (i + 1),
---                width: w,
---                height: h,
---                resizable: true
---            };
---            var newWin = Application.current.createWindow(winAttr);
---            var bmp = new Bitmap(bmpData);
---            bmp.smoothing = true;
---            newWin.stage.addChild(bmp);
---            getVar('myWindows').push({
---                tag: "mirror_" + i,
---                winn: newWin,
---                bmp: bmp
---            });
---        }
---        setVar('mirrorActive', true);
---    ] ])
---    runTimer('forceMainTopPS', 0.01)
---end
---function setMirrorCount(newCount)
---    mirrorCount = newCount
---    runHaxeCode([[
---        import openfl.Lib;
---        import lime.app.Application;
---        import openfl.display.Bitmap;
---        import openfl.display.BitmapData;
---        var mainWindow = Lib.current.stage;
---        var totalMirrors = ] ] .. mirrorCount .. [[;
---        var mScale = ] ] .. scaleFactor .. [[;
---        var oldWindows = getVar('myWindows');
---        if (oldWindows != null) {
---            for (obj in oldWindows) {
---                if (obj.winn != null) obj.winn.close();
---            }
---        }
---        setVar('myWindows', []);
---        var w = mainWindow.stageWidth;
---        var h = mainWindow.stageHeight;
---        for (i in 0...totalMirrors)
---        {
---            var bmpData = new BitmapData(w, h, false, 0xFF000000);
---            var winAttr = {
---                title: "Mirror " + (i + 1),
---                width: w,
---                height: h,
---                resizable: true
---            };
---            var newWin = Application.current.createWindow(winAttr);
---            var bmp = new Bitmap(bmpData);
---            bmp.smoothing = true;
---            newWin.stage.addChild(bmp);
---
---            getVar('myWindows').push({
---                tag: "mirror_" + i,
---                winn: newWin,
---                bmp: bmp
---            });
---        }
---    ] ])
---end]]
 function onUpdatePost()
     setProperty('camOne.x', getProperty("camOther.x"))
     setProperty('camOne.y', getProperty("camOther.y"))
     setProperty('camOne.zoom', getProperty('camOther.zoom'))
     if plz then
-        setWindow(newOriginX+getRandomInt(-10,10), newOriginY+getRandomInt(-10,10), 1280, 720)
+        if not meowmeow then
+            newOriginX = getPropertyFromClass('openfl.Lib','application.window.x')
+            newOriginY = getPropertyFromClass('openfl.Lib','application.window.y')
+        end
+        meowmeow = true
+        setWindow("center","center",1280,720)
+        setWindow("+" .. getRandomInt(-20,20), "+" .. getRandomInt(-20,20), 1280, 720)
         was = true
     end
-    if not nyo then
-        setWindow(newOriginX+getRandomInt(-bleh,bleh), newOriginY+getRandomInt(-bleh,bleh), 1280, 720)
+    if not nyo and shakeThing <= 0 then
+        if not meowmeow then
+            newOriginX = getPropertyFromClass('openfl.Lib','application.window.x')
+            newOriginY = getPropertyFromClass('openfl.Lib','application.window.y')
+        end
+        meowmeow = true
+        setWindow("center","center",1280,720)
+        setWindow("+" .. getRandomInt(-bleh,bleh), "+" .. getRandomInt(-bleh,bleh), 1280, 720)
     end
---    --[[runHaxeCode([[
---        if (!getVar('mirrorActive')) return;
---
---        import flixel.FlxG;
---        import openfl.Lib;
---        import openfl.geom.Matrix;
---        import openfl.display.BitmapData;
---
---        var windows = getVar('myWindows');
---        if (windows == null || windows.length == 0) return;
---
---        var mainW = Lib.current.stage.stageWidth;
---        var mainH = Lib.current.stage.stageHeight;
---
---        // Anchors for each corner
---        var anchors = [
---            {x:0, y:0},
---            {x:] ] .. desktopWidth .. [[, y:0},
---            {x:0, y:] ] .. desktopHeight .. [[},
---            {x:] ] .. desktopWidth .. [[, y:] ] .. desktopHeight .. [[}
---        ];
---
---        for (i in 0...windows.length)
---        {
---            var obj = windows[i];
---            var win = obj.winn;
---            var bmp = obj.bmp;
---
---            if (win.stage != null && bmp != null)
---            {
---                if (win.width != mainW || win.height != mainH)
---                {
---                    win.width = mainW;
---                    win.height = mainH;
---                    var anchor = anchors[i];
---                    if (i == 0) { win.x = anchor.x; win.y = anchor.y; }               
---                    if (i == 1) { win.x = anchor.x - win.width; win.y = anchor.y; }  
---                    if (i == 2) { win.x = anchor.x; win.y = anchor.y - win.height; } 
---                    if (i == 3) { win.x = anchor.x - win.width; win.y = anchor.y - win.height; } 
---
---                    // Resize bitmapData to match window
---                    if (bmp.bitmapData.width != win.stage.stageWidth || bmp.bitmapData.height != win.stage.stageHeight)
---                    {
---                        bmp.bitmapData.dispose();
---                        bmp.bitmapData = new BitmapData(win.stage.stageWidth, win.stage.stageHeight, false, 0xFF000000);
---                    }
---                    bmp.width = bmp.bitmapData.width;
---                    bmp.height = bmp.bitmapData.height;
---                }
---
---                // Draw the main game into bitmapData
---                var matrix = new Matrix();
---                bmp.bitmapData.draw(FlxG.game, matrix);
---            }
---        }
---    ] ])]]
 end
 function onCountdownStarted()
---    --[[setProperty('boyfriend.alpha', 0)
---    setProperty('iconP1.alpha', 0)
---    setProperty('iconP2.alpha', 0)]]
     runHaxeCode([[
         comboGroup.cameras = [camTwo];
         for (note in game.notes) {
@@ -641,9 +526,6 @@ function onDestroy()
         noFS(true)
         os.execute('start "" /min powershell -ExecutionPolicy Bypass -File "' .. debug.getinfo(1).source:sub(2):gsub("[/\\][^/\\]*$", "") .. '/../../powerShell/showPS.ps1"') 
     end
---    --[[local gamePath = "IFE.exe"
---    os.execute('start "" "' .. gamePath .. '"')
---    os.exit()]]
 end
 function onUpdate()
     if getPropertyFromClass('openfl.Lib','application.window.fullscreen') then
@@ -651,30 +533,41 @@ function onUpdate()
     end
 end
 
-function tWin(a,v,d,e)
+function tWin(a, v, d, e)
     if buildTarget ~= 'android' then
+        local screen = runHaxeCode([[
+            import lime.app.Application;
+            var display = Application.current.window.display;
+            return {sw: display.bounds.width, sh: display.bounds.height};
+        ]])
+        local scaleX = screen.sw / 1920
+        local scaleY = screen.sh / 1080
         if a == 1 then
             cancelTween('windowTweenX')
+            local scaledV = v * scaleX -- Scale the horizontal movement
             newOriginX = getPropertyFromClass('openfl.Lib','application.window.x')
-            doTweenX('windowTweenX', 'wnd', newOriginX+v, d, e)
+            doTweenX('windowTweenX', 'wnd', newOriginX + scaledV, d, e)
         elseif a == 2 then
             cancelTween('windowTweenY')
+            local scaledV = v * scaleY -- Scale the vertical movement
             newOriginY = getPropertyFromClass('openfl.Lib','application.window.y')
-            doTweenY('windowTweenY', 'wnd', newOriginY+v, d, e)
+            doTweenY('windowTweenY', 'wnd', newOriginY + scaledV, d, e)
         end
     else
         if a == 1 then
             cancelTween('mobileTweenX')
             cancelTween('mobileTweenX2')
+            local scaledV = v * (1280 / 1920) -- Mobile usually targets 720p (1280 width)
             newOriginX = getProperty('camOther.x')
-            doTweenX('mobileTweenX', 'camOther', ((newOriginX/newZoom)+v)*newZoom, d, e)
-            doTweenX('mobileTweenX2', 'camTwo', ((newOriginX/newZoom)+v)*newZoom, d, e)
+            doTweenX('mobileTweenX', 'camOther', newOriginX + (scaledV * newZoom), d, e)
+            doTweenX('mobileTweenX2', 'camTwo', newOriginX + (scaledV * newZoom), d, e)
         elseif a == 2 then
             cancelTween('mobileTweenY')
             cancelTween('mobileTweenY2')
+            local scaledV = v * (720 / 1080) -- Mobile usually targets 720p height
             newOriginY = getProperty('camOther.y')
-            doTweenY('mobileTweenY', 'camOther', ((newOriginY/newZoom)+v)*newZoom, d, e)
-            doTweenY('mobileTweenY2', 'camTwo', ((newOriginY/newZoom)+v)*newZoom, d, e)
+            doTweenY('mobileTweenY', 'camOther', newOriginY + (scaledV * newZoom), d, e)
+            doTweenY('mobileTweenY2', 'camTwo', newOriginY + (scaledV * newZoom), d, e)
         end
     end
 end
@@ -710,11 +603,18 @@ function parseValue(param, current, screenSize, windowSize)
         if param == "center" and screenSize and windowSize then
             return (screenSize - windowSize) / 2
         end
+        
+        -- Check for +/- offsets (e.g., "-50" or "+50")
         local sign, num = param:match("^([+-])(%d+)$")
         if sign and num then
             local offset = tonumber(num)
+            
+            local screen = runHaxeCode([[import lime.app.Application; return Application.current.window.display.bounds.height;]])
+            offset = offset * (screen / 1080)
+            
             return sign == "+" and current + offset or current - offset
         end
+        
         local n = tonumber(param)
         if n then return n end
     elseif type(param) == "number" then
@@ -723,13 +623,32 @@ function parseValue(param, current, screenSize, windowSize)
     return current
 end
 function scaleWindowParams(x, y, w, h)
-    local screen = runHaxeCode([[import lime.app.Application; var d = Application.current.window.display.bounds; return { sw: d.width, sh: d.height };]])
-    local scaleX, scaleY = screen.sw / 1920, screen.sh / 1080
-    return x * scaleX, y * scaleY, w * scaleX, h * scaleY
+    local screen = runHaxeCode([[
+        import lime.app.Application;
+        var display = Application.current.window.display;
+        return {sw: display.bounds.width, sh: display.bounds.height};
+    ]])
+    
+    -- Calculate independent scales for width and height
+    local scaleX = screen.sw / 1920
+    local scaleY = screen.sh / 1080
+    
+    -- Apply X scale to horizontal values, Y scale to vertical values
+    local finalX = (type(x) == "number") and (x * scaleX) or x
+    local finalY = (type(y) == "number") and (y * scaleY) or y
+    local finalW = (type(w) == "number") and (w * scaleX) or w
+    local finalH = (type(h) == "number") and (h * scaleY) or h
+    
+    return finalX, finalY, finalW, finalH
 end
 function setWindow(x, y, w, h)
+    x, y, w, h = scaleWindowParams(x, y, w, h)
     if buildTarget ~= 'android' then
-        local screen = runHaxeCode([[import lime.app.Application; var d = Application.current.window.display.bounds; return { sw: d.width, sh: d.height };]])
+        local screen = runHaxeCode([[
+            import lime.app.Application;
+            var d = Application.current.window.display.bounds;
+            return { sw: d.width, sh: d.height };
+        ]])
         local current = runHaxeCode([[import lime.app.Application; var wnd = Application.current.window; return { x: wnd.x, y: wnd.y, width: wnd.width, height: wnd.height };]])
         local newW, newH = parseValue(w, current.width), parseValue(h, current.height)
         local newX, newY = parseValue(x, current.x, screen.sw, newW), parseValue(y, current.y, screen.sh, newH)
@@ -775,45 +694,5 @@ function setWindow(x, y, w, h)
             width = camW * newZoom,
             height = camH * newZoom
         }
-    end
-end
-function resizeW()
-    if buildTarget ~= 'android' then
-        runHaxeCode([[
-            import openfl.Lib;
-	        import flixel.FlxG;
-	    	FlxG.game.setFilters([]);
-	    	var stage = Lib.current.stage;
-	    	var resolutionX = 0;
-	    	var resolutionY = 0;
-	    	if (stage.window != null)
-	    	{
-	    		var display = stage.window.display;
-	    		if (display != null)
-	    		{
-	    			resolutionX = Math.ceil(display.currentMode.width * stage.window.scale);
-	    			resolutionY = Math.ceil(display.currentMode.height * stage.window.scale);
-	    		}
-	    	}
-	    	if(resolutionX <= 0){
-	    		resolutionX = stage.stageWidth;
-	    		resolutionY = stage.stageHeight;
-	    	}
-	        Lib.application.window.x = (resolutionX - Lib.application.window.width)/2;
-	        Lib.application.window.y = (resolutionY - Lib.application.window.height)/2;
-	    ]])
-    else
-        local screenWidth = getPropertyFromClass("openfl.Lib", "application.window.width") or 1280
-        local screenHeight = getPropertyFromClass("openfl.Lib", "application.window.height") or 720
-        local camWidth = getProperty("camOther.width") or 1280
-        local camHeight = getProperty("camOther.height") or 720
-
-        local centerX = (screenWidth - camWidth) / 2
-        local centerY = (screenHeight - camHeight) / 2
-
-        setProperty("camOther.x", centerX)
-        setProperty("camOther.y", centerY)
-        setProperty("camTwo.x", centerX)
-        setProperty("camTwo.y", centerY)
     end
 end

@@ -2003,6 +2003,16 @@ function onCountdownStarted()
 
 end
 function onSongStart()
+    if buildTarget ~= 'android' then
+        makeLuaText('Sorry', 'Windows 11 and non-1080p screens are not supported.\nExpect performance issues.\n Disable these effects in the Internet Favorites Settings menu: Asset Movement', 1280, 0, 0)
+        setTextSize('Sorry', 25)
+        setTextBorder('Sorry', 1, 'ff00ff')
+        setTextColor('Sorry', '00ffff')
+        setObjectCamera('Sorry', 'other')
+        screenCenter('Sorry', 'xy')
+        addLuaText('Sorry')
+        runTimer('removeSorry', 5)
+    end
     p0x = getPropertyFromGroup('playerStrums',0,'x')
     p1x = getPropertyFromGroup('playerStrums',1,'x')
     p2x = getPropertyFromGroup('playerStrums',2,'x')
@@ -2083,6 +2093,9 @@ function updHP()
     end
 end
 function onTimerCompleted(tag)
+    if tag == 'removeSorry' then
+        removeLuaText('Sorry')
+    end
     if tag == 'hideMS' then
         setProperty("msText.alpha", 0)
     end

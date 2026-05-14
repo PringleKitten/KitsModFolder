@@ -35,8 +35,6 @@ function onCreatePost()
     setProperty('skipArrowStartTween', true)
     setPropertyFromClass('flixel.FlxG', 'fixedTimestep', false)
     -- This stuff I wanna change if I ever move notes around
-    invt(ls)
-    middcs(mdsc)
     if customFPS then
         target = getPropertyFromClass('backend.ClientPrefs', 'data.framerate')
         setPropertyFromClass("Main", "fpsVar.visible", false)
@@ -91,22 +89,6 @@ function onSongStart()
     debugPrint('')
 end
 function onEvent(n,v1,v2)
-    if ccaptions then
-        cv2 = tonumber(v2)
-		if n == 'makeCaption' and cv2 ~= 0 then
-			runTimer('captionLength', cv2, 0)
-			setTextString('captionText', v1)
-			--if songName == '' then
-			if v2 >= 0.05 then
-				doTweenAlpha('captionAlpha', 'captionText', 1, 0.1, 'linear')
-			else
-				setProperty('captionText.alpha', 1)
-			end
-			--end
-		elseif n == 'makeCaption' and cv2 == 0 then
-			debugPrint('Hey bro, dont put 0 in value 2 please, game says no no no!')
-		end
-	end
     if n == 'nz' then
         av1 = tonumber(v1)
         av2 = tonumber(v2)
@@ -169,13 +151,6 @@ function onTweenCompleted(t)
     end
 end
 function onTimerCompleted(tag)
-    if ccaptions then
-		if tag == 'captionLength' then
-			if v2 > 0.05 then
-				doTweenAlpha('captionAlpha', 'captionText', 0, 0.1, 'linear')
-			end
-		end
-	end
 	if tag == 'stt' then
 		st = false
 	end
@@ -191,34 +166,5 @@ function performanceD()
 end
 function noBopBruh(noBop)
     noDoBop = noBop
-end
-function invt(t)
-	ls = t
-	captionson(ccaptions)
-end
-function middcs(ts)
-	mid = ts
-	captionson(ccaptions)
-end
-function captionson(capen)
-	ccaptions = capen
-	if ccaptions then
-		makeLuaText('captionText', 'l', 600, 0,500)
-    	addLuaText('captionText')
-    	setTextSize('captionText', 35)
-    	setTextAlignment('captionText', 'center')
-    	setProperty('captionText.x', (screenWidth/2)-(getProperty('captionText.width')/2))
-    	setObjectCamera('captionText', 'other')
-    	setProperty('captionText.alpha', 0)
-	end
-	if mid and not ls then
-		screenCenter("captionText", 'x')
-	elseif ls and not mid then
-		setProperty("captionText.x", 630)
-	elseif not ls and not mid then
-		setProperty("captionText.x", 0)
-	elseif mid and ls then
-		screenCenter("captionText", 'x')
-	end
 end
 --@PringleKitten

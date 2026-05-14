@@ -227,7 +227,6 @@ function onSongStart()
         setProperty('timeBar.visible', true)
         setProperty('timeTxt.y', tTy)
         setObjectCamera("timeTxt", 'hud')
-
         for _, obj in ipairs(wholeUI) do
             removeLuaText(obj)
             removeLuaSprite(obj)
@@ -240,7 +239,6 @@ function onSongStart()
         setProperty('iconP2.alpha', 0);
         setProperty('scoreTxt.alpha', 0);
         setProperty('timeBar.visible', false)
-
         for _, obj in ipairs(objects) do
             setProperty(obj .. ".alpha", 1)
         end
@@ -256,7 +254,6 @@ function onSongStart()
         for _, obj in ipairs(objects) do
             setProperty(obj .. ".alpha", 1)
         end
-        setObjectCamera("timeLeftText", 'hud')
     elseif uiType == 3 then
         setProperty('healthBar.alpha', 1);
         setProperty('healthBarBG.alpha', 1);
