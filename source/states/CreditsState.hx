@@ -40,7 +40,6 @@ class CreditsState extends MusicBeatState
 		var defaultList:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
 			["Internet Favorites Engine"],
 			["PringleKitten",	"pringlekitten", 	"I did this entire modification of Psych Engine",	"https://pringlekitten.carrd.co",	"000075"],
-			["Discord Server", "discord", "", "https://discord.com/invite/qH6bu42nrw", "AA00AA"],
 			[""],
 			["Engine Based on"],
 			["Psych Engine","nothing","","",""],
