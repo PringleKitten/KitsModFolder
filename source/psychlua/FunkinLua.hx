@@ -568,18 +568,23 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "doTweenX", function(tag:String, vars:String, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/divideVal;
 			return oldTweenFunction(tag, vars, {x: value}, duration, ease, 'doTweenX');
 		});
 		Lua_helper.add_callback(lua, "doTweenY", function(tag:String, vars:String, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/divideVal;
 			return oldTweenFunction(tag, vars, {y: value}, duration, ease, 'doTweenY');
 		});
 		Lua_helper.add_callback(lua, "doTweenAngle", function(tag:String, vars:String, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/divideVal;
 			return oldTweenFunction(tag, vars, {angle: value}, duration, ease, 'doTweenAngle');
 		});
 		Lua_helper.add_callback(lua, "doTweenAlpha", function(tag:String, vars:String, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/divideVal;
 			return oldTweenFunction(tag, vars, {alpha: value}, duration, ease, 'doTweenAlpha');
 		});
 		Lua_helper.add_callback(lua, "doTweenZoom", function(tag:String, camera:String, value:Dynamic, duration:Float, ?ease:String = 'linear') {
+			duration = duration/divideVal;
 			switch(camera.toLowerCase()) {
 				case 'camgame' | 'game': camera = 'camGame';
 				case 'camhud' | 'hud': camera = 'camHUD';
@@ -594,6 +599,7 @@ class FunkinLua {
 			return oldTweenFunction(tag, camera, {zoom: value}, duration, ease, 'doTweenZoom');
 		});
 		Lua_helper.add_callback(lua, "doTweenColor", function(tag:String, vars:String, targetColor:String, duration:Float, ?ease:String = 'linear') {
+			duration = duration/divideVal;
 			var penisExam:Dynamic = LuaUtils.tweenPrepare(tag, vars);
 			if(penisExam != null) {
 				var curColor:FlxColor = penisExam.color;
