@@ -1712,9 +1712,9 @@ class FunkinLua {
 
 	function oldTweenFunction(tag:String, vars:String, tweenValue:Any, duration:Float, ease:String, funcName:String)
 	{
+		duration = duration/divideVal;
 		var target:Dynamic = LuaUtils.tweenPrepare(tag, vars);
 		var variables = MusicBeatState.getVariables();
-		duration = duration/divideVal;
 		if(target != null)
 		{
 			if(tag != null)
