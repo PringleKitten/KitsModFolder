@@ -2051,37 +2051,6 @@ class PlayState extends MusicBeatState
 		#end
 
 		setOnScripts('botPlay', cpuControlled);
-        if (ClientPrefs.data.osuSustainInput)
-			{
-			for (i in 0...sustains.length) {
-				if (sustains[i] != null) {
-						if (controls.justReleased(keysArray[i])) {
-						var myStrum:StrumNote = playerStrums.members[i];
-							var strumAnim:String = (myStrum != null) ? myStrum.animation.curAnim.name : 'static';
-					
-							var lastHitTime:Float = sustains[i];
-							var compareNote:Float = lastHitTime + (COYOTE_TIME / 60 * 1000) + Conductor.stepCrochet * STEP_TIME;
-							var compareStrum:Float = FlxMath.lerp(Conductor.songPosition, lastHitTime, STRETCH);
-							var imagineDiff:Float = Math.max(0, compareStrum - compareNote);
-	
-							var fakeReleaseNote:Note = new Note(Conductor.songPosition + imagineDiff, i);
-							fakeReleaseNote.isSustainReleaseNote = true;
-							fakeReleaseNote.mustPress = true;
-							fakeReleaseNote.canBeHit = true;
-							fakeReleaseNote.noAnimation = true;
-	
-							goodNoteHit(fakeReleaseNote);
-	
-							if (myStrum != null && myStrum.animation.curAnim.name != strumAnim) {
-						myStrum.playAnim(strumAnim);
-								// myStrum.resetAnim = 0; If the 'confirm' anim persists
-							}
-	
-							sustains[i] = null; // Stop tracking the sustain for this lane
-			 }
-		}
-		}
-	}
 		callOnScripts('onUpdatePost', [elapsed]);
 	}
 
@@ -3326,21 +3295,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
-
-	private function getSustainHit(note:Note):Bool {// Thank you so much @josephjr05
-        	if (note == null || note.tail == null) return false;
-
-        	for (tailSegment in note.tail) {
-			
-        	     if (!tailSegment.wasGoodHit) {
-        	        	return false;
-        	     }
-        	}
-        	if (!note.wasGoodHit) {
-        	    	return false;
-        	}
-        	return true;
-    	}
     
     private function lerp(from:Float, to:Float, i:Float):Float {
         return from + (to - from) * i;
@@ -3361,14 +3315,6 @@ class PlayState extends MusicBeatState
 		if(result == LuaUtils.Function_Stop) return;
 
 		note.wasGoodHit = true;
-
-		if (ClientPrefs.data.osuSustainInput) { // Thank you so much @josephjr05
-			if (note.isSustainNote) {
-				// debugPrint(getSustainHit(note.parent));
-				sustains[note.parent.noteData] = null; // Josephjr05 here again, here's a simplified version of the sustain check
-				sustains[note.noteData] = getSustainHit(note.parent) ? note.strumTime : null;
-			}
-		}
 
 		if (note.hitsoundVolume > 0 && !note.hitsoundDisabled)
 			FlxG.sound.play(Paths.sound(note.hitsound), note.hitsoundVolume);
