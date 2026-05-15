@@ -1338,18 +1338,8 @@ class PlayState extends MusicBeatState
 		FlxTween.tween(timeTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 
 		#if DISCORD_ALLOWED
-		// Updating Discord Rich Presence (with Time Left)
-		var timeLeft:Float = (songLength - Conductor.songPosition) / 1000; // convert from milliseconds to seconds
-		var minutes:Int = Math.floor(timeLeft / 60);
-		var seconds:Int = Math.floor(timeLeft % 60);
-
-		var formattedTime:String = minutes + ":" + (seconds < 10 ? "0" + Std.string(seconds) : Std.string(seconds));
-		DiscordClient.changePresence(
-			detailsText,
-			CoolUtil.floorDecimal(ratingPercent * 100, 2) + "%" + "||M: " + songMisses + "||H: " + songHits + "||C: " + combo + "||"  + ' - Time Left: ' + formattedTime,
-			iconP2.getCharacter(),
-			true
-		);
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence(detailsText,CoolUtil.floorDecimal(ratingPercent * 100, 2) + "%" + "||M: " + songMisses + "||H: " + songHits + "||C: " + combo, iconP2.getCharacter(),true, songLength);
 		#end
 		if(ClientPrefs.data.ldm) {
 			FlxG.cameras.remove(camGame,false);
@@ -1741,12 +1731,7 @@ class PlayState extends MusicBeatState
 		if(!autoUpdateRPC) return;
 
 		if (showTime)
-			DiscordClient.changePresence(
-				detailsText,
-				CoolUtil.floorDecimal(ratingPercent * 100, 2) + "%" + "||M: " + songMisses + "||H: " + songHits + "||C: " + combo + "||"  + ' - Time Left: ' + formattedTime,
-				iconP2.getCharacter(),
-				true
-			);
+			DiscordClient.changePresence(detailsText,CoolUtil.floorDecimal(ratingPercent * 100, 2) + "%" + "||M: " + songMisses + "||H: " + songHits + "||C: " + combo, iconP2.getCharacter(),true,songLength - Conductor.songPosition - ClientPrefs.data.noteOffset);
 		else
 			DiscordClient.changePresence(detailsText, CoolUtil.floorDecimal(ratingPercent * 100, 2)+"%" + "-Miss: " + songMisses + "-Hit: " + songHits + "-Combo: " + combo, iconP2.getCharacter(), true);
 		#end
@@ -2058,19 +2043,8 @@ class PlayState extends MusicBeatState
 				}
 		}
 		openSubState(new PauseSubState());
-
-		var timeLeft:Float = (songLength - Conductor.songPosition) / 1000; // convert from milliseconds to seconds
-		var minutes:Int = Math.floor(timeLeft / 60);
-		var seconds:Int = Math.floor(timeLeft % 60);
-
-		var formattedTime:String = minutes + ":" + (seconds < 10 ? "0" + Std.string(seconds) : Std.string(seconds));
 		#if DISCORD_ALLOWED
-		DiscordClient.changePresence(
-			detailsText,
-			CoolUtil.floorDecimal(ratingPercent * 100, 2) + "%" + "||M: " + songMisses + "||H: " + songHits + "||C: " + combo + "||"  + ' - Time Left: ' + formattedTime,
-			iconP2.getCharacter(),
-			true
-		);
+		DiscordClient.changePresence(detailsText,CoolUtil.floorDecimal(ratingPercent * 100, 2) + "%" + "||M: " + songMisses + "||H: " + songHits + "||C: " + combo,iconP2.getCharacter(),true,songLength - Conductor.songPosition - ClientPrefs.data.noteOffset);
 		#end
 	}
 
