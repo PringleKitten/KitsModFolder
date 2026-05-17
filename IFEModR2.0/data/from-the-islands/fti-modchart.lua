@@ -465,6 +465,7 @@ function onEvent(e, v1, v2)
                 table.insert(vt, number)
             end
             if vt[1] and vt[2] and vt[3] then
+				vt[3] = tostring(vt[3])
                 doTweenZoom('zoomCS', 'camGame', getProperty('camGame.zoom')+vt[1], vt[2], vt[3])
             end
         end
