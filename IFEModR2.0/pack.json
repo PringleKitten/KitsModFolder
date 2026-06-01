@@ -1,6 +1,6 @@
 {
-	"name": "Internet Favorites Rev2.7.1(Unfinished)",
-	"description": "The new and optimized version. No events sorry. All scripts.",
+	"name": "Internet Favorites Rev2.8(b.1)",
+	"description": "The new and optimized version.",
 	"restart": false,
 	"runsGlobally": false,
 	"color": [255, 255, 0]

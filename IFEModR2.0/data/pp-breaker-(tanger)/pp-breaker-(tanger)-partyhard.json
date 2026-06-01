@@ -1,13 +1,6 @@
 {
 	"player1": "bf-full-invis",
-	"events": [
-		[
-			0,
-			[
-				["newArrowToggler", "33", "0"]
-			]
-		]
-	],
+	"events": [],
 	"gfVersion": "gf-full-invis",
 	"notes": [
 		{

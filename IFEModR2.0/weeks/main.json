@@ -45,6 +45,15 @@
 			]
 		],
 		[
+			"bike (tanger)",
+			"gf-invis",
+			[
+				255,
+				0,
+				60
+			]
+		],
+		[
 			"candyland (tobu)",
 			"bf",
 			[
@@ -87,6 +96,60 @@
 				150,
 				0,
 				120
+			]
+		],
+		[
+			"ievan polkka (composerily)",
+			"bf",
+			[
+				80,
+				0,
+				100
+			]
+		],
+		[
+			"ludicrous speed (fvrwvrd)",
+			"gf-invis",
+			[
+				200,
+				0,
+				100
+			]
+		],
+		[
+			"masked and wild",
+			"gf-invis",
+			[
+				20,
+				0,
+				100
+			]
+		],
+		[
+			"pp breaker (tanger)",
+			"gf-invis",
+			[
+				255,
+				0,
+				60
+			]
+		],
+		[
+			"remember",
+			"gf-invis",
+			[
+				180,
+				0,
+				0
+			]
+		],
+		[
+			"space battle",
+			"gf-invis",
+			[
+				170,
+				0,
+				100
 			]
 		]
 	],

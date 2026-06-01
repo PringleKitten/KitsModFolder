@@ -1,19 +1,6 @@
 {
 	"player1": "bf-full-invis",
-	"events": [
-		[
-			70.5882352941177,
-			[
-				["makeText", "Song Request by: LostOnMountSilver", "3"]
-			]
-		],
-		[
-			1848.3660130719,
-			[
-				["newArrowToggler", "33", "0"]
-			]
-		]
-	],
+	"events": [],
 	"gfVersion": "gf-full-invis",
 	"player2": "bf-full-invis",
 	"notes": [

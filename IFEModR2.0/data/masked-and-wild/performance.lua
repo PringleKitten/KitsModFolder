@@ -1,4 +1,3 @@
-callScript("scripts/shader", "noShadersBoy")
 callScript("scripts/videoSprite", "performanceD")
 setProperty('camGame.visible', false)
 function onCountdownStarted()

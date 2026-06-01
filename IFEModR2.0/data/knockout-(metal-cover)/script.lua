@@ -1,5 +1,6 @@
 callScript("scripts/LaneUnderlay", "noChoice")
 callScript("scripts/ratings", "noChoice")
+
 local cupAlertCreated = false
 local cupAlertOfsX = 157
 local cupAlertOfsY = -304
