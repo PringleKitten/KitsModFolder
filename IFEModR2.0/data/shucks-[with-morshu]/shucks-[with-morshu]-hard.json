@@ -1,5 +1,5 @@
 {
-	"player1": "bf-full-invis",
+	"player1": "blueBar",
 	"events": [
 		[
 			2493.92712550607,
@@ -2342,7 +2342,7 @@
 			]
 		]
 	],
-	"gfVersion": "gf-full-invis",
+	"gfVersion": "redBar",
 	"notes": [
 		{
 			"sectionNotes": [],
@@ -7243,7 +7243,7 @@
 			"mustHitSection": false
 		}
 	],
-	"player2": "gf-full-invis",
+	"player2": "redBar",
 	"player3": null,
 	"offset": 0,
 	"song": "shucks [with morshu]",

@@ -1,5 +1,5 @@
 {
-	"player1": "bf-full-invis",
+	"player1": "blueBar",
 	"notes": [
 		{
 			"sectionNotes": [],
@@ -886,8 +886,8 @@
 			"bpm": 148
 		}
 	],
-	"player2": "bf-full-invis",
-	"gfVersion": "gf-full-invis",
+	"player2": "blueBar",
+	"gfVersion": "redBar",
 	"events": [],
 	"player3": null,
 	"song": "masked and wild",

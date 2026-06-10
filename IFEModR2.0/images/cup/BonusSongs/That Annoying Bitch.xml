@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="That Annoying Bitch.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="BoiRun instance 10000" x="10" y="10" width="622" height="446" frameX="-82" frameY="-35" frameWidth="746" frameHeight="499"/>
 	<SubTexture name="BoiRun instance 10001" x="642" y="10" width="563" height="420" frameX="-128" frameY="-61" frameWidth="746" frameHeight="499"/>
 	<SubTexture name="BoiRun instance 10002" x="1215" y="10" width="514" height="415" frameX="-163" frameY="-63" frameWidth="746" frameHeight="499"/>

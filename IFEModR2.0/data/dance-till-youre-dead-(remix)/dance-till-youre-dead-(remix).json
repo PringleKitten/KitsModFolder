@@ -1,7 +1,7 @@
 {
-	"player1": "bf-full-invis",
+	"player1": "blueBar",
 	"events": [],
-	"gfVersion": "gf-full-invis",
+	"gfVersion": "redBar",
 	"notes": [
 		{
 			"sectionBeats": 4,
@@ -1159,7 +1159,7 @@
 			"bpm": 176
 		}
 	],
-	"player2": "gf-full-invis",
+	"player2": "redBar",
 	"player3": null,
 	"offset": 0,
 	"song": "dance till youre dead (remix)",

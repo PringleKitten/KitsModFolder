@@ -1,6 +1,6 @@
 {
 	"player1": "bf",
-	"player2": "gf-full-invis",
+	"player2": "redBar",
 	"notes": [
 		{
 			"sectionBeats": 2,
@@ -2220,7 +2220,7 @@
 			"bpm": 120
 		}
 	],
-	"gfVersion": "gf-full-invis",
+	"gfVersion": "redBar",
 	"events": [],
 	"player3": null,
 	"offset": 0,

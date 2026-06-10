@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="GreenShit.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="GreenShit01 instance 10000" x="10" y="10" width="135" height="144" frameX="0" frameY="-74" frameWidth="914" frameHeight="280"/>
 	<SubTexture name="GreenShit01 instance 10001" x="301" y="10" width="122" height="143" frameX="-73" frameY="-73" frameWidth="922" frameHeight="299"/>
 	<SubTexture name="GreenShit01 instance 10002" x="433" y="10" width="114" height="143" frameX="-141" frameY="-75" frameWidth="922" frameHeight="299"/>

@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="gay.png">
-	<!-- Created with Adobe Animate version 21.0.0.35450 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="YTJT instance 10000" x="10" y="10" width="354" height="79" frameX="0" frameY="0" frameWidth="477" frameHeight="294"/>
 	<SubTexture name="YTJT instance 10001" x="374" y="10" width="315" height="254" frameX="-57" frameY="0" frameWidth="477" frameHeight="294"/>
 	<SubTexture name="YTJT instance 10002" x="699" y="10" width="207" height="294" frameX="-240" frameY="0" frameWidth="477" frameHeight="294"/>

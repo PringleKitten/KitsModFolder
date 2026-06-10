@@ -1,7 +1,7 @@
 local playerHealth = 6
 function onCreate()
     setProperty('skipCountdown', true)
-    setPropertyFromClass('substates.GameOverSubstate', 'characterName', 'bf-full-invis');
+    setPropertyFromClass('substates.GameOverSubstate', 'characterName', 'blueBar');
     setPropertyFromClass('substates.GameOverSubstate', 'deathSoundName', 'nothing');
     setPropertyFromClass('substates.GameOverSubstate', 'loopSoundName', 'nothing');
     setPropertyFromClass('substates.GameOverSubstate', 'endSoundName', 'nothing');

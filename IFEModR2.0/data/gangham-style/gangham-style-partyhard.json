@@ -1,7 +1,7 @@
 {
 	"player1": "bf",
 	"events": [],
-	"gfVersion": "gf-full-invis",
+	"gfVersion": "redBar",
 	"notes": [
 		{
 			"sectionNotes": [
@@ -2304,7 +2304,7 @@
 			"mustHitSection": true
 		}
 	],
-	"player2": "gf-full-invis",
+	"player2": "redBar",
 	"player3": null,
 	"offset": 0,
 	"song": "gangham style",

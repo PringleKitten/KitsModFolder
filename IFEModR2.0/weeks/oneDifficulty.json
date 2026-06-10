@@ -34,42 +34,6 @@
 				0,
 				100
 			]
-		],
-		[
-			"spear of justice (toby fox)",
-			"gf-invis",
-			[
-				160,
-				0,
-				100
-			]
-		],
-		[
-			"spin eternally",
-			"gf-invis",
-			[
-				185,
-				0,
-				100
-			]
-		],
-		[
-			"the seven seas",
-			"gf-invis",
-			[
-				110,
-				0,
-				100
-			]
-		],
-		[
-			"we like to party",
-			"gf-invis",
-			[
-				140,
-				0,
-				100
-			]
 		]
 	],
 	"weekName": "one"

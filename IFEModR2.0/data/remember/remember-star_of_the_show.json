@@ -1,8 +1,8 @@
 {
-	"player1": "bf-full-invis",
+	"player1": "blueBar",
 	"events": [],
-	"gfVersion": "gf-full-invis",
-	"player2": "gf-full-invis",
+	"gfVersion": "redBar",
+	"player2": "redBar",
 	"notes": [
 		{
 			"sectionBeats": 4,

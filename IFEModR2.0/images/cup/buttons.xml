@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="buttons.png">
-	<!-- Created with Adobe Animate version 21.0.7.42652 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="menu basic0000" x="0" y="0" width="244" height="28"/>
 	<SubTexture name="menu white0000" x="0" y="28" width="244" height="28"/>
 	<SubTexture name="quit basic0000" x="0" y="56" width="201" height="33"/>

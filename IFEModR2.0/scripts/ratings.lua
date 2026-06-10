@@ -38,7 +38,6 @@ local combSettings = {
     {max = 100000, scaleX = 2.2, x = 56},
     {max = 1000000, scaleX = 2, x = 56}
 }
-
 function onBeatHit()
     if not hidingUI then
 	    local bpm = getPropertyFromClass('backend.Conductor','bpm')

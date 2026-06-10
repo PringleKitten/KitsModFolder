@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="floorManifest.png">
-	<!-- Created with Adobe Animate version 20.0.3.25487 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="floorManifest0000" x="0" y="0" width="3456" height="1438"/>
 	<SubTexture name="floorManifest0001" x="3456" y="0" width="3456" height="1438"/>
 	<SubTexture name="floorManifest0002" x="0" y="1438" width="3456" height="1438"/>
