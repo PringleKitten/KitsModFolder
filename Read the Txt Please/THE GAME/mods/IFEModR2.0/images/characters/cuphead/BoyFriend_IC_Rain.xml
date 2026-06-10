@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="BoyFriend_Rain.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="0BF attack instance 10000" x="10" y="10" width="386" height="373" frameX="-1136" frameY="-24" frameWidth="1551" frameHeight="400"/>
 	<SubTexture name="0BF attack instance 10001" x="10" y="10" width="386" height="373" frameX="-1136" frameY="-24" frameWidth="1551" frameHeight="400"/>
 	<SubTexture name="0BF attack instance 10002" x="406" y="10" width="385" height="373" frameX="-1136" frameY="-24" frameWidth="1551" frameHeight="400"/>

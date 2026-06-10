@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="noteSplashesCup.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="note splash blue 10000" x="10" y="10" width="223" height="246" frameX="-49" frameY="-9" frameWidth="274" frameHeight="270"/>
 	<SubTexture name="note splash blue 10001" x="243" y="10" width="169" height="166" frameX="-52" frameY="-51" frameWidth="274" frameHeight="270"/>
 	<SubTexture name="note splash blue 10002" x="422" y="10" width="209" height="208" frameX="-33" frameY="-30" frameWidth="274" frameHeight="270"/>

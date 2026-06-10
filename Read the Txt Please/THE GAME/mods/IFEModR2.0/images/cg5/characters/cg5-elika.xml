@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="cg5-elika.png">
-	<!-- Created with Adobe Animate version 21.0.2.37893 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="cg5 DOWN0000" x="0" y="0" width="366" height="703" frameX="0" frameY="-2" frameWidth="366" frameHeight="706"/>
 	<SubTexture name="cg5 DOWN0001" x="0" y="0" width="366" height="703" frameX="0" frameY="-2" frameWidth="366" frameHeight="706"/>
 	<SubTexture name="cg5 DOWN0002" x="366" y="0" width="364" height="706" frameX="-1" frameY="0" frameWidth="366" frameHeight="706"/>

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Created with Free texture packer v0.6.7 http://free-tex-packer.com
--->
 <TextureAtlas imagePath="spooky_kids_assets.png" width="4046" height="1119">
   <SubTexture name="spooky kids YEAH!!0001" x="3366" y="541" width="644" height="578" frameX="-0" frameY="-0" frameWidth="644" frameHeight="578" />
   <SubTexture name="spooky kids YEAH!!0002" x="3366" y="541" width="644" height="578" frameX="-0" frameY="-0" frameWidth="644" frameHeight="578" />

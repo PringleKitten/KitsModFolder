@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="NMcupheadBull.png">
-	<!-- Created with Adobe Animate version 22.0.0.93 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="Shot01 instance 10000" x="10" y="10" width="119" height="92" frameX="0" frameY="-262" frameWidth="962" frameHeight="526"/>
 	<SubTexture name="Shot01 instance 10001" x="139" y="10" width="197" height="99" frameX="-95" frameY="-310" frameWidth="962" frameHeight="526"/>
 	<SubTexture name="Shot01 instance 10002" x="346" y="10" width="345" height="86" frameX="-144" frameY="-334" frameWidth="962" frameHeight="526"/>

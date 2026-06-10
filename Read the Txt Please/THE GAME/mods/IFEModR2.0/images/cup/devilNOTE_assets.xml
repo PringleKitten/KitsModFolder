@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="Devil_Notes_Final.png">
-	<!-- Created with Adobe Flash CS6 version 12.0.0.481 -->
-	<!-- http://www.adobe.com/products/flash.html -->
 	<SubTexture name="blue0000" x="1" y="1" width="199" height="261" frameX="0" frameY="0" frameWidth="199" frameHeight="273"/>
 	<SubTexture name="blue0001" x="200" y="1" width="199" height="216" frameX="0" frameY="0" frameWidth="199" frameHeight="273"/>
 	<SubTexture name="blue0002" x="399" y="1" width="199" height="228" frameX="0" frameY="0" frameWidth="199" frameHeight="273"/>

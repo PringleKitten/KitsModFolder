@@ -1,7 +1,4 @@
-offset = 75 -- Game Offset
-local c = false -- Use Custom Offset Script
 local customFPS = true -- Use my Custom FPS Text
-local newOff = 0
 local target = 60
 local zv1,zv2 = 0,0
 local go = false
@@ -10,19 +7,6 @@ local st = false
 local noDoBop = false
 local ltxT = 'fpsDrawer'
 function onCreate()
-	if not c then
-        offset = getPropertyFromClass('backend.ClientPrefs','data.noteOffset')
-    elseif c then
-        setPropertyFromClass('backend.ClientPrefs','data.noteOffset',offset)
-    end
-    for _, curS in pairs({'song1','song2'}) do
-        if songName == curS then
-            newOff = 0 --Number is YOUR Song Offset
-        end
-    end
-    if newOff ~= 0 then
-        setPropertyFromClass('backend.ClientPrefs','data.noteOffset',offset+newOff)
-    end
 	makeLuaText('st', 'l', '800', 400,450)
     addLuaText('st')
     setTextSize('st', 50)
@@ -32,6 +16,12 @@ function onCreate()
     setProperty('st.alpha', 0)
 end
 function onCreatePost()
+    if getProperty('boyfriend.curCharacter') == 'blueBar' then
+        setProperty('iconP1.visible', false)
+    end
+    if getProperty('dad.curCharacter') == 'redBar' then -- should be opponent
+        setProperty('iconP2.visible', false)
+    end
     setProperty('skipArrowStartTween', true)
     setPropertyFromClass('flixel.FlxG', 'fixedTimestep', false)
     -- This stuff I wanna change if I ever move notes around
@@ -46,18 +36,41 @@ function onCreatePost()
         addLuaText(ltxT,false)
     end
 end
+widthP1 = 0
+widthP2 = 0
+
+t = 0
+delta = 0
+function lerp(a, b, x)
+    return a + (b - a) * x
+end
+function updateIcons()
+    setProperty('iconP1.scale.x', 1 + widthP1)
+    setProperty('iconP2.scale.x', 1 + widthP2)
+    local baseY = getProperty('healthBar.y') - 150
+    local p1ScaleY = (getProperty("iconP1.scale.y") - 1) / -2 + 1
+    local p2ScaleY = (getProperty("iconP2.scale.y") - 1) / -2 + 1
+    setProperty("iconP1.scale.y", p1ScaleY)
+    setProperty("iconP2.scale.y", p2ScaleY)
+    setProperty("iconP1.y", baseY + (p1ScaleY * 75))
+    setProperty("iconP2.y", baseY + (p2ScaleY * 75))
+end
 function onUpdate()
-    if not dontLookForPos then
-        og1 = getProperty('iconP1.y')
-        og2 = getProperty('iconP2.y')
-    end
 	if st then
 		doTweenAlpha('st', 'st', 1, 0.2, 'linear')
 	else
 		doTweenAlpha('st', 'st', 0, 0.2, 'linear')
 	end
 end
-function onUpdatePost()
+function onUpdatePost(elapsed)
+    updateIcons()
+    t = t + elapsed
+    delta = t / 0.9
+    if delta > 1 then
+        delta = 1
+    end
+    widthP1 = lerp(widthP1, 0, delta)
+    widthP2 = lerp(widthP2, 0, delta)
     if customFPS then
         if go then
             local fpsText = getPropertyFromClass("Main", "fpsVar.text")
@@ -82,8 +95,8 @@ function onSongStart()
     og2 = getProperty('iconP2.y')
     go = true
     debugPrint('')
-    debugPrint('Song Added Offset: '..'('..newOff..')')
-    debugPrint('User Offset: '..'('..offset-newOff..')')
+    debugPrint('Song Added Offset: '..'('..getProperty('SONG.offset')..')') -- offset of the song json not the offset you set in the menu
+    debugPrint('User Offset: '..'('..offset..')')
     debugPrint('')
     debugPrint('')
     debugPrint('')
@@ -126,17 +139,11 @@ function onEvent(n,v1,v2)
 end
 function onBeatHit()
     if not noDoBop then
-        scaleObject('iconP1', 1.2, 1.2)
-        scaleObject('iconP2', 1.2, 1.2)
-        setProperty('iconP1.y', getProperty('iconP1.y')+15)
-        setProperty('iconP2.y', getProperty('iconP2.y')+15)
-        startTween('i1bopx', 'iconP1.scale', {x = 1, y = 1}, 0.2, {ease = 'sineOut'})
-        startTween('i2bopx', 'iconP2.scale', {x = 1, y = 1}, 0.2, {ease = 'sineOut'})
-        startTween('i1bopy', 'iconP1.scale', {x = 1, y = 1}, 0.2, {ease = 'sineOut'})
-        startTween('i2bopy', 'iconP2.scale', {x = 1, y = 1}, 0.2, {ease = 'sineOut'})
-        doTweenY('ip1y', 'iconP1', og1, 0.2, 'sineOut')
-        doTweenY('ip2y', 'iconP2', og2, 0.2, 'sineOut')
-        dontLookForPos = true
+    local bounceStr = (getProperty('healthBar.percent') * 0.01) - 0.5
+    widthP1 = 0.55 * (1 + bounceStr)
+    widthP2 = 0.55 * (1 - bounceStr)
+    t = 0
+    updateIcons()
     end
     if doIt then
         setProperty('camZoomsBg', false)
@@ -145,20 +152,12 @@ function onBeatHit()
         setProperty('camGame.zoom', getProperty('camGame.zoom') + zv2)
     end
 end
-function onTweenCompleted(t)
-    if t == 'ip1y' then
-        dontLookForPos = false
-    end
-end
 function onTimerCompleted(tag)
 	if tag == 'stt' then
 		st = false
 	end
 end
 function onDestroy()
-    if c then
-        setPropertyFromClass('backend.ClientPrefs','data.noteOffset',offset)
-    end
     close()
 end
 function performanceD()

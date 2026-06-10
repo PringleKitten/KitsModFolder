@@ -18,24 +18,6 @@
 	],
 	"songs": [
 		[
-			"gangham style",
-			"bf",
-			[
-				150,
-				0,
-				120
-			]
-		],
-		[
-			"ievan polkka (composerily)",
-			"bf",
-			[
-				80,
-				0,
-				100
-			]
-		],
-		[
 			"knockout (metal cover)",
 			"AngryCuphead",
 			[
@@ -45,82 +27,10 @@
 			]
 		],
 		[
-			"ludicrous speed (fvrwvrd)",
-			"gf-invis",
-			[
-				200,
-				0,
-				100
-			]
-		],
-		[
-			"masked and wild",
-			"gf-invis",
-			[
-				20,
-				0,
-				100
-			]
-		],
-		[
-			"remember",
-			"gf-invis",
-			[
-				180,
-				0,
-				0
-			]
-		],
-		[
 			"shucks [with morshu]",
 			"morshu",
 			[
 				70,
-				0,
-				100
-			]
-		],
-		[
-			"space battle",
-			"gf-invis",
-			[
-				170,
-				0,
-				100
-			]
-		],
-		[
-			"spear of justice (toby fox)",
-			"gf-invis",
-			[
-				160,
-				0,
-				100
-			]
-		],
-		[
-			"spin eternally",
-			"gf-invis",
-			[
-				185,
-				0,
-				100
-			]
-		],
-		[
-			"the seven seas",
-			"gf-invis",
-			[
-				110,
-				0,
-				100
-			]
-		],
-		[
-			"we like to party",
-			"gf-invis",
-			[
-				140,
 				0,
 				100
 			]

@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="menu_achievements.png">
-	<!-- Created with Adobe Animate version 23.0.2.103 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="achievements idle0000" x="485" y="481" width="188" height="189"/>
 	<SubTexture name="achievements idle0001" x="485" y="481" width="188" height="189"/>
 	<SubTexture name="achievements idle0002" x="485" y="481" width="188" height="189"/>

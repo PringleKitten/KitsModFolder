@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="ready_wallop.png">
-	<!-- Created with Adobe Animate version 21.0.7.42652 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="Ready? WALLOP!0000" x="0" y="0" width="141" height="320" frameX="-769" frameY="-281" frameWidth="2531" frameHeight="841"/>
 	<SubTexture name="Ready? WALLOP!0001" x="141" y="0" width="455" height="386" frameX="-769" frameY="-272" frameWidth="2531" frameHeight="841"/>
 	<SubTexture name="Ready? WALLOP!0002" x="596" y="0" width="616" height="386" frameX="-769" frameY="-272" frameWidth="2531" frameHeight="841"/>

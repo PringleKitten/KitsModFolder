@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="bgGhouls.png">
-	<!-- Created with Adobe Animate version 21.0.4.39603 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="BG freaks glitch instance 10000" x="0" y="0" width="453" height="90" pivotX="0" pivotY="0"/>
 	<SubTexture name="BG freaks glitch instance 10001" x="0" y="0" width="453" height="90"/>
 	<SubTexture name="BG freaks glitch instance 10002" x="453" y="0" width="453" height="90"/>

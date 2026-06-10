@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="knock.png">
-	<!-- Created with Adobe Animate version 21.0.7.42652 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="A KNOCKOUT!0000" x="0" y="0" width="120" height="515" frameX="0" frameY="0" frameWidth="1167" frameHeight="515"/>
 	<SubTexture name="A KNOCKOUT!0001" x="120" y="0" width="647" height="515" frameX="0" frameY="0" frameWidth="1167" frameHeight="515"/>
 	<SubTexture name="A KNOCKOUT!0002" x="767" y="0" width="1167" height="515"/>

@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="Notmobilegameanymore.png">
-	<!-- Created with Adobe Animate version 22.0.0.93 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="Attack Click instance 10000" x="10" y="10" width="174" height="153" frameX="-4" frameY="-3" frameWidth="181" frameHeight="159"/>
 	<SubTexture name="Attack Click instance 10001" x="10" y="10" width="174" height="153" frameX="-4" frameY="-3" frameWidth="181" frameHeight="159"/>
 	<SubTexture name="Attack Click instance 10002" x="194" y="10" width="181" height="159"/>

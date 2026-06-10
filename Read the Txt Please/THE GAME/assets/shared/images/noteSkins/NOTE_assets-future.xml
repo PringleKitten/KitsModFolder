@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="NOTE_assets-future.png">
-	<!-- Created with Adobe Animate version 21.0.6.41649 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="arrowDOWN0000" x="1826" y="227" width="147" height="162"/>
 	<SubTexture name="arrowLEFT0000" x="903" y="221" width="163" height="147"/>
 	<SubTexture name="arrowRIGHT0000" x="898" y="369" width="161" height="146"/>
