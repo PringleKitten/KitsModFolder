@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="Menu_Mom.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="M Mom Idle0000" x="4" y="4" width="177" height="379" pivotX="1.75" pivotY="1.25" frameX="-1" frameY="-1" frameWidth="178" frameHeight="380"/>
 	<SubTexture name="M Mom Idle0001" x="4" y="4" width="177" height="379" frameX="-1" frameY="-1" frameWidth="178" frameHeight="380"/>
 	<SubTexture name="M Mom Idle0002" x="181" y="4" width="177" height="374" frameX="-1" frameY="-6" frameWidth="178" frameHeight="380"/>

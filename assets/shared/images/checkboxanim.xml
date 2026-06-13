@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="checkboxanim.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="checkbox0000" x="4" y="4" width="111" height="108" pivotX="0" pivotY="0"/>
 	<SubTexture name="checkbox anim0000" x="119" y="4" width="183" height="142" pivotX="38.45" pivotY="25.3"/>
 	<SubTexture name="checkbox anim0001" x="119" y="4" width="183" height="142"/>

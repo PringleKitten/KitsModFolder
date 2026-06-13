@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="menu_options.png">
-	<!-- Created with Adobe Animate version 23.0.2.103 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="options idle0000" x="610" y="207" width="188" height="189"/>
 	<SubTexture name="options idle0001" x="610" y="207" width="188" height="189"/>
 	<SubTexture name="options idle0002" x="610" y="207" width="188" height="189"/>

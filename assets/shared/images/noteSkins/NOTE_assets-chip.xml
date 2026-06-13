@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="NOTE_assets-chip.png">
-	<!-- Created with Adobe Animate version 21.0.6.41649 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="arrowDOWN0000" x="1" y="226" width="152" height="152"/>
 	<SubTexture name="arrowLEFT0000" x="1" y="226" width="152" height="152"/>
 	<SubTexture name="arrowRIGHT0000" x="1" y="226" width="152" height="152"/>
