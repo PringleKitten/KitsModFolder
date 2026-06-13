@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="bfPixelsDEAD.png">
-	<!-- Created with Adobe Animate version 20.0.0.17400 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="BF Dies pixel0000" x="0" y="0" width="90" height="81" frameX="0" frameY="0" frameWidth="90" frameHeight="81"/>
 	<SubTexture name="BF Dies pixel0001" x="100" y="0" width="90" height="81"/>
 	<SubTexture name="BF Dies pixel0002" x="200" y="0" width="90" height="81"/>

@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="GF_Dialogue.png">
-	<!-- Created with Adobe Animate version 21.0.1.37179 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="GF0000" x="4" y="4" width="293" height="414" pivotX="-70.4" pivotY="303.55"/>
 	<SubTexture name="GF CONFUSED0000" x="301" y="4" width="293" height="414" pivotX="-70.4" pivotY="303.55"/>
 	<SubTexture name="GF CONFUSED LOOP0000" x="598" y="4" width="293" height="424" pivotX="-66.55" pivotY="311.45" frameX="-3" frameY="0" frameWidth="299" frameHeight="424"/>

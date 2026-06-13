@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="Pico_Intro.png">
-	<!-- Created with Adobe Animate version 18.0.1.115 -->
-	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="Pico Gets Pissed0000" x="2655" y="2402" width="435" height="461" frameX="-75" frameY="-13" frameWidth="510" frameHeight="475"/>
 	<SubTexture name="Pico Gets Pissed0001" x="2655" y="2402" width="435" height="461" frameX="-75" frameY="-13" frameWidth="510" frameHeight="475"/>
 	<SubTexture name="Pico Gets Pissed0002" x="3176" y="1443" width="442" height="468" frameX="-68" frameY="-6" frameWidth="510" frameHeight="475"/>
