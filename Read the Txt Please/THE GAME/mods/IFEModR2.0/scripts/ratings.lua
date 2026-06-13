@@ -38,13 +38,7 @@ local combSettings = {
     {max = 100000, scaleX = 2.2, x = 56},
     {max = 1000000, scaleX = 2, x = 56}
 }
-function onEvent(n,v1,v2)
-    if n == "Flash Camera" then
-        cameraFlash('game', 'FFFFFF', v1, true)
-    end
-end
 function onBeatHit()
-    cameraFlash('game', 'FFFFFF', 0.1, true)
     if not hidingUI then
 	    local bpm = getPropertyFromClass('backend.Conductor','bpm')
         local beatDur = 60 / bpm
