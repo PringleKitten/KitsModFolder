@@ -1364,7 +1364,7 @@ class PlayState extends MusicBeatState
 		stagesFunc(function(stage:BaseStage) stage.startSong());
 
 		// Song duration in a float, useful for the time left feature
-		songLength = FlxG.sound.music.length + ClientPrefs.data.noteOffset;
+		songLength = FlxG.sound.music.length;
 		FlxTween.tween(timeBar, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 		FlxTween.tween(timeTxt, {alpha: 1}, 0.5, {ease: FlxEase.circOut});
 
@@ -2573,17 +2573,20 @@ class PlayState extends MusicBeatState
 	public function finishSong(?ignoreNoteOffset:Bool = false):Void
 	{
 		updateTime = false;
-		FlxG.sound.music.volume = 0;
-
-		vocals.volume = 0;
-		vocals.pause();
-		opponentVocals.volume = 0;
-		opponentVocals.pause();
-
 		if(ClientPrefs.data.noteOffset <= 0 || ignoreNoteOffset) {
+			FlxG.sound.music.volume = 0;
+			vocals.volume = 0;
+			vocals.pause();
+			opponentVocals.volume = 0;
+			opponentVocals.pause();
 			endCallback();
 		} else {
 			finishTimer = new FlxTimer().start(ClientPrefs.data.noteOffset / 1000, function(tmr:FlxTimer) {
+				FlxG.sound.music.volume = 0;
+				vocals.volume = 0;
+				vocals.pause();
+				opponentVocals.volume = 0;
+				opponentVocals.pause();
 				endCallback();
 			});
 		}
