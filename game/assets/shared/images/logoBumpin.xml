@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="KadeEngineLogoBumpin.png">
+	<SubTexture name="logo bumpin0000" x="0" y="0" width="894" height="670" frameX="-39" frameY="-29" frameWidth="973" frameHeight="730"/>
+</TextureAtlas>

@@ -1,0 +1,7 @@
+{
+	"name": "Internet Favorites Rev2.8",
+	"description": "The new and optimized version.",
+	"restart": false,
+	"runsGlobally": false,
+	"color": [255, 255, 0]
+}

@@ -1,5 +1,0 @@
-Value1 - UIZoom Amount
-DEF: 0.03
-
-Value2 - CamZoom Amount
-DEF: 0.015
