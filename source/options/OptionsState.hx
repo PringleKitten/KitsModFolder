@@ -15,7 +15,8 @@ class OptionsState extends MusicBeatState
         'Graphics',
         'Visuals',
         'Gameplay',
-        'Internet Favorites Settings'
+        'Internet Favorites Settings',
+        'Update Settings'
         #if TRANSLATIONS_ALLOWED , 'Language' #end
     ];
 
@@ -51,6 +52,7 @@ class OptionsState extends MusicBeatState
         optionMap.set('Visuals', () -> openSubState(new options.VisualsSettingsSubState()));
         optionMap.set('Gameplay', () -> openSubState(new options.GameplaySettingsSubState()));
         optionMap.set('Internet Favorites Settings', () -> openSubState(new options.PringlekittenSettingsSubState()));
+        optionMap.set('Update Settings', () -> openSubState(new options.UpdateSettingsSubState()));
         optionMap.set('Adjust Delay and Combo', () -> MusicBeatState.switchState(new options.NoteOffsetState()));
         #if TRANSLATIONS_ALLOWED
         optionMap.set('Language', () -> openSubState(new options.LanguageSubState()));

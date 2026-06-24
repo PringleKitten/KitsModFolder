@@ -5,6 +5,9 @@ import flixel.effects.FlxFlicker;
 import lime.app.Application;
 import states.editors.MasterEditorMenu;
 import options.OptionsState;
+import backend.UpdateManager;
+import objects.UpdateNotificationBar;
+import objects.UpToDateNotification;
 
 enum MainMenuColumn {
 	LEFT;
@@ -14,7 +17,7 @@ enum MainMenuColumn {
 
 class MainMenuState extends MusicBeatState
 {
-	public static var internetFavsVersion:String = '5.0'; // This is also used for Discord RPC
+	public static var internetFavsVersion:String = '6.0'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 	public static var curColumn:MainMenuColumn = CENTER;
 	var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
@@ -36,6 +39,9 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	
+	var updateNotificationBar:UpdateNotificationBar;
+	var hasCheckedUpdates:Bool = false;
 
 	override function create()
 	{
@@ -101,6 +107,13 @@ class MainMenuState extends MusicBeatState
 		fnfVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(fnfVer);
 		changeItem();
+		
+		// Check for updates if enabled in settings
+		if(ClientPrefs.data.checkForUpdates && !hasCheckedUpdates)
+		{
+			hasCheckedUpdates = true;
+			checkForUpdatesAsync();
+		}
 
 		#if ACHIEVEMENTS_ALLOWED
 		// Unlocks "Freaky on a Friday Night" achievement if it's a Friday and between 18:00 PM and 23:59 PM
@@ -368,5 +381,75 @@ class MainMenuState extends MusicBeatState
 		selectedItem.animation.play('selected');
 		selectedItem.centerOffsets();
 		camFollow.y = selectedItem.getGraphicMidpoint().y;
+	}
+	
+	function checkForUpdatesAsync():Void
+	{
+		// Initialize versions first
+		UpdateManager.initializeVersions();
+		UpdateManager.checkForUpdates(onUpdateCheckComplete);
+	}
+	
+	function onUpdateCheckComplete(updateAvailable:Bool, engineAvail:Bool, modAvail:Bool, error:String):Void
+	{
+		if(error.length > 0)
+		{
+			trace('Update check failed: $error');
+			return;
+		}
+
+		if(updateAvailable && updateNotificationBar == null)
+		{
+			updateNotificationBar = new UpdateNotificationBar(engineAvail, modAvail, 
+				'${UpdateManager.CURRENT_ENGINE_VERSION}',
+				'${UpdateManager.CURRENT_MOD_VERSION}',
+				onUpdatePressed,
+				onUpdateDismissed);
+			add(updateNotificationBar);
+		}
+		else
+		{
+			// Show up-to-date notification
+			var upToDateNotif = new UpToDateNotification(
+				'${UpdateManager.CURRENT_ENGINE_VERSION}',
+				'${UpdateManager.CURRENT_MOD_VERSION}');
+			add(upToDateNotif);
+		}
+	}
+	
+	function onUpdatePressed():Void
+	{
+		// Show loading state and download update
+		FlxG.sound.play(Paths.sound('confirmMenu'));
+		
+		if(updateNotificationBar != null)
+			updateNotificationBar.visible = false;
+		
+		UpdateManager.downloadAndApplyUpdates(onUpdateComplete);
+	}
+	
+	function onUpdateDismissed():Void
+	{
+		// User dismissed update notification - do nothing
+	}
+	
+	function onUpdateComplete(success:Bool, message:String):Void
+	{
+		if(success && UpdateManager.pendingUpdate)
+		{
+			// Show message and restart
+			var popup = new flixel.util.FlxSignal();
+			FlxG.sound.play(Paths.sound('confirmMenu'));
+			
+			// Restart the game
+			UpdateManager.restartGame();
+		}
+		else
+		{
+			// Show error message
+			trace('Update failed: $message');
+			if(updateNotificationBar != null)
+				updateNotificationBar.visible = true;
+		}
 	}
 }
