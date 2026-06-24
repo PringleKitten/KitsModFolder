@@ -6,8 +6,10 @@ import lime.app.Application;
 import states.editors.MasterEditorMenu;
 import options.OptionsState;
 import backend.UpdateManager;
+import objects.CheckboxThingie;
 import objects.UpdateNotificationBar;
 import objects.UpToDateNotification;
+import flixel.ui.FlxButton;
 
 enum MainMenuColumn {
 	LEFT;
@@ -17,7 +19,7 @@ enum MainMenuColumn {
 
 class MainMenuState extends MusicBeatState
 {
-	public static var internetFavsVersion:String = '6.0'; // This is also used for Discord RPC
+	public static var internetFavsVersion:String = '4.0'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 	public static var curColumn:MainMenuColumn = CENTER;
 	var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
@@ -268,7 +270,8 @@ class MainMenuState extends MusicBeatState
 				MusicBeatState.switchState(new TitleState());
 			}
 
-			if (controls.ACCEPT || (FlxG.mouse.justPressed && allowMouse))
+			var mouseBlockedByOverlay:Bool = isMouseBlockedByOverlay();
+			if (subState == null && (controls.ACCEPT || (FlxG.mouse.justPressed && allowMouse && !mouseBlockedByOverlay)))
 			{
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 					selectedSomethin = true;
@@ -383,6 +386,22 @@ class MainMenuState extends MusicBeatState
 		camFollow.y = selectedItem.getGraphicMidpoint().y;
 	}
 	
+	function isMouseBlockedByOverlay():Bool
+	{
+		if (subState != null)
+		{
+			if (subState is UpdateOptionsSubState)
+				return cast(subState, UpdateOptionsSubState).shouldBlockMouse();
+			if (subState is UpdateProgressSubState)
+				return cast(subState, UpdateProgressSubState).shouldBlockMouse();
+		}
+
+		if (updateNotificationBar != null && updateNotificationBar.shouldBlockMouse())
+			return true;
+
+		return false;
+	}
+
 	function checkForUpdatesAsync():Void
 	{
 		// Initialize versions first
@@ -419,13 +438,16 @@ class MainMenuState extends MusicBeatState
 	
 	function onUpdatePressed():Void
 	{
-		// Show loading state and download update
 		FlxG.sound.play(Paths.sound('confirmMenu'));
-		
 		if(updateNotificationBar != null)
 			updateNotificationBar.visible = false;
-		
-		UpdateManager.downloadAndApplyUpdates(onUpdateComplete);
+		openSubState(new UpdateOptionsSubState(onUpdateSelectionComplete));
+	}
+	
+	function onUpdateSelectionComplete(includeMod:Bool):Void
+	{
+		openSubState(new UpdateProgressSubState(onUpdateComplete));
+		UpdateManager.downloadAndApplyUpdates(onUpdateComplete, includeMod);
 	}
 	
 	function onUpdateDismissed():Void
@@ -451,5 +473,199 @@ class MainMenuState extends MusicBeatState
 			if(updateNotificationBar != null)
 				updateNotificationBar.visible = true;
 		}
+	}
+}
+
+class UpdateOptionsSubState extends MusicBeatSubstate
+{
+	var onComplete:Bool->Void;
+	var includeModCheckbox:CheckboxThingie;
+	var toggleArea:FlxSprite;
+	var includeMod:Bool = false;
+
+	public function new(onComplete:Bool->Void)
+	{
+		super();
+		this.onComplete = onComplete;
+	}
+
+	override function create()
+	{
+		super.create();
+		var bg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+		bg.alpha = 0.95;
+		bg.setGraphicSize(680, 260);
+		bg.updateHitbox();
+		bg.x = Std.int((FlxG.width - bg.width) / 2);
+		bg.y = 120;
+		bg.scrollFactor.set(0, 0);
+		add(bg);
+
+		var border = new FlxSprite(bg.x - 4, bg.y - 4).makeGraphic(Std.int(bg.width) + 8, Std.int(bg.height) + 8, 0xFFFFFFFF);
+		border.alpha = 0.8;
+		border.scrollFactor.set(0, 0);
+		add(border);
+
+		var title = new FlxText(0, bg.y + 20, 620, 'Update options', 24);
+		title.alignment = CENTER;
+		title.x = bg.x + 20;
+		title.scrollFactor.set(0, 0);
+		add(title);
+
+		var desc = new FlxText(0, title.y + 46, 620, 'Install the latest engine update?\nYou can also include the Internet Favorites mod package if you want the newest mod folder.', 18);
+		desc.alignment = CENTER;
+		desc.x = bg.x + 30;
+		desc.scrollFactor.set(0, 0);
+		add(desc);
+
+		var label = new FlxText(0, desc.y + 74, 0, 'Include mod update', 20);
+		label.x = bg.x + 180;
+		label.scrollFactor.set(0, 0);
+		add(label);
+
+		includeModCheckbox = new CheckboxThingie(bg.x + 420, label.y - 4, false);
+		includeModCheckbox.scale.set(1.35, 1.35);
+		includeModCheckbox.updateHitbox();
+		includeModCheckbox.scrollFactor.set(0, 0);
+		add(includeModCheckbox);
+
+		toggleArea = new FlxSprite(bg.x + 360, label.y - 12);
+		toggleArea.makeGraphic(150, 70, 0x11FFFFFF);
+		toggleArea.scrollFactor.set(0, 0);
+		add(toggleArea);
+
+		var confirm = new FlxButton(0, bg.y + bg.height - 44, 'Start update', function() {
+			includeMod = includeModCheckbox.daValue;
+			onComplete(includeMod);
+			close();
+		});
+		confirm.x = bg.x + 170;
+		confirm.scrollFactor.set(0, 0);
+		add(confirm);
+
+		var cancel = new FlxButton(0, bg.y + bg.height - 44, 'Cancel', close);
+		cancel.x = bg.x + 350;
+		cancel.scrollFactor.set(0, 0);
+		add(cancel);
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (FlxG.mouse.justPressed && includeModCheckbox != null)
+		{
+			if (FlxG.mouse.overlaps(includeModCheckbox) || (toggleArea != null && FlxG.mouse.overlaps(toggleArea)))
+				includeModCheckbox.daValue = !includeModCheckbox.daValue;
+		}
+	}
+
+	public function shouldBlockMouse():Bool
+	{
+		for (member in members)
+		{
+			if (member != null && member.visible && Std.isOfType(member, FlxSprite))
+			{
+				var sprite:FlxSprite = cast member;
+				if (FlxG.mouse.overlaps(sprite))
+					return true;
+			}
+		}
+		return false;
+	}
+}
+
+class UpdateProgressSubState extends MusicBeatSubstate
+{
+	var resultCallback:Bool->String->Void;
+	var statusText:FlxText;
+	var progressFill:FlxSprite;
+	var progressBg:FlxSprite;
+	var detailText:FlxText;
+
+	public function new(resultCallback:Bool->String->Void)
+	{
+		super();
+		this.resultCallback = resultCallback;
+	}
+
+	override function create()
+	{
+		super.create();
+		var bg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+		bg.alpha = 0.95;
+		bg.setGraphicSize(660, 240);
+		bg.updateHitbox();
+		bg.x = Std.int((FlxG.width - bg.width) / 2);
+		bg.y = 140;
+		bg.scrollFactor.set(0, 0);
+		add(bg);
+
+		var title = new FlxText(0, bg.y + 24, 620, 'Updating game...', 26);
+		title.alignment = CENTER;
+		title.x = bg.x + 20;
+		title.scrollFactor.set(0, 0);
+		add(title);
+
+		detailText = new FlxText(0, title.y + 44, 600, 'Please wait while the update downloads and applies in the background.', 18);
+		detailText.alignment = CENTER;
+		detailText.x = bg.x + 30;
+		detailText.scrollFactor.set(0, 0);
+		add(detailText);
+
+		statusText = new FlxText(0, detailText.y + 60, 600, 'Preparing update...', 18);
+		statusText.alignment = CENTER;
+		statusText.x = bg.x + 30;
+		statusText.scrollFactor.set(0, 0);
+		add(statusText);
+
+		progressBg = new FlxSprite(bg.x + 80, statusText.y + 44);
+		progressBg.makeGraphic(500, 24, 0xFF222222);
+		progressBg.scrollFactor.set(0, 0);
+		add(progressBg);
+
+		progressFill = new FlxSprite(progressBg.x + 2, progressBg.y + 2);
+		progressFill.makeGraphic(1, 20, 0xFF00C8FF);
+		progressFill.scrollFactor.set(0, 0);
+		add(progressFill);
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (UpdateManager.updateThreadFinished)
+		{
+			if (resultCallback != null)
+				resultCallback(UpdateManager.updateThreadSuccessful, UpdateManager.updateThreadMessage);
+			close();
+			return;
+		}
+
+		if (statusText != null)
+			statusText.text = UpdateManager.progressLabel + (UpdateManager.progressTotal > 0 ? ' (${UpdateManager.progressCurrent}/${UpdateManager.progressTotal})' : '');
+
+		if (progressFill != null && progressBg != null)
+		{
+			var ratio:Float = Math.max(0, Math.min(1, UpdateManager.progressValue));
+			progressFill.setGraphicSize(Std.int(496 * ratio), 20);
+			progressFill.updateHitbox();
+			progressFill.x = progressBg.x + 2;
+			progressFill.y = progressBg.y + 2;
+		}
+	}
+
+	public function shouldBlockMouse():Bool
+	{
+		for (member in members)
+		{
+			if (member != null && member.visible && Std.isOfType(member, FlxSprite))
+			{
+				var sprite:FlxSprite = cast member;
+				if (FlxG.mouse.overlaps(sprite))
+					return true;
+			}
+		}
+		return false;
 	}
 }

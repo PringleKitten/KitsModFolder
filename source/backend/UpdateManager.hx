@@ -4,6 +4,7 @@ import haxe.Json;
 import haxe.io.Path;
 import sys.io.File;
 import sys.FileSystem;
+import sys.thread.Thread;
 
 #if cpp
 import lime.system.System;
@@ -36,9 +37,20 @@ class UpdateManager
 	
 	private static var _latestEngineVersion:String = '';
 	private static var _latestModVersion:String = '';
+	private static var _latestReleaseTag:String = '';
 	private static var _updateCheckInProgress:Bool = false;
 	private static var _downloadInProgress:Bool = false;
 	private static var _versionsInitialized:Bool = false;
+	public static var postCloseInstallPending:Bool = false;
+	private static var _includeModInUpdate:Bool = false;
+	public static var progressValue:Float = 0;
+	public static var progressLabel:String = 'Preparing update...';
+	public static var progressTotal:Int = 0;
+	public static var progressCurrent:Int = 0;
+	public static var updateThreadActive:Bool = false;
+	public static var updateThreadFinished:Bool = false;
+	public static var updateThreadSuccessful:Bool = false;
+	public static var updateThreadMessage:String = '';
 	
 	/**
 	 * Initialize version numbers from actual game sources
@@ -116,6 +128,7 @@ class UpdateManager
 			if(rawTag.length > 0 && rawTag.charAt(0) == 'v') {
 				rawTag = rawTag.substr(1);
 			}
+			_latestReleaseTag = release.tag_name;
 			var versionParts = rawTag.split('-');
 			if(versionParts.length >= 2) {
 				_latestEngineVersion = versionParts[0].replace('r', ''); // Remove 'r' suffix
@@ -212,69 +225,123 @@ class UpdateManager
 	}
 	
 	/**
-	 * Download and apply updates
-	 * This uses git diff to get changed files and downloads only those
+	 * Download and apply updates from the latest GitHub release tag.
+	 * This avoids the broken compare-diff URL and uses the release tag contents directly.
 	 */
-	public static function downloadAndApplyUpdates(callback:Bool->String->Void):Void
+	public static function downloadAndApplyUpdates(callback:Bool->String->Void, includeMod:Bool = false):Void
 	{
-		if(_downloadInProgress) return;
+		if(_downloadInProgress || updateThreadActive) return;
 		
 		_downloadInProgress = true;
+		_includeModInUpdate = includeMod;
+		postCloseInstallPending = false;
+		resetProgressState();
+		updateThreadActive = true;
 		
 		#if sys
 		try {
-			var diffUrl = if(hasInternetFavoritesMod) 'https://github.com/${REPO}/compare/v${CURRENT_ENGINE_VERSION}-${CURRENT_MOD_VERSION}...v${_latestEngineVersion}-${_latestModVersion}.diff' else 'https://github.com/${REPO}/compare/v${CURRENT_ENGINE_VERSION}...v${_latestEngineVersion}.diff';
-			var http = new haxe.Http(diffUrl);
-			http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
-			http.onData = function(data:String) {
-				var changedFiles = parseGitDiff(data);
-				if(changedFiles.length > 0) {
-					downloadFiles(changedFiles, callback);
-				} else {
-					_downloadInProgress = false;
-					callback(false, 'No changes found');
-				}
-			};
-			http.onError = function(error:String) {
-				_downloadInProgress = false;
-				callback(false, 'Failed to download diff: $error');
-			};
-			http.request(false);
+			var tagName = _latestReleaseTag;
+			if(tagName == null || tagName.length == 0) {
+				tagName = _latestEngineVersion + (hasInternetFavoritesMod ? '-' + _latestModVersion : '');
+			}
+			if(tagName == null || tagName.length == 0) {
+				finishUpdate(false, 'No release tag available for update');
+				return;
+			}
+			
+			trace('Downloading update from release tag: $tagName (include mod: $includeMod)');
+			Thread.create(function() {
+				fetchReleaseFiles(tagName, includeMod, function(success:Bool, message:String) {
+					finishUpdate(success, message);
+				});
+			});
 		} catch(e:Dynamic) {
-			_downloadInProgress = false;
-			callback(false, 'Error during update: $e');
+			finishUpdate(false, 'Error during update: $e');
 		}
 		#else
-		callback(false, 'Updates not supported on this platform');
+		finishUpdate(false, 'Updates not supported on this platform');
 		#end
 	}
 	
 	/**
-	 * Parse git diff output to extract changed files
+	 * Fetch the file list for a release tag from the GitHub tree API.
 	 */
-	private static function parseGitDiff(diffContent:String):Array<String>
+	private static function resetProgressState():Void
 	{
-		var files:Array<String> = [];
-		var lines = diffContent.split('\n');
-		
-		for(line in lines) {
-			if(line.startsWith('diff --git')) {
-				// Extract filename from: diff --git a/path/to/file b/path/to/file
-				var parts = line.split(' ');
-				if(parts.length >= 4) {
-					var filePath = parts[3]; // b/path/to/file
-					if(filePath.startsWith('b/')) {
-						filePath = filePath.substring(2);
-						// Only include files that should be updated (exclude certain directories)
-						if(!shouldIgnoreFile(filePath)) {
-							files.push(filePath);
+		progressValue = 0;
+		progressLabel = 'Preparing update...';
+		progressTotal = 0;
+		progressCurrent = 0;
+		updateThreadActive = false;
+		updateThreadFinished = false;
+		updateThreadSuccessful = false;
+		updateThreadMessage = '';
+	}
+
+	private static function setProgress(label:String, current:Int, total:Int):Void
+	{
+		progressLabel = label;
+		progressCurrent = current;
+		progressTotal = total;
+		progressValue = total > 0 ? current / total : 0;
+	}
+
+	private static function finishUpdate(success:Bool, message:String):Void
+	{
+		_downloadInProgress = false;
+		updateThreadActive = false;
+		updateThreadFinished = true;
+		updateThreadSuccessful = success;
+		updateThreadMessage = message;
+		if(success) {
+			CURRENT_ENGINE_VERSION = _latestEngineVersion;
+			CURRENT_MOD_VERSION = _latestModVersion;
+			pendingUpdate = true;
+			postCloseInstallPending = false;
+		} else {
+			pendingUpdate = false;
+			postCloseInstallPending = false;
+		}
+	}
+
+	private static function fetchReleaseFiles(tagName:String, includeMod:Bool, callback:Bool->String->Void):Void
+	{
+		var treeUrl = 'https://api.github.com/repos/${REPO}/git/trees/${tagName}?recursive=1';
+		var http = new haxe.Http(treeUrl);
+		http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+		http.onData = function(data:String) {
+			try {
+				var treeData:Dynamic = Json.parse(data);
+				var files:Array<String> = [];
+				if(treeData.tree != null) {
+					for(entry in (treeData.tree:Array<Dynamic>)) {
+						if(entry.type == 'blob' && entry.path != null) {
+							var filePath:String = Std.string(entry.path);
+							if(includeMod || !filePath.startsWith('mods/')) {
+								if(!shouldIgnoreFile(filePath)) {
+									files.push(filePath);
+								}
+							}
 						}
 					}
 				}
+				
+				if(files.length > 0) {
+					downloadFiles(files, tagName, callback);
+				} else {
+					_downloadInProgress = false;
+					callback(false, 'No files found in release tag');
+				}
+			} catch(e:Dynamic) {
+				_downloadInProgress = false;
+				callback(false, 'Failed to parse release file list: $e');
 			}
-		}
-		
-		return files;
+		};
+		http.onError = function(error:String) {
+			_downloadInProgress = false;
+			callback(false, 'Failed to download release file list: $error');
+		};
+		http.request(false);
 	}
 	
 	/**
@@ -304,11 +371,10 @@ class UpdateManager
 	/**
 	 * Download changed files from GitHub raw content
 	 */
-	private static function downloadFiles(files:Array<String>, callback:Bool->String->Void):Void
+	private static function downloadFiles(files:Array<String>, tagName:String, callback:Bool->String->Void):Void
 	{
 		if(files.length == 0) {
-			_downloadInProgress = false;
-			callback(false, 'No files to update');
+			finishUpdate(false, 'No files to update');
 			return;
 		}
 		
@@ -321,22 +387,21 @@ class UpdateManager
 			
 			var failedFiles:Array<String> = [];
 			var downloadedCount = 0;
-			var tagPath = _latestEngineVersion + (hasInternetFavoritesMod ? '-' + _latestModVersion : '');
 			var index:Int = 0;
+			setProgress('Downloading files', 0, files.length);
 			
 			var downloadNext:Void->Void;
 			downloadNext = function() {
 				if(index >= files.length) {
 					if(failedFiles.length > 0) {
-						_downloadInProgress = false;
-						callback(false, 'Failed to download: ${failedFiles.join(", ")}');
+						finishUpdate(false, 'Failed to download: ${failedFiles.join(", ")}');
 					} else {
 						applyUpdates(downloadDir, callback);
 					}
 					return;
 				}
 				var file = files[index++];
-				var fileUrl = 'https://raw.githubusercontent.com/${REPO}/refs/tags/${tagPath}/$file';
+				var fileUrl = 'https://raw.githubusercontent.com/${REPO}/${tagName}/$file';
 				var http = new haxe.Http(fileUrl);
 				var content = '';
 				http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
@@ -350,6 +415,7 @@ class UpdateManager
 						}
 						File.saveContent(destPath, content);
 						downloadedCount++;
+						setProgress('Downloading files', downloadedCount, files.length);
 					} else {
 						failedFiles.push('$file (empty file)');
 					}
@@ -363,8 +429,7 @@ class UpdateManager
 			};
 			downloadNext();
 		} catch(e:Dynamic) {
-			_downloadInProgress = false;
-			callback(false, 'Error preparing update: $e');
+			finishUpdate(false, 'Error preparing update: $e');
 		}
 		#end
 	}
@@ -376,24 +441,42 @@ class UpdateManager
 	{
 		#if sys
 		try {
-			// Copy files from temp directory to game directory
+			setProgress('Applying update', 0, 1);
 			copyDirectory(tempDir, '.');
-			
-			// Clean up temp directory
 			deleteDirectory(tempDir);
-			
-			// Update version numbers in memory
-			CURRENT_ENGINE_VERSION = _latestEngineVersion;
-			CURRENT_MOD_VERSION = _latestModVersion;
-			
-			_downloadInProgress = false;
-			pendingUpdate = true;
-			
+			setProgress('Applying update', 1, 1);
 			callback(true, 'Update downloaded successfully. Game will restart to apply changes.');
 		} catch(e:Dynamic) {
-			_downloadInProgress = false;
-			callback(false, 'Error applying update: $e');
+			try {
+				createPostCloseInstallScript(tempDir);
+				pendingUpdate = true;
+				postCloseInstallPending = true;
+				callback(true, 'Update files were prepared. The game will close and finish applying the update.');
+				exitForPostCloseInstall();
+			} catch(scriptError:Dynamic) {
+				callback(false, 'Error applying update: $e; fallback script failed: $scriptError');
+			}
 		}
+		#end
+	}
+	
+	private static function createPostCloseInstallScript(tempDir:String):Void
+	{
+		#if sys
+		var scriptPath = Path.join([Sys.getCwd(), 'update_post_close.cmd']);
+		var exePath = Sys.programPath();
+		var scriptContent = '@echo off\nsetlocal EnableExtensions\nset "SCRIPT_DIR=%~dp0"\nset "UPDATE_DIR=%SCRIPT_DIR%update_temp"\nset "GAME_EXE=%~1"\nif exist "%UPDATE_DIR%" (\n  timeout /t 2 /nobreak >nul\n  robocopy "%UPDATE_DIR%" "%SCRIPT_DIR%" /E /R:1 /W:1 /NFL /NDL /NJH /NJS /NP >nul\n  set "ROBOCOPY_EXIT=%ERRORLEVEL%"\n  if not "%ROBOCOPY_EXIT%"=="0" if not "%ROBOCOPY_EXIT%"=="1" if not "%ROBOCOPY_EXIT%"=="2" if not "%ROBOCOPY_EXIT%"=="3" if not "%ROBOCOPY_EXIT%"=="5" if not "%ROBOCOPY_EXIT%"=="6" if not "%ROBOCOPY_EXIT%"=="7" exit /b 1\n  rd /s /q "%UPDATE_DIR%" 2>nul\n)\nif defined GAME_EXE if exist "%GAME_EXE%" start "" "%GAME_EXE%"\ndel "%SCRIPT_DIR%update_post_close.cmd" 2>nul\n';
+		File.saveContent(scriptPath, scriptContent);
+		if(exePath != null && exePath.length > 0) {
+			Sys.command('cmd', ['/c', 'start', '', scriptPath, exePath]);
+		}
+		#end
+	}
+	
+	public static function exitForPostCloseInstall():Void
+	{
+		#if cpp
+		Sys.exit(0);
 		#end
 	}
 	

@@ -97,6 +97,26 @@ class UpdateNotificationBar extends FlxGroup
 			expandPanel();
 		}
 	}
+
+	public function shouldBlockMouse():Bool
+	{
+		if (bg != null && bg.visible && FlxG.mouse.overlaps(bg))
+			return true;
+
+		if (expandedPanel != null && expandedPanel.visible && FlxG.mouse.overlaps(expandedPanel))
+			return true;
+
+		if (expandedText != null && expandedText.visible && FlxG.mouse.overlaps(expandedText))
+			return true;
+
+		if (updateButton != null && updateButton.visible && FlxG.mouse.overlaps(updateButton))
+			return true;
+
+		if (dismissButton != null && dismissButton.visible && FlxG.mouse.overlaps(dismissButton))
+			return true;
+
+		return false;
+	}
 	
 	private function expandPanel():Void
 	{
