@@ -22,7 +22,7 @@ class MainMenuState extends MusicBeatState
 	public static var internetFavsVersion:String = '6.0r'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 	public static var curColumn:MainMenuColumn = CENTER;
-	var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
+	public var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	var leftItem:FlxSprite;
@@ -148,7 +148,7 @@ class MainMenuState extends MusicBeatState
 		return menuItem;
 	}
 
-	var selectedSomethin:Bool = false;
+	public var selectedSomethin:Bool = false;
 
 	var timeNotMoving:Float = 0;
 	override function update(elapsed:Float)
@@ -417,18 +417,21 @@ class MainMenuState extends MusicBeatState
 			return;
 		}
 
-		if(updateAvailable && updateNotificationBar == null)
+		var shouldShowUpdateBanner = (engineAvail || (modAvail && UpdateManager.hasInternetFavoritesMod)) && (engineAvail || UpdateManager.hasInternetFavoritesMod);
+		if(shouldShowUpdateBanner && updateNotificationBar == null)
 		{
-			updateNotificationBar = new UpdateNotificationBar(engineAvail, modAvail, 
+			updateNotificationBar = new UpdateNotificationBar(engineAvail, modAvail, UpdateManager.hasInternetFavoritesMod,
 				'${UpdateManager.CURRENT_ENGINE_VERSION}',
 				'${UpdateManager.CURRENT_MOD_VERSION}',
+				'${UpdateManager.latestEngineVersionDisplay}',
+				'${UpdateManager.latestModVersionDisplay}',
 				onUpdatePressed,
 				onUpdateDismissed);
 			add(updateNotificationBar);
 		}
-		else
+		else if(updateNotificationBar == null)
 		{
-			// Show up-to-date notification
+			// Show up-to-date notification only when there is nothing to update
 			var upToDateNotif = new UpToDateNotification(
 				'${UpdateManager.CURRENT_ENGINE_VERSION}',
 				'${UpdateManager.CURRENT_MOD_VERSION}');
@@ -439,15 +442,31 @@ class MainMenuState extends MusicBeatState
 	function onUpdatePressed():Void
 	{
 		FlxG.sound.play(Paths.sound('confirmMenu'));
-		if(updateNotificationBar != null)
-			updateNotificationBar.visible = false;
-		openSubState(new UpdateOptionsSubState(onUpdateSelectionComplete));
+		selectedSomethin = false;
+		allowMouse = true;
+		FlxG.mouse.visible = true;
+		setUpdateNotificationVisible(false);
+
+		if (subState == null)
+		{
+			openSubState(new UpdateOptionsSubState(function(includeMod:Bool)
+			{
+				if (!includeMod)
+				{
+					setUpdateNotificationVisible(true);
+					return;
+				}
+
+				openSubState(new UpdateProgressSubState(onUpdateComplete));
+				UpdateManager.downloadAndApplyUpdates(onUpdateComplete, true);
+			}));
+		}
 	}
-	
-	function onUpdateSelectionComplete(includeMod:Bool):Void
+
+	public function setUpdateNotificationVisible(visible:Bool):Void
 	{
-		openSubState(new UpdateProgressSubState(onUpdateComplete));
-		UpdateManager.downloadAndApplyUpdates(onUpdateComplete, includeMod);
+		if (updateNotificationBar != null)
+			updateNotificationBar.visible = visible;
 	}
 	
 	function onUpdateDismissed():Void
@@ -459,19 +478,26 @@ class MainMenuState extends MusicBeatState
 	{
 		if(success && UpdateManager.pendingUpdate)
 		{
-			// Show message and restart
-			var popup = new flixel.util.FlxSignal();
 			FlxG.sound.play(Paths.sound('confirmMenu'));
-			
-			// Restart the game
-			UpdateManager.restartGame();
+			if(UpdateManager.updateReadyToApply)
+			{
+				trace('Update staged; waiting for restart confirmation.');
+			}
+			else if(UpdateManager.postCloseInstallPending)
+			{
+				trace('Update files prepared for post-close install; exiting to apply them.');
+				UpdateManager.exitForPostCloseInstall();
+			}
+			else
+			{
+				trace('Restarting game to apply update.');
+				UpdateManager.restartGame();
+			}
 		}
 		else
 		{
-			// Show error message
 			trace('Update failed: $message');
-			if(updateNotificationBar != null)
-				updateNotificationBar.visible = true;
+			setUpdateNotificationVisible(true);
 		}
 	}
 }
@@ -481,7 +507,13 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 	var onComplete:Bool->Void;
 	var includeModCheckbox:CheckboxThingie;
 	var toggleArea:FlxSprite;
+	var confirmationBg:FlxSprite;
+	var updateButton:FlxButton;
+	var laterButton:FlxButton;
+	var changelogLinkText:FlxText;
 	var includeMod:Bool = false;
+	var startUpdateCallback:Void->Void;
+	var releaseUrl:String = '';
 
 	public function new(onComplete:Bool->Void)
 	{
@@ -492,71 +524,134 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 	override function create()
 	{
 		super.create();
-		var bg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
-		bg.alpha = 0.95;
-		bg.setGraphicSize(680, 260);
-		bg.updateHitbox();
-		bg.x = Std.int((FlxG.width - bg.width) / 2);
-		bg.y = 120;
-		bg.scrollFactor.set(0, 0);
-		add(bg);
+		confirmationBg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+		confirmationBg.alpha = 0.95;
+		confirmationBg.setGraphicSize(680, 260);
+		confirmationBg.updateHitbox();
+		confirmationBg.x = Std.int((FlxG.width - confirmationBg.width) / 2);
+		confirmationBg.y = 120;
+		confirmationBg.scrollFactor.set(0, 0);
+		add(confirmationBg);
 
-		var border = new FlxSprite(bg.x - 4, bg.y - 4).makeGraphic(Std.int(bg.width) + 8, Std.int(bg.height) + 8, 0xFFFFFFFF);
-		border.alpha = 0.8;
+		var border = new FlxSprite(confirmationBg.x - 4, confirmationBg.y - 4).makeGraphic(Std.int(confirmationBg.width) + 8, Std.int(confirmationBg.height) + 8, 0xFF111111);
+		border.alpha = 0.95;
 		border.scrollFactor.set(0, 0);
 		add(border);
 
-		var title = new FlxText(0, bg.y + 20, 620, 'Update options', 24);
+		var title = new FlxText(0, confirmationBg.y + 20, 620, 'Update options', 24);
 		title.alignment = CENTER;
-		title.x = bg.x + 20;
+		title.x = confirmationBg.x + 20;
 		title.scrollFactor.set(0, 0);
 		add(title);
 
-		var desc = new FlxText(0, title.y + 46, 620, 'Install the latest engine update?\nYou can also include the Internet Favorites mod package if you want the newest mod folder.', 18);
+		var descText = 'Nothing to update.';
+		if(UpdateManager.engineUpdateAvailable && UpdateManager.modUpdateAvailable) {
+			descText = 'Install the latest engine and mod updates?';
+		} else if(UpdateManager.engineUpdateAvailable) {
+			descText = 'Install the latest engine update?';
+		} else if(UpdateManager.modUpdateAvailable) {
+			descText = 'A newer Internet Favorites mod version is available.\nDo you want to install the mod update?';
+		}
+		var desc = new FlxText(0, title.y + 46, 620, descText, 18);
 		desc.alignment = CENTER;
-		desc.x = bg.x + 30;
+		desc.x = confirmationBg.x + 30;
 		desc.scrollFactor.set(0, 0);
 		add(desc);
 
-		var label = new FlxText(0, desc.y + 74, 0, 'Include mod update', 20);
-		label.x = bg.x + 180;
-		label.scrollFactor.set(0, 0);
-		add(label);
+		if(UpdateManager.engineUpdateAvailable && UpdateManager.modUpdateAvailable) {
+			var label = new FlxText(0, desc.y + 74, 0, 'Include mod update', 20);
+			label.x = confirmationBg.x + 180;
+			label.scrollFactor.set(0, 0);
+			add(label);
 
-		includeModCheckbox = new CheckboxThingie(bg.x + 420, label.y - 4, false);
-		includeModCheckbox.scale.set(1.35, 1.35);
-		includeModCheckbox.updateHitbox();
-		includeModCheckbox.scrollFactor.set(0, 0);
-		add(includeModCheckbox);
+			includeModCheckbox = new CheckboxThingie(confirmationBg.x + 420, label.y - 4, false);
+			includeModCheckbox.scale.set(1.35, 1.35);
+			includeModCheckbox.updateHitbox();
+			includeModCheckbox.scrollFactor.set(0, 0);
+			add(includeModCheckbox);
 
-		toggleArea = new FlxSprite(bg.x + 360, label.y - 12);
-		toggleArea.makeGraphic(150, 70, 0x11FFFFFF);
-		toggleArea.scrollFactor.set(0, 0);
-		add(toggleArea);
+			toggleArea = new FlxSprite(confirmationBg.x + 360, label.y - 12);
+			toggleArea.makeGraphic(150, 70, 0x11FFFFFF);
+			toggleArea.scrollFactor.set(0, 0);
+			add(toggleArea);
+		}
 
-		var confirm = new FlxButton(0, bg.y + bg.height - 44, 'Start update', function() {
-			includeMod = includeModCheckbox.daValue;
+		releaseUrl = UpdateManager.latestReleaseUrl.length > 0 ? UpdateManager.latestReleaseUrl : 'https://github.com/${UpdateManager.REPO}/releases';
+		var releaseTagText = UpdateManager.latestReleaseTag.length > 0 ? UpdateManager.latestReleaseTag : 'latest release';
+		changelogLinkText = new FlxText(0, confirmationBg.y + confirmationBg.height - 98, 620, 'Update Changelog (${releaseTagText})', 16);
+		changelogLinkText.alignment = CENTER;
+		changelogLinkText.x = confirmationBg.x + 20;
+		changelogLinkText.scrollFactor.set(0, 0);
+		changelogLinkText.color = 0xFF00C8FF;
+		changelogLinkText.setFormat(null, 16, 0xFF00C8FF, CENTER);
+		add(changelogLinkText);
+
+		var buttonY:Float = confirmationBg.y + confirmationBg.height - 54;
+		updateButton = new FlxButton(0, buttonY, 'Update', function() {
+			startUpdateCallback();
+		});
+		updateButton.scale.set(1.08, 1.08);
+		updateButton.updateHitbox();
+		updateButton.x = confirmationBg.x + 210;
+		updateButton.scrollFactor.set(0, 0);
+		add(updateButton);
+
+		laterButton = new FlxButton(0, buttonY, 'Later', close);
+		laterButton.scale.set(1.08, 1.08);
+		laterButton.updateHitbox();
+		laterButton.x = confirmationBg.x + 370;
+		laterButton.scrollFactor.set(0, 0);
+		add(laterButton);
+
+		startUpdateCallback = function() {
+			includeMod = UpdateManager.engineUpdateAvailable && UpdateManager.modUpdateAvailable ? includeModCheckbox.daValue : true;
 			onComplete(includeMod);
 			close();
-		});
-		confirm.x = bg.x + 170;
-		confirm.scrollFactor.set(0, 0);
-		add(confirm);
-
-		var cancel = new FlxButton(0, bg.y + bg.height - 44, 'Cancel', close);
-		cancel.x = bg.x + 350;
-		cancel.scrollFactor.set(0, 0);
-		add(cancel);
+		};
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (FlxG.mouse.justPressed && includeModCheckbox != null)
+		if (FlxG.keys.justPressed.ENTER)
 		{
-			if (FlxG.mouse.overlaps(includeModCheckbox) || (toggleArea != null && FlxG.mouse.overlaps(toggleArea)))
-				includeModCheckbox.daValue = !includeModCheckbox.daValue;
+			startUpdateCallback();
+			return;
+		}
+
+		if (FlxG.mouse.justPressed)
+		{
+			if (includeModCheckbox != null)
+			{
+				if (FlxG.mouse.overlaps(includeModCheckbox) || (toggleArea != null && FlxG.mouse.overlaps(toggleArea)))
+				{
+					includeModCheckbox.daValue = !includeModCheckbox.daValue;
+					return;
+				}
+			}
+			if (changelogLinkText != null && FlxG.mouse.overlaps(changelogLinkText))
+			{
+				CoolUtil.browserLoad(releaseUrl);
+				return;
+			}
+			if (laterButton != null && FlxG.mouse.overlaps(laterButton))
+			{
+				FlxG.mouse.visible = true;
+				if (FlxG.state != null && Std.isOfType(FlxG.state, MainMenuState))
+				{
+					var menu:MainMenuState = cast FlxG.state;
+					menu.selectedSomethin = false;
+					menu.allowMouse = true;
+					menu.setUpdateNotificationVisible(true);
+				}
+				close();
+				return;
+			}
+			if (updateButton != null && FlxG.mouse.overlaps(updateButton))
+			{
+				startUpdateCallback();
+			}
 		}
 	}
 
@@ -578,10 +673,15 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 class UpdateProgressSubState extends MusicBeatSubstate
 {
 	var resultCallback:Bool->String->Void;
+	var bg:FlxSprite;
+	var title:FlxText;
 	var statusText:FlxText;
 	var progressFill:FlxSprite;
 	var progressBg:FlxSprite;
 	var detailText:FlxText;
+	var restartButton:FlxButton;
+	var completionTimer:Float = 0;
+	var completionStarted:Bool = false;
 
 	public function new(resultCallback:Bool->String->Void)
 	{
@@ -601,7 +701,7 @@ class UpdateProgressSubState extends MusicBeatSubstate
 		bg.scrollFactor.set(0, 0);
 		add(bg);
 
-		var title = new FlxText(0, bg.y + 24, 620, 'Updating game...', 26);
+		title = new FlxText(0, bg.y + 24, 620, 'Updating game...', 26);
 		title.alignment = CENTER;
 		title.x = bg.x + 20;
 		title.scrollFactor.set(0, 0);
@@ -628,7 +728,20 @@ class UpdateProgressSubState extends MusicBeatSubstate
 		progressFill.makeGraphic(1, 20, 0xFF00C8FF);
 		progressFill.scrollFactor.set(0, 0);
 		add(progressFill);
+
+		restartButton = new FlxButton(0, bg.y + bg.height - 34, 'Restart', function() {
+			UpdateManager.applyPendingUpdate();
+			close();
+		});
+		restartButton.scale.set(1.08, 1.08);
+		restartButton.updateHitbox();
+		restartButton.x = Std.int(bg.x + (bg.width - restartButton.width) / 2);
+		restartButton.scrollFactor.set(0, 0);
+		restartButton.visible = false;
+		add(restartButton);
 	}
+
+	var autoApplyTriggered:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -636,14 +749,52 @@ class UpdateProgressSubState extends MusicBeatSubstate
 
 		if (UpdateManager.updateThreadFinished)
 		{
+			if (!completionStarted)
+			{
+				completionStarted = true;
+				completionTimer = 0.8;
+				detailText.text = UpdateManager.updateThreadSuccessful ? 'Done! The update has been applied.' : 'The update could not be completed.';
+				statusText.text = UpdateManager.updateThreadSuccessful ? 'Update complete' : 'Update failed';
+				if (bg != null) FlxTween.tween(bg, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+				if (title != null) FlxTween.tween(title, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+				if (detailText != null) FlxTween.tween(detailText, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+				if (statusText != null) FlxTween.tween(statusText, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+				if (progressBg != null) FlxTween.tween(progressBg, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+				if (progressFill != null) FlxTween.tween(progressFill, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+				if (restartButton != null) FlxTween.tween(restartButton, {alpha: 0}, 0.3, {ease: FlxEase.quadOut});
+			}
+			if (completionTimer > 0)
+			{
+				completionTimer -= elapsed;
+				return;
+			}
 			if (resultCallback != null)
 				resultCallback(UpdateManager.updateThreadSuccessful, UpdateManager.updateThreadMessage);
 			close();
 			return;
 		}
 
-		if (statusText != null)
+		if (UpdateManager.updateReadyToApply)
+		{
+			if (UpdateManager.shouldAutoApplyPendingUpdate() && !autoApplyTriggered)
+			{
+				autoApplyTriggered = true;
+				detailText.text = 'Applying mod update in place...';
+				statusText.text = 'Applying mod update';
+				if(restartButton != null) restartButton.visible = false;
+				UpdateManager.applyPendingUpdate();
+			}
+			else
+			{
+				detailText.text = 'Update downloaded and staged. Click Restart to close the game, apply the new files, and relaunch.';
+				statusText.text = 'Update ready to apply';
+				if(restartButton != null) restartButton.visible = !UpdateManager.shouldAutoApplyPendingUpdate();
+			}
+		}
+		else if (statusText != null)
+		{
 			statusText.text = UpdateManager.progressLabel + (UpdateManager.progressTotal > 0 ? ' (${UpdateManager.progressCurrent}/${UpdateManager.progressTotal})' : '');
+		}
 
 		if (progressFill != null && progressBg != null)
 		{
