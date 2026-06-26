@@ -6,7 +6,6 @@ import lime.app.Application;
 import states.editors.MasterEditorMenu;
 import options.OptionsState;
 import backend.UpdateManager;
-import objects.CheckboxThingie;
 import objects.UpdateNotificationBar;
 import objects.UpToDateNotification;
 import flixel.ui.FlxButton;
@@ -19,7 +18,7 @@ enum MainMenuColumn {
 
 class MainMenuState extends MusicBeatState
 {
-	public static var internetFavsVersion:String = '6.0r'; // This is also used for Discord RPC
+	public static var internetFavsVersion:String = '6.0'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 	public static var curColumn:MainMenuColumn = CENTER;
 	public var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
@@ -128,8 +127,6 @@ class MainMenuState extends MusicBeatState
 		#end
 		#end
 
-		super.create();
-
 		FlxG.camera.follow(camFollow, null, 0.15);
 	}
 
@@ -150,12 +147,12 @@ class MainMenuState extends MusicBeatState
 
 	public var selectedSomethin:Bool = false;
 
-	var timeNotMoving:Float = 0;
 	override function update(elapsed:Float)
 	{
-		if (FlxG.sound.music.volume < 0.8)
+		if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
 			FlxG.sound.music.volume = Math.min(FlxG.sound.music.volume + 0.5 * elapsed, 0.8);
 
+		var mouse = FlxG.mouse;
 		if (!selectedSomethin)
 		{
 			if (controls.UI_UP_P)
@@ -164,12 +161,11 @@ class MainMenuState extends MusicBeatState
 			if (controls.UI_DOWN_P)
 				changeItem(1);
 
-			var allowMouse:Bool = allowMouse;
-			if (allowMouse && ((FlxG.mouse.deltaScreenX != 0 && FlxG.mouse.deltaScreenY != 0) || FlxG.mouse.justPressed)) //FlxG.mouse.deltaScreenX/Y checks is more accurate than FlxG.mouse.justMoved
+			var mouseBlockedByOverlay:Bool = isMouseBlockedByOverlay();
+			allowMouse = !mouseBlockedByOverlay;
+			if (allowMouse && ((mouse.deltaScreenX != 0 && mouse.deltaScreenY != 0) || mouse.justPressed)) //FlxG.mouse.deltaScreenX/Y checks is more accurate than FlxG.mouse.justMoved
 			{
-				allowMouse = false;
-				FlxG.mouse.visible = true;
-				timeNotMoving = 0;
+				mouse.visible = true;
 
 				var selectedItem:FlxSprite;
 				switch(curColumn)
@@ -182,7 +178,7 @@ class MainMenuState extends MusicBeatState
 						selectedItem = rightItem;
 				}
 
-				if(leftItem != null && FlxG.mouse.overlaps(leftItem))
+				if(leftItem != null && mouse.overlaps(leftItem))
 				{
 					allowMouse = true;
 					if(selectedItem != leftItem)
@@ -191,7 +187,7 @@ class MainMenuState extends MusicBeatState
 						changeItem();
 					}
 				}
-				else if(rightItem != null && FlxG.mouse.overlaps(rightItem))
+				else if(rightItem != null && mouse.overlaps(rightItem))
 				{
 					allowMouse = true;
 					if(selectedItem != rightItem)
@@ -207,9 +203,9 @@ class MainMenuState extends MusicBeatState
 					for (i in 0...optionShit.length)
 					{
 						var memb:FlxSprite = menuItems.members[i];
-						if(FlxG.mouse.overlaps(memb))
+						if(mouse.overlaps(memb))
 						{
-							var distance:Float = Math.sqrt(Math.pow(memb.getGraphicMidpoint().x - FlxG.mouse.screenX, 2) + Math.pow(memb.getGraphicMidpoint().y - FlxG.mouse.screenY, 2));
+							var distance:Float = Math.sqrt(Math.pow(memb.getGraphicMidpoint().x - mouse.screenX, 2) + Math.pow(memb.getGraphicMidpoint().y - mouse.screenY, 2));
 							if (dist < 0 || distance < dist)
 							{
 								dist = distance;
@@ -229,8 +225,7 @@ class MainMenuState extends MusicBeatState
 			}
 			else
 			{
-				timeNotMoving += elapsed;
-				if(timeNotMoving > 2) FlxG.mouse.visible = false;
+				mouse.visible = true;
 			}
 
 			switch(curColumn)
@@ -265,17 +260,16 @@ class MainMenuState extends MusicBeatState
 			if (controls.BACK)
 			{
 				selectedSomethin = true;
-				FlxG.mouse.visible = false;
+				mouse.visible = true;
 				FlxG.sound.play(Paths.sound('cancelMenu'));
 				MusicBeatState.switchState(new TitleState());
 			}
 
-			var mouseBlockedByOverlay:Bool = isMouseBlockedByOverlay();
-			if (subState == null && (controls.ACCEPT || (FlxG.mouse.justPressed && allowMouse && !mouseBlockedByOverlay)))
+			if (subState == null && (controls.ACCEPT || (mouse.justPressed && allowMouse)))
 			{
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 					selectedSomethin = true;
-					FlxG.mouse.visible = false;
+					mouse.visible = true;
 
 					if (ClientPrefs.data.flashing)
 						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
@@ -350,7 +344,7 @@ class MainMenuState extends MusicBeatState
 			if (controls.justPressed('debug_1'))
 			{
 				selectedSomethin = true;
-				FlxG.mouse.visible = false;
+				mouse.visible = true;
 				MusicBeatState.switchState(new MasterEditorMenu());
 			}
 			#end
@@ -444,7 +438,8 @@ class MainMenuState extends MusicBeatState
 		FlxG.sound.play(Paths.sound('confirmMenu'));
 		selectedSomethin = false;
 		allowMouse = true;
-		FlxG.mouse.visible = true;
+		var mouse = FlxG.mouse;
+		mouse.visible = true;
 		setUpdateNotificationVisible(false);
 
 		if (subState == null)
@@ -576,7 +571,7 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 		desc.scrollFactor.set(0, 0);
 		add(desc);
 
-		var selectedReleaseKind = isModPrompt ? 'mod' : 'engine';
+		var selectedReleaseKind = isModPrompt ? 'mod' : ((UpdateManager.modUpdateAvailable && !UpdateManager.engineUpdateAvailable) ? 'mod' : 'engine');
 		releaseUrl = UpdateManager.getReleaseUrlForUpdateKind(selectedReleaseKind);
 		if(releaseUrl.length == 0) releaseUrl = UpdateManager.latestReleaseUrl.length > 0 ? UpdateManager.latestReleaseUrl : 'https://github.com/${UpdateManager.REPO}/releases';
 		var releaseTagText = UpdateManager.getReleaseTagForUpdateKind(selectedReleaseKind);
@@ -673,7 +668,6 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 class UpdateProgressSubState extends MusicBeatSubstate
 {
 	var resultCallback:Bool->String->Void;
-	var initialUpdateType:String;
 	var bg:FlxSprite;
 	var title:FlxText;
 	var statusText:FlxText;
@@ -688,13 +682,12 @@ class UpdateProgressSubState extends MusicBeatSubstate
 	{
 		super();
 		this.resultCallback = resultCallback;
-		this.initialUpdateType = includeMod ? 'mod' : 'engine';
 	}
 
 	override function create()
 	{
 		super.create();
-		var bg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
+		bg = new FlxSprite().makeGraphic(1, 1, FlxColor.BLACK);
 		bg.alpha = 0.95;
 		bg.setGraphicSize(660, 240);
 		bg.updateHitbox();

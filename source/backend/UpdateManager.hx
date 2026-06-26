@@ -51,6 +51,7 @@ class UpdateManager
 	public static var latestReleaseBody:String = '';
 	public static var latestReleaseUrl:String = '';
 	private static var _updateCheckInProgress:Bool = false;
+	private static var _updateCheckFallbackAttempted:Bool = false;
 	private static var _downloadInProgress:Bool = false;
 	private static var _versionsInitialized:Bool = false;
 	public static var postCloseInstallPending:Bool = false;
@@ -61,6 +62,8 @@ class UpdateManager
 	private static var _pendingInstallDir:String = '';
 	private static var _engineInstallDir:String = '';
 	private static var _modInstallDir:String = '';
+	private static var _cachedInstallDirectory:String = '';
+	private static var _cachedGameExecutablePath:String = '';
 	public static var progressValue:Float = 0;
 	public static var progressLabel:String = 'Preparing update...';
 	public static var progressTotal:Int = 0;
@@ -110,6 +113,7 @@ class UpdateManager
 		if(_updateCheckInProgress) return;
 		
 		_updateCheckInProgress = true;
+		_updateCheckFallbackAttempted = false;
 		
 		// Use HTTP request to check GitHub API
 		#if sys
@@ -137,6 +141,13 @@ class UpdateManager
 	
 	private static function handleUpdateCheckFailure(callback:Bool->Bool->Bool->String->Void, ?error:String):Void
 	{
+		if(!_updateCheckFallbackAttempted) {
+			_updateCheckFallbackAttempted = true;
+			trace('Primary update check failed, trying GitHub tag-page fallback: ' + (error != null && error.length > 0 ? error : 'GitHub API request failed'));
+			fetchTagFallback(callback);
+			return;
+		}
+		
 		_updateCheckInProgress = false;
 		engineUpdateAvailable = false;
 		modUpdateAvailable = false;
@@ -225,14 +236,11 @@ class UpdateManager
 	private static function findLatestTagInfoForFallback(tags:Array<String>, prefix:String):{version:String, tagName:String}
 	{
 		var result:{version:String, tagName:String} = {version: '', tagName: ''};
-		var prefixLower = prefix != null ? prefix.toLowerCase() : '';
 		for(tagName in tags) {
 			if(tagName == null || tagName.length == 0) continue;
 			var normalized = StringTools.trim(tagName);
 			if(normalized.startsWith('v')) normalized = normalized.substring(1);
-			var normalizedLower = normalized.toLowerCase();
-			if(!normalizedLower.startsWith(prefixLower + '-')) continue;
-			var version = extractVersionFromTag(normalized);
+			var version = extractVersionForPrefix(normalized, prefix);
 			if(version.length == 0) continue;
 			if(result.version.length == 0 || compareVersions(version, result.version) > 0) {
 				result.version = version;
@@ -336,22 +344,67 @@ class UpdateManager
 	private static function findLatestTagInfoForPrefix(tags:Array<Dynamic>, prefix:String):{version:String, tagName:String}
 	{
 		var result:{version:String, tagName:String} = {version: '', tagName: ''};
-		var prefixLower = prefix != null ? prefix.toLowerCase() : '';
 		for(entry in tags) {
 			var tagName:String = entry != null ? Std.string(entry.name) : '';
 			if(tagName.length == 0) continue;
 			var normalized = StringTools.trim(tagName);
 			if(normalized.startsWith('v')) normalized = normalized.substring(1);
-			var normalizedLower = normalized.toLowerCase();
-			if(!normalizedLower.startsWith(prefixLower + '-')) continue;
-			var version = extractVersionFromTag(normalized);
+			var version = extractVersionForPrefix(normalized, prefix);
 			if(version.length == 0) continue;
+			if(!isTagTypeCompatible(normalized, prefix)) continue;
 			if(result.version.length == 0 || compareVersions(version, result.version) > 0) {
 				result.version = version;
 				result.tagName = tagName;
 			}
 		}
 		return result;
+	}
+
+	private static function extractVersionForPrefix(tag:String, prefix:String):String
+	{
+		if(tag == null) return '';
+		var text = StringTools.trim(tag);
+		if(text.length == 0) return '';
+		if(text.startsWith('v')) text = text.substring(1);
+
+		if(!isTagTypeCompatible(text, prefix)) return '';
+
+		var prefixLower = prefix != null ? prefix.toLowerCase() : '';
+		var normalizedText = text.toLowerCase();
+		if(prefixLower == 'mod') {
+			var modPrefix = 'mod-';
+			if(normalizedText.startsWith(modPrefix)) {
+				return extractVersionFromTag(text.substring(modPrefix.length));
+			}
+			if(normalizedText.startsWith('mod ')) {
+				return extractVersionFromTag(text.substring(4));
+			}
+		}
+		if(prefixLower == 'engine') {
+			var enginePrefix = 'engine-';
+			if(normalizedText.startsWith(enginePrefix)) {
+				return extractVersionFromTag(text.substring(enginePrefix.length));
+			}
+			if(normalizedText.startsWith('engine ')) {
+				return extractVersionFromTag(text.substring(7));
+			}
+		}
+
+		return '';
+	}
+
+	private static function isTagTypeCompatible(tag:String, prefix:String):Bool
+	{
+		if(tag == null || tag.length == 0) return false;
+		var normalized = StringTools.trim(tag).toLowerCase();
+		var prefixLower = prefix != null ? prefix.toLowerCase() : '';
+		if(prefixLower == 'mod') {
+			return normalized.startsWith('mod-') || normalized.startsWith('mod ') || normalized.startsWith('mod') && normalized.indexOf('engine') < 0;
+		}
+		if(prefixLower == 'engine') {
+			return normalized.startsWith('engine-') || normalized.startsWith('engine ') || normalized.startsWith('engine') && normalized.indexOf('mod') < 0;
+		}
+		return false;
 	}
 
 	private static function extractVersionFromTag(tag:String):String
@@ -661,6 +714,8 @@ class UpdateManager
 			_engineInstallDir = '';
 			_modInstallDir = '';
 		}
+		_cachedGameExecutablePath = '';
+		_cachedInstallDirectory = '';
 	}
 
 	private static function setProgress(label:String, current:Int, total:Int):Void
@@ -2023,6 +2078,7 @@ class UpdateManager
 	private static function getInstallDirectory():String
 	{
 		#if sys
+		if(_cachedInstallDirectory != null && _cachedInstallDirectory.length > 0) return _cachedInstallDirectory;
 		var exePath = Sys.programPath();
 		if(exePath != null && exePath.length > 0) {
 			var exeDir = Path.directory(exePath);
@@ -2031,12 +2087,17 @@ class UpdateManager
 				var dirName = normalizedDir.lastIndexOf('/') >= 0 ? normalizedDir.substring(normalizedDir.lastIndexOf('/') + 1) : normalizedDir;
 				if(dirName.toLowerCase() == 'mods') {
 					var parentDir = Path.directory(exeDir);
-					if(parentDir != null && parentDir.length > 0) return parentDir;
+					if(parentDir != null && parentDir.length > 0) {
+						_cachedInstallDirectory = parentDir;
+						return _cachedInstallDirectory;
+					}
 				}
-				return exeDir;
+				_cachedInstallDirectory = exeDir;
+				return _cachedInstallDirectory;
 			}
 		}
-		return Sys.getCwd();
+		_cachedInstallDirectory = Sys.getCwd();
+		return _cachedInstallDirectory;
 		#else
 		return '.';
 		#end
@@ -2045,6 +2106,7 @@ class UpdateManager
 	private static function getExpectedGameExecutablePath():String
 	{
 		#if sys
+		if(_cachedGameExecutablePath != null && _cachedGameExecutablePath.length > 0) return _cachedGameExecutablePath;
 		var exePath = Sys.programPath();
 		if(exePath != null && exePath.length > 0) {
 			var installDir = getInstallDirectory();
@@ -2052,11 +2114,13 @@ class UpdateManager
 				var exeName = exePath.indexOf('/') >= 0 ? exePath.substring(exePath.lastIndexOf('/') + 1) : exePath;
 				var candidatePath = Path.join([installDir, exeName]);
 				if(FileSystem.exists(candidatePath) && !FileSystem.isDirectory(candidatePath)) {
-					return candidatePath;
+					_cachedGameExecutablePath = candidatePath;
+					return _cachedGameExecutablePath;
 				}
 			}
 		}
-		return exePath;
+		_cachedGameExecutablePath = exePath;
+		return _cachedGameExecutablePath;
 		#else
 		return '';
 		#end
