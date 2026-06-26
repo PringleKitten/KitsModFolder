@@ -2,9 +2,12 @@ package states;
 
 import flixel.FlxObject;
 import flixel.effects.FlxFlicker;
+import flixel.text.FlxText;
 import lime.app.Application;
-import states.editors.MasterEditorMenu;
 import options.OptionsState;
+import states.editors.MasterEditorMenu;
+import backend.UpdateManager;
+import objects.UpdateNotificationBar;
 
 enum MainMenuColumn {
 	LEFT;
@@ -14,7 +17,7 @@ enum MainMenuColumn {
 
 class MainMenuState extends MusicBeatState
 {
-	public static var internetFavsVersion:String = '5.0'; // This is also used for Discord RPC
+	public static var internetFavsVersion:String = '6.0'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 	public static var curColumn:MainMenuColumn = CENTER;
 	var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
@@ -36,6 +39,8 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	var updateNotificationBar:UpdateNotificationBar;
+	var hasCheckedUpdates:Bool = false;
 
 	override function create()
 	{
@@ -100,7 +105,14 @@ class MainMenuState extends MusicBeatState
 		fnfVer.scrollFactor.set();
 		fnfVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(fnfVer);
+
 		changeItem();
+
+		if (ClientPrefs.data.checkForUpdates && !hasCheckedUpdates)
+		{
+			hasCheckedUpdates = true;
+			checkForUpdatesAsync();
+		}
 
 		#if ACHIEVEMENTS_ALLOWED
 		// Unlocks "Freaky on a Friday Night" achievement if it's a Friday and between 18:00 PM and 23:59 PM
@@ -116,6 +128,59 @@ class MainMenuState extends MusicBeatState
 		FlxG.camera.follow(camFollow, null, 0.15);
 
 		addTouchPad('NONE', 'E');
+	}
+
+	function checkForUpdatesAsync():Void
+	{
+		UpdateManager.initializeVersions();
+		UpdateManager.checkForUpdates(onUpdateCheckComplete);
+	}
+
+	function onUpdateCheckComplete(updateAvailable:Bool, engineAvail:Bool, modAvail:Bool, error:String):Void
+	{
+		if(error.length > 0)
+		{
+			trace('Update check failed: $error');
+			return;
+		}
+
+		if(updateNotificationBar != null)
+		{
+			remove(updateNotificationBar);
+			updateNotificationBar.destroy();
+			updateNotificationBar = null;
+		}
+
+		var shouldShowUpdateBanner = (engineAvail || (modAvail && UpdateManager.hasInternetFavoritesMod)) && (engineAvail || UpdateManager.hasInternetFavoritesMod);
+		if(shouldShowUpdateBanner && updateNotificationBar == null)
+		{
+			updateNotificationBar = new UpdateNotificationBar(engineAvail, modAvail, UpdateManager.hasInternetFavoritesMod,
+				'${UpdateManager.CURRENT_ENGINE_VERSION}', '${UpdateManager.CURRENT_MOD_VERSION}',
+				UpdateManager.latestEngineVersionDisplay, UpdateManager.latestModVersionDisplay,
+				startPendingUpdate, function() {});
+			add(updateNotificationBar);
+		}
+	}
+
+	function startPendingUpdate():Void
+	{
+		if(updateNotificationBar == null)
+			return;
+
+		selectedSomethin = true;
+		FlxG.mouse.visible = false;
+
+		var includeMod = UpdateManager.modUpdateAvailable && !UpdateManager.engineUpdateAvailable;
+		var promptMessage:String = includeMod
+			? 'A new mod update is available. This will open the APK download link for the full Android package in your browser. Continue?'
+			: 'A new update is available. Do you want to open the APK download link in your browser?';
+		CoolUtil.showPopUp(promptMessage, 'Download APK');
+
+		UpdateManager.downloadAndApplyUpdates(function(success:Bool, message:String)
+		{
+			selectedSomethin = false;
+			CoolUtil.showPopUp(message, 'Update Download');
+		}, includeMod);
 	}
 
 	function createMenuItem(name:String, x:Float, y:Float):FlxSprite
@@ -245,6 +310,12 @@ class MainMenuState extends MusicBeatState
 						curColumn = CENTER;
 						changeItem();
 					}
+			}
+
+			if (controls.ACCEPT && updateNotificationBar != null && updateNotificationBar.visible && !selectedSomethin)
+			{
+				startPendingUpdate();
+				return;
 			}
 
 			if (controls.BACK)
