@@ -1,6 +1,7 @@
 package backend;
 
 import haxe.Json;
+import haxe.io.Bytes;
 import haxe.io.Path;
 import sys.io.File;
 import sys.FileSystem;
@@ -40,6 +41,8 @@ class UpdateManager
 	
 	private static var _latestEngineVersion:String = '';
 	private static var _latestModVersion:String = '';
+	private static var _latestEngineTagName:String = '';
+	private static var _latestModTagName:String = '';
 	private static var _latestReleaseTag:String = '';
 	public static var latestEngineVersionDisplay:String = '';
 	public static var latestModVersionDisplay:String = '';
@@ -52,8 +55,12 @@ class UpdateManager
 	private static var _versionsInitialized:Bool = false;
 	public static var postCloseInstallPending:Bool = false;
 	public static var updateReadyToApply:Bool = false;
+	public static var pendingModUpdatePrompt:Bool = false;
+	public static var activeUpdateType:String = 'engine';
 	private static var _includeModInUpdate:Bool = false;
 	private static var _pendingInstallDir:String = '';
+	private static var _engineInstallDir:String = '';
+	private static var _modInstallDir:String = '';
 	public static var progressValue:Float = 0;
 	public static var progressLabel:String = 'Preparing update...';
 	public static var progressTotal:Int = 0;
@@ -109,73 +116,191 @@ class UpdateManager
 		try {
 			var http = new haxe.Http(API_URL);
 			http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+			http.setHeader('Accept', 'application/vnd.github+json');
 			
 			http.onData = function(data:String) {
 				parseReleaseInfo(data, callback);
 			};
 			
 			http.onError = function(error:String) {
-				_updateCheckInProgress = false;
-				callback(false, false, false, 'Failed to check for updates: $error');
+				handleUpdateCheckFailure(callback, error);
 			};
 			
 			http.request(false);
 		} catch(e:Dynamic) {
-			_updateCheckInProgress = false;
-			callback(false, false, false, 'Error checking for updates: $e');
+			handleUpdateCheckFailure(callback, Std.string(e));
 		}
 		#else
 		callback(false, false, false, 'Update checking not supported on this platform');
 		#end
 	}
 	
+	private static function handleUpdateCheckFailure(callback:Bool->Bool->Bool->String->Void, ?error:String):Void
+	{
+		_updateCheckInProgress = false;
+		engineUpdateAvailable = false;
+		modUpdateAvailable = false;
+		updateAvailable = false;
+		_latestEngineVersion = '';
+		_latestModVersion = '';
+		_latestEngineTagName = '';
+		_latestModTagName = '';
+		_latestReleaseTag = '';
+		latestEngineVersionDisplay = CURRENT_ENGINE_VERSION;
+		latestModVersionDisplay = CURRENT_MOD_VERSION;
+		latestReleaseTag = '';
+		latestReleaseName = '';
+		latestReleaseBody = '';
+		latestReleaseUrl = '';
+		trace('Update check unavailable: ' + (error != null && error.length > 0 ? error : 'GitHub API request failed'));
+		callback(false, false, false, '');
+	}
+
 	private static function parseReleaseInfo(jsonString:String, callback:Bool->Bool->Bool->String->Void):Void
 	{
 		try {
 			var tags:Array<Dynamic> = Json.parse(jsonString);
-			_latestEngineVersion = findLatestVersionForPrefix(tags, 'engine');
-			_latestModVersion = findLatestVersionForPrefix(tags, 'mod');
-			_latestReleaseTag = _latestEngineVersion.length > 0 ? 'engine-' + _latestEngineVersion : '';
-			latestEngineVersionDisplay = _latestEngineVersion;
-			latestModVersionDisplay = _latestModVersion;
-			latestReleaseTag = '';
-			latestReleaseName = '';
-			latestReleaseBody = '';
-			latestReleaseUrl = '';
-			
-			engineUpdateAvailable = _latestEngineVersion.length > 0 && compareVersions(_latestEngineVersion, CURRENT_ENGINE_VERSION) > 0;
-			
-			modUpdateAvailable = false;
-			if(hasInternetFavoritesMod) {
-				modUpdateAvailable = _latestModVersion.length > 0 && compareVersions(_latestModVersion, CURRENT_MOD_VERSION) > 0;
-				trace('Mod update check: installed=$hasInternetFavoritesMod currentMod=$CURRENT_MOD_VERSION latestMod=$_latestModVersion result=$modUpdateAvailable');
-			} else {
-				trace('Internet Favorites mod not found - skipping mod update check');
+			var engineInfo = findLatestTagInfoForPrefix(tags, 'engine');
+			var modInfo = findLatestTagInfoForPrefix(tags, 'mod');
+			_latestEngineVersion = engineInfo.version;
+			_latestEngineTagName = engineInfo.tagName;
+			_latestModVersion = modInfo.version;
+			_latestModTagName = modInfo.tagName;
+			if(_latestEngineVersion.length == 0 && _latestModVersion.length == 0) {
+				fetchTagFallback(callback);
+				return;
 			}
-			
-			updateAvailable = engineUpdateAvailable || modUpdateAvailable;
-			if(updateAvailable) {
-				var releaseTag = getPreferredReleaseTag();
-				latestReleaseTag = releaseTag;
-				latestReleaseUrl = releaseTag.length > 0 ? 'https://github.com/${REPO}/releases/tag/${releaseTag}' : '';
-				if(releaseTag.length > 0) {
-					fetchReleaseDetails(releaseTag);
-				}
-			}
-			
-			_updateCheckInProgress = false;
-			callback(updateAvailable, engineUpdateAvailable, modUpdateAvailable, '');
+			finishUpdateCheck(callback);
 		} catch(e:Dynamic) {
-			_updateCheckInProgress = false;
-			callback(false, false, false, 'Failed to parse version info: $e');
+			handleUpdateCheckFailure(callback, 'Failed to parse version info: $e');
 		}
+	}
+
+	private static function fetchTagFallback(callback:Bool->Bool->Bool->String->Void):Void
+	{
+		#if sys
+		try {
+			var tagsUrl = 'https://github.com/${REPO}/tags';
+			var http = new haxe.Http(tagsUrl);
+			http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+			http.onData = function(data:String) {
+				try {
+					var tags:Array<String> = [];
+					var regex = ~/href="\/PringleKitten\/KitsModFolder\/releases\/tag\/([^"#?]+)"/g;
+					while(regex.match(data)) {
+						var tagName = regex.matched(1);
+						if(tagName.length > 0 && !containsString(tags, tagName)) {
+							tags.push(tagName);
+						}
+						data = regex.matchedRight();
+					}
+					if(tags.length > 0) {
+						var engineInfo = findLatestTagInfoForFallback(tags, 'engine');
+						var modInfo = findLatestTagInfoForFallback(tags, 'mod');
+						_latestEngineVersion = engineInfo.version;
+						_latestEngineTagName = engineInfo.tagName;
+						_latestModVersion = modInfo.version;
+						_latestModTagName = modInfo.tagName;
+					} else {
+						_latestEngineVersion = '';
+						_latestEngineTagName = '';
+						_latestModVersion = '';
+						_latestModTagName = '';
+					}
+					finishUpdateCheck(callback);
+				} catch(e:Dynamic) {
+					handleUpdateCheckFailure(callback, 'Failed to parse fallback tag info: $e');
+				}
+			};
+			http.onError = function(error:String) {
+				handleUpdateCheckFailure(callback, error);
+			};
+			http.request(false);
+		} catch(e:Dynamic) {
+			handleUpdateCheckFailure(callback, Std.string(e));
+		}
+		#end
+	}
+
+	private static function findLatestTagInfoForFallback(tags:Array<String>, prefix:String):{version:String, tagName:String}
+	{
+		var result:{version:String, tagName:String} = {version: '', tagName: ''};
+		var prefixLower = prefix != null ? prefix.toLowerCase() : '';
+		for(tagName in tags) {
+			if(tagName == null || tagName.length == 0) continue;
+			var normalized = StringTools.trim(tagName);
+			if(normalized.startsWith('v')) normalized = normalized.substring(1);
+			var normalizedLower = normalized.toLowerCase();
+			if(!normalizedLower.startsWith(prefixLower + '-')) continue;
+			var version = extractVersionFromTag(normalized);
+			if(version.length == 0) continue;
+			if(result.version.length == 0 || compareVersions(version, result.version) > 0) {
+				result.version = version;
+				result.tagName = tagName;
+			}
+		}
+		return result;
+	}
+
+	private static function finishUpdateCheck(callback:Bool->Bool->Bool->String->Void):Void
+	{
+		_latestReleaseTag = _latestEngineTagName.length > 0 ? _latestEngineTagName : (_latestEngineVersion.length > 0 ? 'engine-' + _latestEngineVersion : '');
+		latestEngineVersionDisplay = _latestEngineVersion;
+		latestModVersionDisplay = _latestModVersion;
+		latestReleaseTag = '';
+		latestReleaseName = '';
+		latestReleaseBody = '';
+		latestReleaseUrl = '';
+
+		engineUpdateAvailable = _latestEngineVersion.length > 0 && compareVersions(_latestEngineVersion, CURRENT_ENGINE_VERSION) > 0;
+
+		modUpdateAvailable = false;
+		if(hasInternetFavoritesMod) {
+			modUpdateAvailable = _latestModVersion.length > 0 && compareVersions(_latestModVersion, CURRENT_MOD_VERSION) > 0;
+			trace('Mod update check: installed=$hasInternetFavoritesMod currentMod=$CURRENT_MOD_VERSION latestMod=$_latestModVersion result=$modUpdateAvailable');
+		} else {
+			trace('Internet Favorites mod not found - skipping mod update check');
+		}
+
+		updateAvailable = engineUpdateAvailable || modUpdateAvailable;
+		if(updateAvailable) {
+			var releaseTag = getPreferredReleaseTag();
+			latestReleaseTag = releaseTag;
+			latestReleaseUrl = releaseTag.length > 0 ? 'https://github.com/${REPO}/releases/tag/${releaseTag}' : '';
+			if(releaseTag.length > 0) {
+				fetchReleaseDetails(releaseTag);
+			}
+		}
+
+		_updateCheckInProgress = false;
+		callback(updateAvailable, engineUpdateAvailable, modUpdateAvailable, '');
 	}
 
 	private static function getPreferredReleaseTag():String
 	{
+		if(modUpdateAvailable && _latestModTagName.length > 0) return _latestModTagName;
+		if(engineUpdateAvailable && _latestEngineTagName.length > 0) return _latestEngineTagName;
 		if(modUpdateAvailable && _latestModVersion.length > 0) return 'mod-' + _latestModVersion;
 		if(engineUpdateAvailable && _latestEngineVersion.length > 0) return 'engine-' + _latestEngineVersion;
 		return '';
+	}
+
+	public static function getReleaseTagForUpdateKind(updateKind:String):String
+	{
+		if(updateKind == 'mod') {
+			if(_latestModTagName.length > 0) return _latestModTagName;
+			if(_latestModVersion.length > 0) return 'mod-' + _latestModVersion;
+			return '';
+		}
+		if(_latestEngineTagName.length > 0) return _latestEngineTagName;
+		if(_latestEngineVersion.length > 0) return 'engine-' + _latestEngineVersion;
+		return '';
+	}
+
+	public static function getReleaseUrlForUpdateKind(updateKind:String):String
+	{
+		var releaseTag = getReleaseTagForUpdateKind(updateKind);
+		return releaseTag.length > 0 ? 'https://github.com/${REPO}/releases/tag/${releaseTag}' : '';
 	}
 
 	private static function fetchReleaseDetails(tagName:String):Void
@@ -208,22 +333,25 @@ class UpdateManager
 		#end
 	}
 
-	private static function findLatestVersionForPrefix(tags:Array<Dynamic>, prefix:String):String
+	private static function findLatestTagInfoForPrefix(tags:Array<Dynamic>, prefix:String):{version:String, tagName:String}
 	{
-		var latest:String = '';
+		var result:{version:String, tagName:String} = {version: '', tagName: ''};
+		var prefixLower = prefix != null ? prefix.toLowerCase() : '';
 		for(entry in tags) {
 			var tagName:String = entry != null ? Std.string(entry.name) : '';
 			if(tagName.length == 0) continue;
 			var normalized = StringTools.trim(tagName);
 			if(normalized.startsWith('v')) normalized = normalized.substring(1);
-			if(!normalized.startsWith(prefix + '-')) continue;
+			var normalizedLower = normalized.toLowerCase();
+			if(!normalizedLower.startsWith(prefixLower + '-')) continue;
 			var version = extractVersionFromTag(normalized);
 			if(version.length == 0) continue;
-			if(latest.length == 0 || compareVersions(version, latest) > 0) {
-				latest = version;
+			if(result.version.length == 0 || compareVersions(version, result.version) > 0) {
+				result.version = version;
+				result.tagName = tagName;
 			}
 		}
-		return latest;
+		return result;
 	}
 
 	private static function extractVersionFromTag(tag:String):String
@@ -232,11 +360,27 @@ class UpdateManager
 		var text = StringTools.trim(tag);
 		if(text.length == 0) return '';
 		if(text.startsWith('v')) text = text.substring(1);
-		var regex = ~/([0-9]+(?:\.[0-9]+)*(?:[A-Za-z0-9._-]+)?)/;
-		if(regex.match(text)) {
-			return regex.matched(1);
+
+		var startIndex = -1;
+		for(i in 0...text.length) {
+			var ch = text.charAt(i);
+			if(ch >= '0' && ch <= '9') {
+				startIndex = i;
+				break;
+			}
 		}
-		return '';
+		if(startIndex < 0) return '';
+
+		var endIndex = startIndex;
+		while(endIndex < text.length) {
+			var ch = text.charAt(endIndex);
+			if(ch >= '0' && ch <= '9' || ch == '.' || ch == '_' || ch == '-' || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+				endIndex++;
+			} else {
+				break;
+			}
+		}
+		return text.substring(startIndex, endIndex);
 	}
 	
 	/**
@@ -254,6 +398,10 @@ class UpdateManager
 			
 			if(p1 > p2) return 1;
 			if(p1 < p2) return -1;
+		}
+
+		if(parsed1.parts.length == 0 && parsed2.parts.length == 0) {
+			return compareSuffix(parsed1.suffix, parsed2.suffix);
 		}
 		
 		if(parsed1.suffix.length == 0 && parsed2.suffix.length > 0) return -1;
@@ -297,6 +445,11 @@ class UpdateManager
 	{
 		var leftLower = left.toLowerCase();
 		var rightLower = right.toLowerCase();
+		if(leftLower == rightLower) return 0;
+		if(leftLower.length == 0) return -1;
+		if(rightLower.length == 0) return 1;
+		if(leftLower == 'r' || leftLower == 'rev' || leftLower == 'revision') return 1;
+		if(rightLower == 'r' || rightLower == 'rev' || rightLower == 'revision') return -1;
 		var maxLen = Std.int(Math.max(leftLower.length, rightLower.length));
 		for(i in 0...maxLen) {
 			var leftChar = i < leftLower.length ? leftLower.charCodeAt(i) : 0;
@@ -441,12 +594,23 @@ class UpdateManager
 	 */
 	public static function downloadAndApplyUpdates(callback:Bool->String->Void, includeMod:Bool = false):Void
 	{
+		startUpdateDownload(callback, includeMod, false);
+	}
+
+	public static function downloadModUpdateAfterEngine(callback:Bool->String->Void):Void
+	{
+		startUpdateDownload(callback, true, true);
+	}
+
+	private static function startUpdateDownload(callback:Bool->String->Void, includeMod:Bool, preserveExistingInstallState:Bool):Void
+	{
 		if(_downloadInProgress || updateThreadActive) return;
 		
 		_downloadInProgress = true;
 		_includeModInUpdate = includeMod;
+		activeUpdateType = includeMod ? 'mod' : 'engine';
 		postCloseInstallPending = false;
-		resetProgressState();
+		resetProgressState(preserveExistingInstallState);
 		updateThreadActive = true;
 		
 		#if sys
@@ -479,7 +643,7 @@ class UpdateManager
 	/**
 	 * Fetch the file list for a release tag from the GitHub tree API.
 	 */
-	private static function resetProgressState():Void
+	private static function resetProgressState(preserveExistingInstallState:Bool = false):Void
 	{
 		progressValue = 0;
 		progressLabel = 'Preparing update...';
@@ -491,7 +655,12 @@ class UpdateManager
 		updateThreadMessage = '';
 		updateReadyToApply = false;
 		postCloseInstallPending = false;
-		_pendingInstallDir = '';
+		pendingModUpdatePrompt = false;
+		if(!preserveExistingInstallState) {
+			_pendingInstallDir = '';
+			_engineInstallDir = '';
+			_modInstallDir = '';
+		}
 	}
 
 	private static function setProgress(label:String, current:Int, total:Int):Void
@@ -524,14 +693,17 @@ class UpdateManager
 
 	private static function getTargetTagName(includeMod:Bool):String
 	{
+		if(includeMod && modUpdateAvailable && _latestModTagName.length > 0) {
+			return _latestModTagName;
+		}
+		if(engineUpdateAvailable && _latestEngineTagName.length > 0) {
+			return _latestEngineTagName;
+		}
 		if(includeMod && modUpdateAvailable && _latestModVersion.length > 0) {
 			return 'mod-' + _latestModVersion;
 		}
 		if(engineUpdateAvailable && _latestEngineVersion.length > 0) {
 			return 'engine-' + _latestEngineVersion;
-		}
-		if(modUpdateAvailable && _latestModVersion.length > 0) {
-			return 'mod-' + _latestModVersion;
 		}
 		return '';
 	}
@@ -542,19 +714,537 @@ class UpdateManager
 			return 'mod-' + CURRENT_MOD_VERSION;
 		}
 		if(CURRENT_ENGINE_VERSION != null && CURRENT_ENGINE_VERSION.length > 0) {
+			var currentEngineTag = getMatchingReleaseTag(CURRENT_ENGINE_VERSION);
+			if(currentEngineTag.length > 0) return currentEngineTag;
 			return 'engine-' + CURRENT_ENGINE_VERSION;
 		}
-		if(includeMod && CURRENT_MOD_VERSION != null && CURRENT_MOD_VERSION.length > 0 && CURRENT_MOD_VERSION != '0.0.0') {
+		if(includeMod && CURRENT_MOD_VERSION != null && CURRENT_MOD_VERSION.length > 0 && CURRENT_MOD_VERSION.length != '0.0.0'.length) {
 			return 'mod-' + CURRENT_MOD_VERSION;
 		}
-		return _latestEngineVersion.length > 0 ? 'engine-' + _latestEngineVersion : '';
+		return _latestEngineVersion.length > 0 ? getMatchingReleaseTag(_latestEngineVersion) : '';
+	}
+
+	private static function getMatchingReleaseTag(version:String):String
+	{
+		if(version == null || version.length == 0) return '';
+		var normalized = StringTools.trim(version);
+		if(normalized.startsWith('v')) normalized = normalized.substring(1);
+		var candidates:Array<String> = [];
+		addUniqueCandidate(candidates, 'Engine-' + normalized);
+		addUniqueCandidate(candidates, 'engine-' + normalized);
+		addUniqueCandidate(candidates, normalized);
+		addUniqueCandidate(candidates, 'v' + normalized);
+		for(candidate in candidates) {
+			if(candidate.length > 0) return candidate;
+		}
+		return '';
 	}
 
 	private static function fetchChangedFiles(baseTag:String, headTag:String, includeMod:Bool, callback:Bool->String->Void):Void
 	{
-		var baseCandidates:Array<String> = buildTagCandidates(baseTag);
-		var headCandidates:Array<String> = buildTagCandidates(headTag);
-		resolveBaseTagAndCompare(0, baseCandidates, headCandidates, includeMod, callback);
+		resolveRemoteTagNameString(baseTag, function(resolvedBaseTag:String) {
+			resolveRemoteTagNameString(headTag, function(resolvedHeadTag:String) {
+				var compareBaseTag = resolvedBaseTag.length > 0 ? resolvedBaseTag : baseTag;
+				var compareHeadTag = resolvedHeadTag.length > 0 ? resolvedHeadTag : headTag;
+				resolveComparableBaseTag(compareBaseTag, compareHeadTag, function(resolvedCompareBaseTag:String) {
+					var finalBaseTag = resolvedCompareBaseTag.length > 0 ? resolvedCompareBaseTag : compareBaseTag;
+					trace('Using GitHub compare API for $finalBaseTag -> $compareHeadTag');
+					fetchCompareChanges(finalBaseTag, compareHeadTag, includeMod, function(files:Array<String>, deletions:Array<String>) {
+						if((files == null || files.length == 0) && (deletions == null || deletions.length == 0)) {
+							finishUpdate(false, 'No changed files could be resolved between the current and target versions.');
+						} else {
+							downloadFiles(files, deletions, compareHeadTag, callback);
+						}
+					});
+				});
+			});
+		});
+	}
+
+	private static function resolveComparableBaseTag(baseTag:String, headTag:String, callback:String->Void):Void
+	{
+		if(baseTag == null || baseTag.length == 0 || headTag == null || headTag.length == 0) {
+			callback(baseTag);
+			return;
+		}
+		var tagsUrl = 'https://api.github.com/repos/${REPO}/tags?per_page=100';
+		var http = new haxe.Http(tagsUrl);
+		http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+		http.onData = function(data:String) {
+			try {
+				var tags:Array<Dynamic> = Json.parse(data);
+				var bestTag = findBestComparableBaseTag(baseTag, headTag, tags);
+				callback(bestTag.length > 0 ? bestTag : baseTag);
+			} catch(e:Dynamic) {
+				callback(baseTag);
+			}
+		};
+		http.onError = function(error:String) {
+			callback(baseTag);
+		};
+		http.request(false);
+	}
+
+	private static function findBestComparableBaseTag(baseTag:String, headTag:String, remoteTags:Array<Dynamic>):String
+	{
+		if(baseTag == null || baseTag.length == 0 || remoteTags == null) return '';
+		var normalizedBase = normalizeTag(baseTag);
+		var normalizedHead = normalizeTag(headTag);
+		var baseVersion = extractVersionFromTag(baseTag);
+		var baseKind = getTagKind(baseTag);
+		var bestTag = '';
+		var bestScore = -1;
+		for(entry in remoteTags) {
+			var remoteTag:String = entry != null ? Std.string(entry.name) : '';
+			if(remoteTag.length == 0) continue;
+			var normalizedRemote = normalizeTag(remoteTag);
+			if(normalizedRemote.length == 0 || normalizedRemote == normalizedHead || normalizedRemote == normalizedBase) continue;
+			var remoteKind = getTagKind(remoteTag);
+			var remoteVersion = extractVersionFromTag(remoteTag);
+			if(remoteVersion.length == 0) continue;
+			var isVersionCompatible = isComparableReleaseVersion(baseVersion, remoteVersion);
+			if(baseKind.length > 0) {
+				if(remoteKind.length > 0 && remoteKind != baseKind && !isVersionCompatible) continue;
+				if(remoteKind.length == 0 && !isVersionCompatible) continue;
+			}
+			if(!isVersionCompatible) continue;
+			var remoteLower = remoteTag.toLowerCase();
+			if(remoteLower.indexOf('alpha') >= 0 || remoteLower.indexOf('beta') >= 0 || remoteLower.indexOf('dev') >= 0 || remoteLower.indexOf('nightly') >= 0) continue;
+			var score = 0;
+			if(baseVersion.length > 0) {
+				var baseCore = getComparableVersionCore(baseVersion);
+				var remoteCore = getComparableVersionCore(remoteVersion);
+				if(remoteCore == baseCore) {
+					score += 100;
+				} else {
+					var basePrefix = getVersionPrefix(baseCore);
+					if(basePrefix.length > 0 && remoteCore.indexOf(basePrefix) >= 0) {
+						score += 40;
+					}
+				}
+			}
+			if(normalizedRemote.indexOf(normalizedBase) >= 0) score += 50;
+			if(remoteLower.indexOf('engine') >= 0) score += 8;
+			if(remoteLower.indexOf('release') >= 0) score += 4;
+			if(score > bestScore) {
+				bestTag = remoteTag;
+				bestScore = score;
+			}
+		}
+		return bestTag;
+	}
+
+	private static function getTagKind(tag:String):String
+	{
+		if(tag == null || tag.length == 0) return '';
+		var normalized = normalizeTag(tag);
+		if(normalized.startsWith('engine-')) return 'engine';
+		if(normalized.startsWith('mod-')) return 'mod';
+		if(normalized.indexOf('engine') >= 0) return 'engine';
+		if(normalized.indexOf('mod') >= 0) return 'mod';
+		return '';
+	}
+
+	private static function isComparableReleaseVersion(baseVersion:String, remoteVersion:String):Bool
+	{
+		if(baseVersion == null || baseVersion.length == 0 || remoteVersion == null || remoteVersion.length == 0) return false;
+		var baseCore = getComparableVersionCore(baseVersion);
+		var remoteCore = getComparableVersionCore(remoteVersion);
+		if(baseCore.length == 0 || remoteCore.length == 0) return false;
+		if(baseCore == remoteCore) return true;
+		return remoteCore.indexOf(baseCore + '.') >= 0 || remoteCore.indexOf(baseCore + '-') >= 0 || remoteCore.indexOf(baseCore + '_') >= 0;
+	}
+
+	private static function getComparableVersionCore(version:String):String
+	{
+		if(version == null || version.length == 0) return '';
+		var text = StringTools.trim(version);
+		if(text.length == 0) return '';
+		var lower = text.toLowerCase();
+		for(suffix in ['revision', 'rev', 'release', 'r']) {
+			if(lower.endsWith(suffix)) {
+				return StringTools.trim(text.substring(0, text.length - suffix.length));
+			}
+		}
+		return text;
+	}
+
+	private static function fetchCompareChanges(baseTag:String, headTag:String, includeMod:Bool, callback:Array<String>->Array<String>->Void):Void
+	{
+		if(baseTag == null || baseTag.length == 0 || headTag == null || headTag.length == 0) {
+			callback([], []);
+			return;
+		}
+
+		var compareUrl = 'https://api.github.com/repos/${REPO}/compare/${baseTag}...${headTag}';
+		trace('Requesting compare URL: $compareUrl');
+		var http = new haxe.Http(compareUrl);
+		http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+		http.onData = function(data:String) {
+			try {
+				var compareData:Dynamic = Json.parse(data);
+				var compareOperations = collectCompareOperations(compareData, includeMod);
+				var compareFiles:Array<String> = compareOperations.files != null ? compareOperations.files : [];
+				var compareDeletions:Array<String> = compareOperations.deletions != null ? compareOperations.deletions : [];
+				var compareCommits:Array<String> = collectCommitShas(compareData);
+				if((compareFiles.length > 0) || (compareDeletions.length > 0)) {
+					trace('Using compare API file list for $baseTag -> $headTag (${compareFiles.length} files, ${compareDeletions.length} deletions)');
+					processCompareOperations(compareFiles, compareDeletions, headTag, callback);
+				} else if(compareCommits.length > 0) {
+					trace('Compare API returned commits but no file list; inspecting commits for $baseTag -> $headTag');
+					inspectCommitFiles(compareCommits, 0, includeMod, headTag, callback);
+				} else {
+					trace('Compare API returned no file changes; falling back to tree comparison for $baseTag -> $headTag');
+					fallbackToTreeComparison(baseTag, headTag, includeMod, callback);
+				}
+			} catch(e:Dynamic) {
+				trace('Compare API parse failed: $e');
+				fallbackToCompareDiff(baseTag, headTag, includeMod, callback);
+			}
+		};
+		http.onError = function(error:String) {
+			trace('Compare API request failed: $error');
+			fallbackToCompareDiff(baseTag, headTag, includeMod, callback);
+		};
+		http.request(false);
+	}
+
+	private static function fallbackToCompareDiff(baseTag:String, headTag:String, includeMod:Bool, callback:Array<String>->Array<String>->Void):Void
+	{
+		if(baseTag == null || baseTag.length == 0 || headTag == null || headTag.length == 0) {
+			fallbackToTreeComparison(baseTag, headTag, includeMod, callback);
+			return;
+		}
+
+		var diffUrl = 'https://github.com/${REPO}/compare/${baseTag}...${headTag}.diff';
+		var http = new haxe.Http(diffUrl);
+		http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+		http.onData = function(data:String) {
+			var files:Array<String> = [];
+			var deletions:Array<String> = [];
+			try {
+				var lines:Array<String> = data != null ? data.split('\n') : [];
+				for(line in lines) {
+					var trimmed:String = StringTools.trim(line);
+					if(trimmed.startsWith('diff --git ')) {
+						var dividerIndex = trimmed.indexOf(' b/');
+						if(dividerIndex >= 0) {
+							var oldPath = normalizeCompareDiffPath(trimmed.substring('diff --git a/'.length, dividerIndex));
+							var newPath = normalizeCompareDiffPath(trimmed.substring(dividerIndex + 3));
+							if(oldPath.length > 0 && isPathRelevantForUpdate(oldPath, includeMod)) {
+								if(newPath.length == 0) {
+									deletions.push(oldPath);
+								} else if(oldPath != newPath) {
+									deletions.push(oldPath);
+									files.push(newPath);
+								}
+							}
+							if(newPath.length > 0 && newPath != oldPath && isPathRelevantForUpdate(newPath, includeMod)) {
+								if(oldPath.length == 0) {
+									files.push(newPath);
+								}
+							}
+						}
+					}
+				}
+				if(files.length > 0 || deletions.length > 0) {
+					trace('Using GitHub compare diff fallback for $baseTag -> $headTag (${files.length} files, ${deletions.length} deletions)');
+					processCompareOperations(files, deletions, headTag, callback);
+					return;
+				}
+			} catch(e:Dynamic) {
+				trace('Compare diff fallback parse failed: $e');
+			}
+			fallbackToTreeComparison(baseTag, headTag, includeMod, callback);
+		};
+		http.onError = function(error:String) {
+			trace('Compare diff fallback request failed: $error');
+			fallbackToTreeComparison(baseTag, headTag, includeMod, callback);
+		};
+		http.request(false);
+	}
+
+	private static function normalizeCompareDiffPath(path:String):String
+	{
+		if(path == null) return '';
+		var normalized = StringTools.trim(path);
+		if(normalized.length == 0 || normalized == '/dev/null') return '';
+		while(normalized.startsWith('/')) normalized = normalized.substring(1);
+		if(normalized.startsWith('a/')) normalized = normalized.substring(2);
+		if(normalized.startsWith('b/')) normalized = normalized.substring(2);
+		return normalized;
+	}
+
+	private static function isPathRelevantForUpdate(path:String, includeMod:Bool):Bool
+	{
+		if(path == null || path.length == 0) return false;
+		if(shouldIgnoreFile(path)) return false;
+		if(includeMod) return true;
+		return !path.startsWith('mods/');
+	}
+
+	private static function processCompareOperations(remoteFiles:Array<String>, remoteDeletions:Array<String>, headTag:String, callback:Array<String>->Array<String>->Void):Void
+	{
+		var files:Array<String> = [];
+		var deletions:Array<String> = [];
+		var installDir = getInstallDirectory();
+		var fileIndex = 0;
+		var processNext:Void->Void;
+		processNext = function() {
+			if(fileIndex >= remoteFiles.length) {
+				for(deletionPath in remoteDeletions) {
+					var targetKind = getActiveInstallTargetKind();
+					var relativeDeletion = getRelativePathForInstallTarget(deletionPath, targetKind);
+					if(relativeDeletion.length > 0) {
+						deletions.push(deletionPath);
+					}
+				}
+				callback(files, deletions);
+				return;
+			}
+			var remotePath:String = remoteFiles[fileIndex++];
+			var targetKind = getActiveInstallTargetKind();
+			var relativePath = getRelativePathForInstallTarget(remotePath, targetKind);
+			if(relativePath.length == 0) {
+				processNext();
+				return;
+			}
+			var localPath = getExpectedInstallTargetPath(relativePath, installDir, targetKind);
+			if(!FileSystem.exists(localPath)) {
+				files.push(remotePath);
+				processNext();
+				return;
+			}
+			if(FileSystem.isDirectory(localPath)) {
+				processNext();
+				return;
+			}
+			checkRemoteFileAgainstLocal(headTag, remotePath, relativePath, localPath, function(needsDownload:Bool) {
+				if(needsDownload) {
+					files.push(remotePath);
+				}
+				processNext();
+			});
+		};
+		processNext();
+	}
+
+	private static function fallbackToTreeComparison(baseTag:String, headTag:String, includeMod:Bool, callback:Array<String>->Array<String>->Void):Void
+	{
+		fetchTagFileList(baseTag, includeMod, function(baseFiles:Array<String>) {
+			fetchTagFileList(headTag, includeMod, function(headFiles:Array<String>) {
+				var files:Array<String> = [];
+				var deletions:Array<String> = [];
+				var installDir = getInstallDirectory();
+				var baseFileList:Array<String> = baseFiles != null ? baseFiles : [];
+				var headFileList:Array<String> = headFiles != null ? headFiles : [];
+				var fileIndex = 0;
+				var processNext:Void->Void;
+				processNext = function() {
+					if(fileIndex >= headFileList.length) {
+						callback(files, deletions);
+						return;
+					}
+					var remotePath:String = headFileList[fileIndex++];
+					var targetKind = getActiveInstallTargetKind();
+					var relativePath = getRelativePathForInstallTarget(remotePath, targetKind);
+					if(relativePath.length == 0) {
+						processNext();
+						return;
+					}
+					var localPath = getExpectedInstallTargetPath(relativePath, installDir, targetKind);
+					if(!containsString(baseFileList, remotePath) || !FileSystem.exists(localPath) || FileSystem.isDirectory(localPath)) {
+						files.push(remotePath);
+						processNext();
+						return;
+					}
+					checkRemoteFileAgainstLocal(headTag, remotePath, relativePath, localPath, function(needsDownload:Bool) {
+						if(needsDownload) {
+							files.push(remotePath);
+						}
+						processNext();
+					});
+				};
+				processNext();
+			});
+		});
+	}
+
+	private static function resolveRemoteTagNameString(tagName:String, callback:String->Void):Void
+	{
+		if(tagName == null || tagName.length == 0) {
+			callback('');
+			return;
+		}
+		var normalizedTagName = normalizeTag(tagName);
+		var tagsUrl = 'https://api.github.com/repos/${REPO}/tags?per_page=100';
+		var http = new haxe.Http(tagsUrl);
+		http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+		http.onData = function(data:String) {
+			try {
+				var tags:Array<Dynamic> = Json.parse(data);
+				for(entry in tags) {
+					var remoteTag:String = entry != null ? Std.string(entry.name) : '';
+					if(remoteTag.length > 0) {
+						var normalizedRemoteTag = normalizeTag(remoteTag);
+						if(normalizedRemoteTag == normalizedTagName || normalizedRemoteTag.indexOf(normalizedTagName) >= 0 || normalizedTagName.indexOf(normalizedRemoteTag) >= 0) {
+							callback(remoteTag);
+							return;
+						}
+					}
+				}
+			} catch(e:Dynamic) {
+			}
+			callback('');
+		};
+		http.onError = function(error:String) {
+			callback('');
+		};
+		http.request(false);
+	}
+
+	private static function collectLocalInstallFiles(baseDir:String):Array<String>
+	{
+		var files:Array<String> = [];
+		#if sys
+		if(baseDir == null || baseDir.length == 0 || !FileSystem.exists(baseDir) || !FileSystem.isDirectory(baseDir)) return files;
+		var normalizedBase = StringTools.replace(Path.normalize(baseDir), '\\', '/');
+		collectLocalInstallFilesRecursive(normalizedBase, normalizedBase, files);
+		#end
+		return files;
+	}
+
+	private static function collectLocalInstallFilesRecursive(rootDir:String, currentDir:String, output:Array<String>):Void
+	{
+		#if sys
+		for(entry in FileSystem.readDirectory(currentDir)) {
+			var fullPath = Path.join([currentDir, entry]);
+			var normalizedPath = StringTools.replace(Path.normalize(fullPath), '\\', '/');
+			var normalizedCurrent = StringTools.replace(Path.normalize(currentDir), '\\', '/');
+			if(FileSystem.isDirectory(fullPath)) {
+				if(shouldSkipInstallDirectory(normalizedPath)) continue;
+				collectLocalInstallFilesRecursive(rootDir, normalizedPath, output);
+			} else {
+				var relativePath = normalizedPath.substring(rootDir.length).trim();
+				if(relativePath.startsWith('/')) relativePath = relativePath.substring(1);
+				if(relativePath.length > 0 && isTrackedInstallPath(relativePath)) {
+					output.push(relativePath);
+				}
+			}
+		}
+		#end
+	}
+
+	private static function shouldSkipInstallDirectory(path:String):Bool
+	{
+		if(path == null || path.length == 0) return false;
+		var normalized = path.toLowerCase();
+		return normalized.endsWith('/mods') || normalized.indexOf('/mods/') >= 0 || normalized.endsWith('/update_temp') || normalized.indexOf('/update_temp/') >= 0 || normalized.endsWith('/export') || normalized.indexOf('/export/') >= 0 || normalized.endsWith('/setup') || normalized.indexOf('/setup/') >= 0 || normalized.endsWith('/source') || normalized.indexOf('/source/') >= 0 || normalized.endsWith('/art') || normalized.indexOf('/art/') >= 0 || normalized.endsWith('/flashfiles') || normalized.indexOf('/flashfiles/') >= 0 || normalized.endsWith('/example_mods') || normalized.indexOf('/example_mods/') >= 0;
+	}
+
+	private static function isTrackedInstallPath(path:String):Bool
+	{
+		if(path == null || path.length == 0) return false;
+		var normalized = normalizeInstallPath(path).toLowerCase();
+		if(normalized.length == 0 || normalized == 'update_post_close.ps1' || normalized == '.update_manifest.txt' || normalized == 'modslist.txt') return false;
+		return normalized.startsWith('assets/') || normalized.startsWith('data/') || normalized.startsWith('shared/') || normalized.startsWith('songs/') || normalized.startsWith('weeks/') || normalized.startsWith('images/') || normalized.startsWith('fonts/') || normalized.startsWith('music/') || normalized.startsWith('sounds/') || normalized.startsWith('stages/') || normalized.startsWith('characters/') || normalized.startsWith('videos/') || normalized.startsWith('scripts/') || normalized.startsWith('shaders/');
+	}
+
+	private static function shouldTreatAsTextFile(path:String):Bool
+	{
+		if(path == null || path.length == 0) return false;
+		var normalized = path.toLowerCase();
+		return normalized.endsWith('.json') || normalized.endsWith('.txt') || normalized.endsWith('.lua') || normalized.endsWith('.hx') || normalized.endsWith('.xml') || normalized.endsWith('.md') || normalized.endsWith('.ini') || normalized.endsWith('.cfg') || normalized.endsWith('.yaml') || normalized.endsWith('.yml') || normalized.endsWith('.toml') || normalized.endsWith('.ps1') || normalized.endsWith('.bat') || normalized.endsWith('.sh') || normalized.endsWith('.properties');
+	}
+
+	private static function checkRemoteFileAgainstLocal(tagName:String, remotePath:String, relativePath:String, localPath:String, callback:Bool->Void):Void
+	{
+		if(localPath == null || localPath.length == 0) {
+			callback(true);
+			return;
+		}
+		if(!FileSystem.exists(localPath)) {
+			callback(true);
+			return;
+		}
+		if(shouldTreatAsTextFile(relativePath)) {
+			fetchRemoteTextContentForTag(tagName, remotePath, function(remoteContent:String) {
+				try {
+					if(remoteContent == null || remoteContent.length == 0) {
+						callback(false);
+					} else {
+						var currentContent = File.getContent(localPath);
+						callback(remoteContent != currentContent);
+					}
+				} catch(e:Dynamic) {
+					callback(false);
+				}
+			});
+			return;
+		}
+		fetchRemoteFileBytesForTag(tagName, remotePath, function(remoteBytes:Bytes) {
+			try {
+				if(remoteBytes == null) {
+					callback(false);
+					return;
+				}
+				var currentBytes = File.getBytes(localPath);
+				callback(!bytesEqual(remoteBytes, currentBytes));
+			} catch(e:Dynamic) {
+				callback(false);
+			}
+		});
+	}
+
+	private static function fetchRemoteTextContentForTag(tagName:String, remotePath:String, callback:String->Void):Void
+	{
+		if(tagName == null || tagName.length == 0 || remotePath == null || remotePath.length == 0) {
+			callback('');
+			return;
+		}
+		var url = 'https://raw.githubusercontent.com/${REPO}/${tagName}/${remotePath}';
+		fetchRemoteTextContent(url, callback);
+	}
+
+	private static function fetchRemoteFileBytesForTag(tagName:String, remotePath:String, callback:Bytes->Void):Void
+	{
+		if(tagName == null || tagName.length == 0 || remotePath == null || remotePath.length == 0) {
+			callback(null);
+			return;
+		}
+		var url = 'https://raw.githubusercontent.com/${REPO}/${tagName}/${remotePath}';
+		var http = new haxe.Http(url);
+		http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+		http.onBytes = function(bytes:Bytes) {
+			callback(bytes);
+		};
+		http.onError = function(error:String) {
+			callback(null);
+		};
+		http.request(false);
+	}
+
+	private static function fetchRemoteTextContent(url:String, callback:String->Void):Void
+	{
+		var http = new haxe.Http(url);
+		http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+		http.onData = function(data:String) {
+			callback(data);
+		};
+		http.onError = function(error:String) {
+			callback('');
+		};
+		http.request(false);
+	}
+
+	private static function bytesEqual(left:Bytes, right:Bytes):Bool
+	{
+		if(left == null || right == null) return left == right;
+		if(left.length != right.length) return false;
+		for(i in 0...left.length) {
+			if(left.get(i) != right.get(i)) return false;
+		}
+		return true;
 	}
 
 	private static function resolveBaseTagAndCompare(index:Int, baseCandidates:Array<String>, headCandidates:Array<String>, includeMod:Bool, callback:Bool->String->Void):Void
@@ -634,7 +1324,7 @@ class UpdateManager
 		if(trimmed.startsWith('v')) {
 			trimmed = trimmed.substring(1);
 		}
-		return trimmed;
+		return trimmed.toLowerCase();
 	}
 
 	private static function doesTagMatchBase(remoteTag:String, baseTag:String):Bool
@@ -720,7 +1410,9 @@ class UpdateManager
 
 						var commitShas:Array<String> = collectCommitShas(compareData);
 						if(commitShas.length > 0) {
-							inspectCommitFiles(commitShas, 0, includeMod, headTag, callback);
+							inspectCommitFiles(commitShas, 0, includeMod, headTag, function(files:Array<String>, deletions:Array<String>) {
+								downloadFiles(files, deletions, headTag, callback);
+							});
 							return;
 						}
 
@@ -744,6 +1436,20 @@ class UpdateManager
 			fetchTagFileList(headTag, includeMod, function(headFiles:Array<String>) {
 				var files:Array<String> = [];
 				var deletions:Array<String> = [];
+				var normalizedBaseTag = normalizeTag(baseTag);
+				var normalizedHeadTag = normalizeTag(headTag);
+				if(normalizedBaseTag.length > 0 && normalizedHeadTag.length > 0 && normalizedBaseTag == normalizedHeadTag) {
+					trace('Skipping update download: base and head tags are identical ($baseTag -> $headTag).');
+					onComplete([], []);
+					return;
+				}
+				var baseFileList:Array<String> = baseFiles != null ? baseFiles : [];
+				var headFileList:Array<String> = headFiles != null ? headFiles : [];
+				if(fileListsMatch(baseFileList, headFileList)) {
+					trace('Skipping update download: file lists are identical for $baseTag -> $headTag.');
+					onComplete([], []);
+					return;
+				}
 
 				for(path in initialFiles) {
 					if(path != null && path.length > 0 && !containsString(files, path)) {
@@ -756,17 +1462,18 @@ class UpdateManager
 					}
 				}
 
-				for(path in headFiles) {
-					if(path == null || path.length == 0 || isPathInList(baseFiles, path)) continue;
+				for(path in headFileList) {
+					if(path == null || path.length == 0 || isPathInList(baseFileList, path)) continue;
 					if(!containsString(files, path)) {
 						files.push(path);
 					}
 				}
 
-				for(path in baseFiles) {
-					if(path == null || path.length == 0 || isPathInList(headFiles, path)) continue;
-					if(!containsString(deletions, path)) {
-						deletions.push(path);
+				if(initialDeletions != null) {
+					for(path in initialDeletions) {
+						if(path != null && path.length > 0 && !containsString(deletions, path)) {
+							deletions.push(path);
+						}
 					}
 				}
 
@@ -801,7 +1508,41 @@ class UpdateManager
 				}
 			} catch(e:Dynamic) {
 			}
-			callback(files);
+			if(files.length == 0) {
+				resolveRemoteTagName(tagName, callback, includeMod);
+			} else {
+				callback(files);
+			}
+		};
+		http.onError = function(error:String) {
+			resolveRemoteTagName(tagName, callback, includeMod);
+		};
+		http.request(false);
+	}
+
+	private static function resolveRemoteTagName(tagName:String, callback:Array<String>->Void, includeMod:Bool):Void
+	{
+		if(tagName == null || tagName.length == 0) {
+			callback([]);
+			return;
+		}
+
+		var tagsUrl = 'https://api.github.com/repos/${REPO}/tags?per_page=100';
+		var http = new haxe.Http(tagsUrl);
+		http.setHeader('User-Agent', 'FNF-IFE-UpdateChecker');
+		http.onData = function(data:String) {
+			try {
+				var tags:Array<Dynamic> = Json.parse(data);
+				for(entry in tags) {
+					var remoteTag:String = entry != null ? Std.string(entry.name) : '';
+					if(remoteTag.length > 0 && remoteTag.toLowerCase() == tagName.toLowerCase() && remoteTag != tagName) {
+						fetchTagFileList(remoteTag, includeMod, callback);
+						return;
+					}
+				}
+			} catch(e:Dynamic) {
+			}
+			callback([]);
 		};
 		http.onError = function(error:String) {
 			callback([]);
@@ -836,8 +1577,9 @@ class UpdateManager
 				var previousPath:String = entry.previous_filename != null ? Std.string(entry.previous_filename) : '';
 				var isRemoval = entry.status == 'removed' || entry.status == 'renamed' || entry.status == 'deleted';
 				if(isRemoval) {
-					if(previousPath.length > 0 && !shouldIgnoreFile(previousPath)) {
-						deletions.push(previousPath);
+					var deletionTarget = previousPath.length > 0 ? previousPath : filePath;
+					if(deletionTarget.length > 0 && !shouldIgnoreFile(deletionTarget) && (includeMod || !deletionTarget.startsWith('mods/'))) {
+						deletions.push(deletionTarget);
 					}
 					if(filePath.length > 0 && !shouldIgnoreFile(filePath) && entry.status != 'removed' && entry.status != 'deleted') {
 						files.push(filePath);
@@ -864,7 +1606,7 @@ class UpdateManager
 		return shas;
 	}
 
-	private static function inspectCommitFiles(commitShas:Array<String>, index:Int, includeMod:Bool, headTag:String, callback:Bool->String->Void):Void
+	private static function inspectCommitFiles(commitShas:Array<String>, index:Int, includeMod:Bool, headTag:String, callback:Array<String>->Array<String>->Void):Void
 	{
 		if(index >= commitShas.length) {
 			finishUpdate(false, 'No changed files could be resolved from the commit history.');
@@ -885,8 +1627,9 @@ class UpdateManager
 						var previousPath:String = entry.previous_filename != null ? Std.string(entry.previous_filename) : '';
 						var isRemoval = entry.status == 'removed' || entry.status == 'renamed' || entry.status == 'deleted';
 						if(isRemoval) {
-							if(previousPath.length > 0 && !shouldIgnoreFile(previousPath)) {
-								compareOperations.deletions.push(previousPath);
+							var deletionTarget = previousPath.length > 0 ? previousPath : filePath;
+							if(deletionTarget.length > 0 && !shouldIgnoreFile(deletionTarget) && (includeMod || !deletionTarget.startsWith('mods/'))) {
+								compareOperations.deletions.push(deletionTarget);
 							}
 							if(filePath.length > 0 && !shouldIgnoreFile(filePath) && entry.status != 'removed' && entry.status != 'deleted') {
 								compareOperations.files.push(filePath);
@@ -897,7 +1640,7 @@ class UpdateManager
 					}
 				}
 				if(compareOperations.files.length > 0 || compareOperations.deletions.length > 0) {
-					downloadFiles(compareOperations.files, compareOperations.deletions, headTag, callback);
+					processCompareOperations(compareOperations.files, compareOperations.deletions, headTag, callback);
 				} else {
 					inspectCommitFiles(commitShas, index, includeMod, headTag, callback);
 				}
@@ -917,6 +1660,16 @@ class UpdateManager
 			if(item == value) return true;
 		}
 		return false;
+	}
+
+	private static function fileListsMatch(left:Array<String>, right:Array<String>):Bool
+	{
+		if(left == null || right == null) return left == right;
+		if(left.length != right.length) return false;
+		for(path in left) {
+			if(!containsString(right, path)) return false;
+		}
+		return true;
 	}
 	
 	/**
@@ -998,11 +1751,14 @@ class UpdateManager
 		
 		#if sys
 		var installDir = getInstallDirectory();
-		var modsRoot = Path.join([installDir, 'mods']);
-		var downloadDir = Path.join([modsRoot, 'update_temp']);
+		var targetKind = getActiveInstallTargetKind();
+		var downloadDir = targetKind == 'mod'
+			? Path.join([installDir, 'mods', 'update_temp'])
+			: Path.join([installDir, 'assets', 'update_temp']);
 		try {
-			if(!FileSystem.exists(modsRoot)) {
-				FileSystem.createDirectory(modsRoot);
+			var targetRootDir = targetKind == 'mod' ? Path.join([installDir, 'mods']) : Path.join([installDir, 'assets']);
+			if(!FileSystem.exists(targetRootDir)) {
+				FileSystem.createDirectory(targetRootDir);
 			}
 			if(FileSystem.exists(downloadDir)) {
 				deleteDirectory(downloadDir);
@@ -1014,12 +1770,12 @@ class UpdateManager
 			var failedFiles:Array<String> = [];
 			var downloadedCount = 0;
 			var index:Int = 0;
-			setProgress('Downloading files', 0, files.length);
+			setProgress('Downloading ${getActiveUpdateKindLabel()} files', 0, files.length);
 			
 			if(removedFiles != null && removedFiles.length > 0) {
 				var manifestLines:Array<String> = [];
 				for(removedPath in removedFiles) {
-					var relativePath = getRelativePathForInstallTarget(removedPath);
+					var relativePath = getRelativePathForInstallTarget(removedPath, getActiveInstallTargetKind());
 					if(relativePath.length > 0 && !containsString(manifestLines, relativePath)) {
 						manifestLines.push(relativePath);
 					}
@@ -1046,7 +1802,7 @@ class UpdateManager
 				}
 				var file = files[index++];
 				var fileUrl = 'https://raw.githubusercontent.com/${REPO}/${tagName}/$file';
-				var relativePath = getRelativePathForInstallTarget(file);
+				var relativePath = getRelativePathForInstallTarget(file, getActiveInstallTargetKind());
 				var destPath = getModStagedPath(downloadDir, relativePath);
 				var dir = Path.directory(destPath);
 				if(!FileSystem.exists(dir)) {
@@ -1054,7 +1810,7 @@ class UpdateManager
 				}
 				if(downloadFileToPath(fileUrl, destPath)) {
 					downloadedCount++;
-					setProgress('Downloading files', downloadedCount, files.length);
+					setProgress('Downloading ${getActiveUpdateKindLabel()} files', downloadedCount, files.length);
 				} else {
 					failedFiles.push('$file (download failed)');
 				}
@@ -1071,12 +1827,22 @@ class UpdateManager
 	{
 		#if sys
 		_pendingInstallDir = tempDir;
+		if(_includeModInUpdate) {
+			_modInstallDir = tempDir;
+			_engineInstallDir = _engineInstallDir.length > 0 ? _engineInstallDir : '';
+			pendingModUpdatePrompt = false;
+		} else {
+			_engineInstallDir = tempDir;
+			_modInstallDir = _modInstallDir.length > 0 ? _modInstallDir : '';
+			pendingModUpdatePrompt = engineUpdateAvailable && modUpdateAvailable;
+		}
+		activeUpdateType = _includeModInUpdate ? 'mod' : 'engine';
 		updateThreadFinished = false;
 		updateThreadSuccessful = true;
 		updateThreadMessage = shouldAutoApplyPendingUpdate() ? 'Update downloaded. Applying in place...' : 'Update downloaded. Click Restart to apply and relaunch.';
 		pendingUpdate = true;
 		updateReadyToApply = true;
-		postCloseInstallPending = true;
+		postCloseInstallPending = false;
 		_downloadInProgress = false;
 		updateThreadActive = false;
 		progressLabel = 'Update ready to apply';
@@ -1089,17 +1855,10 @@ class UpdateManager
 	public static function applyPendingUpdate():Void
 	{
 		#if sys
-		if(_pendingInstallDir == null || _pendingInstallDir.length == 0) return;
-		setProgress('Applying update', 0, 1);
+		if((_engineInstallDir == null || _engineInstallDir.length == 0) && (_modInstallDir == null || _modInstallDir.length == 0) && (_pendingInstallDir == null || _pendingInstallDir.length == 0)) return;
+		setProgress('Applying ${getActiveUpdateKindLabel()} update', 0, 1);
 		try {
-			if(shouldAutoApplyPendingUpdate()) {
-				createPostCloseInstallScript(_pendingInstallDir);
-				updateReadyToApply = false;
-				postCloseInstallPending = true;
-				exitForPostCloseInstall();
-				return;
-			}
-			createPostCloseInstallScript(_pendingInstallDir);
+			createPostCloseInstallScript();
 			updateReadyToApply = false;
 			postCloseInstallPending = true;
 			exitForPostCloseInstall();
@@ -1109,59 +1868,44 @@ class UpdateManager
 		#end
 	}
 	
-	private static function createPostCloseInstallScript(tempDir:String):Void
+	private static function createPostCloseInstallScript():Void
 	{
 		#if sys
 		var installDir = getInstallDirectory();
-		var installTargets = getPostCloseInstallPaths(tempDir, installDir);
 		var scriptPath = Path.join([installDir, 'update_post_close.ps1']);
-		var exePath = Sys.programPath();
-		var normalizedTempDir = StringTools.replace(tempDir, '/', '\\');
-		var normalizedSourceRoot = StringTools.replace(installTargets.sourceRoot, '/', '\\');
-		var normalizedTargetRoot = StringTools.replace(installTargets.targetRoot, '/', '\\');
+		var exePath = getExpectedGameExecutablePath();
+		var stages:Array<{sourceRoot:String, targetRoot:String, includeMod:Bool}> = [];
+		if(_engineInstallDir != null && _engineInstallDir.length > 0) {
+			stages.push({sourceRoot: _engineInstallDir, targetRoot: installDir, includeMod: false});
+		}
+		if(_modInstallDir != null && _modInstallDir.length > 0) {
+			var modTargetRoot = getExistingModInstallRoot(installDir, _modInstallDir);
+			if(modTargetRoot == null || modTargetRoot.length == 0) {
+				modTargetRoot = Path.join([installDir, 'mods']);
+			}
+			stages.push({sourceRoot: _modInstallDir, targetRoot: modTargetRoot, includeMod: true});
+		}
+		if(stages.length == 0 && _pendingInstallDir != null && _pendingInstallDir.length > 0) {
+			stages.push({sourceRoot: _pendingInstallDir, targetRoot: installDir, includeMod: false});
+		}
+		if(stages.length == 0) return;
+		for(stage in stages) {
+			applyManifestDeletions(stage.sourceRoot, stage.targetRoot, stage.includeMod);
+		}
 		var scriptContent = 'param([string]$$GameExe)\r\n' +
 			'$$ErrorActionPreference = "Stop"\r\n' +
 			'$$scriptDir = Split-Path -Parent $$MyInvocation.MyCommand.Path\r\n' +
-			'$$updateDir = "' + normalizedTempDir + '"\r\n' +
-			'$$manifestPath = Join-Path $$updateDir ".update_manifest.txt"\r\n' +
 			'$$gameName = [System.IO.Path]::GetFileNameWithoutExtension($$GameExe)\r\n' +
 			'while ($$true) {\r\n' +
 			'  $$running = @(Get-Process -Name $$gameName -ErrorAction SilentlyContinue)\r\n' +
 			'  if ($$running.Count -eq 0) { break }\r\n' +
 			'  Stop-Process -Name $$gameName -Force -ErrorAction SilentlyContinue\r\n' +
 			'  Start-Sleep -Seconds 2\r\n' +
-			'}\r\n' +
-			'if (Test-Path $$updateDir) {\r\n' +
-			'  $$sourceRoot = [System.IO.Path]::GetFullPath("' + normalizedSourceRoot + '")\r\n' +
-			'  $$targetRoot = [System.IO.Path]::GetFullPath("' + normalizedTargetRoot + '")\r\n' +
-			'  $$deletePaths = @()\r\n' +
-			'  if (Test-Path $$manifestPath) {\r\n' +
-			'    $$deletePaths = Get-Content -LiteralPath $$manifestPath | Where-Object { $$_-and $$_.Trim().Length -gt 0 }\r\n' +
-			'    Remove-Item -LiteralPath $$manifestPath -Force -ErrorAction SilentlyContinue\r\n' +
-			'  }\r\n' +
-			'  foreach ($$relPath in $$deletePaths) {\r\n' +
-			'    $$targetPath = Join-Path $$targetRoot $$relPath\r\n' +
-			'    if (Test-Path $$targetPath) {\r\n' +
-			'      if (Test-Path $$targetPath -PathType Container) { Remove-Item -LiteralPath $$targetPath -Recurse -Force -ErrorAction SilentlyContinue } else { Remove-Item -LiteralPath $$targetPath -Force -ErrorAction SilentlyContinue }\r\n' +
-			'    }\r\n' +
-			'  }\r\n' +
-			'  if (-not (Test-Path $$targetRoot)) { New-Item -ItemType Directory -Path $$targetRoot -Force | Out-Null }\r\n' +
-			'  if (Test-Path (Join-Path $$targetRoot ".update_manifest.txt")) { Remove-Item -LiteralPath (Join-Path $$targetRoot ".update_manifest.txt") -Force -ErrorAction SilentlyContinue }\r\n' +
-			'  Get-ChildItem -LiteralPath $$sourceRoot -Recurse -Force | ForEach-Object {\r\n' +
-			'    $$relPath = $$_.FullName.Substring($$sourceRoot.Length).TrimStart([char[]]@("\\", "/"))\r\n' +
-			'    if ($$relPath -eq "") { return }\r\n' +
-			'    if ($$_.Name -eq ".update_manifest.txt") { return }\r\n' +
-					'    $$targetPath = Join-Path $$targetRoot $$relPath\r\n' +
-			'    $$targetParent = Split-Path -Parent $$targetPath\r\n' +
-			'    if ($$targetParent -and -not (Test-Path $$targetParent)) { New-Item -ItemType Directory -Path $$targetParent -Force | Out-Null }\r\n' +
-			'    $$targetFullPath = [System.IO.Path]::GetFullPath($$targetPath)\r\n' +
-			'    $$sourceFullPath = [System.IO.Path]::GetFullPath($$_.FullName)\r\n' +
-			'    if ($$targetFullPath -eq $$sourceFullPath) { return }\r\n' +
-			'    if ($$_.PSIsContainer) { New-Item -ItemType Directory -Path $$targetPath -Force | Out-Null } else { Copy-Item -LiteralPath $$_.FullName -Destination $$targetPath -Force }\r\n' +
-			'  }\r\n' +
-			'  Get-ChildItem -LiteralPath $$targetRoot -Directory -Recurse -Force | Sort-Object FullName -Descending | ForEach-Object { if ((Get-ChildItem -LiteralPath $$_.FullName -Force | Measure-Object).Count -eq 0) { Remove-Item -LiteralPath $$_.FullName -Force -ErrorAction SilentlyContinue } }\r\n' +
-			'  Remove-Item -Path $$updateDir -Recurse -Force -ErrorAction SilentlyContinue\r\n' +
-			'}\r\n' +
+			'}\r\n';
+		for(stage in stages) {
+			scriptContent += buildInstallStageScript(stage.sourceRoot, stage.targetRoot, stage.includeMod);
+		}
+		scriptContent +=
 			'if (Test-Path $$GameExe) {\r\n' +
 			'  Push-Location $$scriptDir\r\n' +
 			'  & $$GameExe\r\n' +
@@ -1173,9 +1917,97 @@ class UpdateManager
 			var windowsScriptPath = StringTools.replace(scriptPath, '/', '\\');
 			var windowsExePath = StringTools.replace(exePath, '/', '\\');
 			trace('Launching detached post-close installer: $windowsScriptPath');
-			Sys.command('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', windowsScriptPath, windowsExePath]);
+			Sys.command('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-NonInteractive', '-File', windowsScriptPath, windowsExePath]);
 		}
 		#end
+	}
+	
+	private static function applyManifestDeletions(sourceRoot:String, targetRoot:String, includeMod:Bool):Void
+	{
+		#if sys
+		if(sourceRoot == null || sourceRoot.length == 0 || targetRoot == null || targetRoot.length == 0) return;
+		var manifestPath = Path.join([sourceRoot, '.update_manifest.txt']);
+		if(!FileSystem.exists(manifestPath)) return;
+		try {
+			var manifestContent = File.getContent(manifestPath);
+			var lines:Array<String> = manifestContent != null ? manifestContent.split('\n') : [];
+			for(line in lines) {
+				var trimmed = StringTools.trim(line);
+				if(trimmed.length == 0) continue;
+				var relativePath = normalizeInstallPath(trimmed);
+				if(relativePath.length == 0) continue;
+				var targetPath = Path.join([targetRoot, relativePath]);
+				trace('Applying staged deletion: $targetPath');
+				if(FileSystem.exists(targetPath)) {
+					if(FileSystem.isDirectory(targetPath)) {
+						deleteDirectory(targetPath);
+					} else {
+						FileSystem.deleteFile(targetPath);
+					}
+				}
+			}
+		} catch(e:Dynamic) {
+			trace('Failed to apply manifest deletions from $sourceRoot: $e');
+		}
+		#end
+	}
+
+	private static function buildInstallStageScript(sourceRoot:String, targetRoot:String, includeMod:Bool):String
+	{
+		var normalizedSourceRoot = StringTools.replace(sourceRoot, '/', '\\');
+		var normalizedTargetRoot = StringTools.replace(targetRoot, '/', '\\');
+		var shouldStripAssetsPrefix = !includeMod;
+		var modsPrefixAdjustment = '    $$relPath = $$relPath -replace "^(?:mods[\\/])?(?:IFEModR2\\.0[\\/])?", ""\r\n';
+		var assetPathAdjustment = shouldStripAssetsPrefix ?
+			'    if ($$relPath -like "assets/*") { $$relPath = $$relPath.Substring(7) }\r\n' +
+			'    if ($$relPath -eq "assets") { $$relPath = "" }\r\n' :
+			'';
+		return 'if (Test-Path "' + normalizedSourceRoot + '") {\r\n' +
+			'  $$sourceRoot = [System.IO.Path]::GetFullPath("' + normalizedSourceRoot + '")\r\n' +
+			'  $$targetRoot = [System.IO.Path]::GetFullPath("' + normalizedTargetRoot + '")\r\n' +
+			'  $$manifestPath = Join-Path $$sourceRoot ".update_manifest.txt"\r\n' +
+			'  $$deletePaths = @()\r\n' +
+			'  if (Test-Path $$manifestPath) {\r\n' +
+			'    $$deletePaths = Get-Content -LiteralPath $$manifestPath | Where-Object { $$_-and $$_.Trim().Length -gt 0 }\r\n' +
+			'    Remove-Item -LiteralPath $$manifestPath -Force -ErrorAction SilentlyContinue\r\n' +
+			'  }\r\n' +
+			'  foreach ($$relPath in $$deletePaths) {\r\n' +
+			'    $$relPath = $$relPath.TrimStart([char[]]@("\\", "/"))\r\n' +
+			modsPrefixAdjustment +
+			assetPathAdjustment +
+			'    if ($$relPath -eq "") { continue }\r\n' +
+			'    $$targetPath = Join-Path $$targetRoot $$relPath\r\n' +
+			'    Write-Host "[UpdateManager] delete: $$targetPath"\r\n' +
+			'    if (Test-Path $$targetPath) {\r\n' +
+			'      if (Test-Path $$targetPath -PathType Container) { Remove-Item -LiteralPath $$targetPath -Recurse -Force -ErrorAction SilentlyContinue } else { Remove-Item -LiteralPath $$targetPath -Force -ErrorAction SilentlyContinue }\r\n' +
+			'    }\r\n' +
+			'  }\r\n' +
+			'  if (-not (Test-Path $$targetRoot)) { New-Item -ItemType Directory -Path $$targetRoot -Force | Out-Null }\r\n' +
+			'  Get-ChildItem -LiteralPath $$sourceRoot -Recurse -Force | ForEach-Object {\r\n' +
+			'    $$relPath = $$_.FullName.Substring($$sourceRoot.Length).TrimStart([char[]]@("\\", "/"))\r\n' +
+			'    if ($$relPath -eq "") { return }\r\n' +
+			'    if ($$_.Name -eq ".update_manifest.txt") { return }\r\n' +
+			assetPathAdjustment +
+			modsPrefixAdjustment +
+			'    $$relPath = $$relPath.TrimStart([char[]]@("\\", "/"))\r\n' +
+			'    $$targetPath = if ($$relPath) { Join-Path $$targetRoot $$relPath } else { $$targetRoot }\r\n' +
+			'    $$targetParent = Split-Path -Parent $$targetPath\r\n' +
+			'    if ($$targetParent -and -not (Test-Path $$targetParent)) { New-Item -ItemType Directory -Path $$targetParent -Force | Out-Null }\r\n' +
+			'    $$targetFullPath = [System.IO.Path]::GetFullPath($$targetPath)\r\n' +
+			'    $$sourceFullPath = [System.IO.Path]::GetFullPath($$_.FullName)\r\n' +
+			'    if ($$targetFullPath -eq $$sourceFullPath) { return }\r\n' +
+			'    Write-Host "[UpdateManager] copy: $$targetPath"\r\n' +
+			'    if ($$_.PSIsContainer) {\r\n' +
+			'      if (Test-Path $$targetPath -PathType Leaf) { Remove-Item -LiteralPath $$targetPath -Force -ErrorAction SilentlyContinue }\r\n' +
+			'      if (-not (Test-Path $$targetPath)) { New-Item -ItemType Directory -Path $$targetPath -Force | Out-Null }\r\n' +
+			'    } else {\r\n' +
+			'      if (Test-Path $$targetPath -PathType Container) { Remove-Item -LiteralPath $$targetPath -Recurse -Force -ErrorAction SilentlyContinue }\r\n' +
+			'      Copy-Item -LiteralPath $$_.FullName -Destination $$targetPath -Force\r\n' +
+			'    }\r\n' +
+			'  }\r\n' +
+			'  Get-ChildItem -LiteralPath $$targetRoot -Directory -Recurse -Force | Sort-Object FullName -Descending | ForEach-Object { if ((Get-ChildItem -LiteralPath $$_.FullName -Force | Measure-Object).Count -eq 0) { Remove-Item -LiteralPath $$_.FullName -Force -ErrorAction SilentlyContinue } }\r\n' +
+			'  Remove-Item -Path "' + normalizedSourceRoot + '" -Recurse -Force -ErrorAction SilentlyContinue\r\n' +
+			'}\r\n';
 	}
 	
 	public static function exitForPostCloseInstall():Void
@@ -1194,11 +2026,39 @@ class UpdateManager
 		var exePath = Sys.programPath();
 		if(exePath != null && exePath.length > 0) {
 			var exeDir = Path.directory(exePath);
-			if(exeDir != null && exeDir.length > 0) return exeDir;
+			if(exeDir != null && exeDir.length > 0) {
+				var normalizedDir = StringTools.replace(Path.normalize(exeDir), '\\', '/');
+				var dirName = normalizedDir.lastIndexOf('/') >= 0 ? normalizedDir.substring(normalizedDir.lastIndexOf('/') + 1) : normalizedDir;
+				if(dirName.toLowerCase() == 'mods') {
+					var parentDir = Path.directory(exeDir);
+					if(parentDir != null && parentDir.length > 0) return parentDir;
+				}
+				return exeDir;
+			}
 		}
 		return Sys.getCwd();
 		#else
 		return '.';
+		#end
+	}
+
+	private static function getExpectedGameExecutablePath():String
+	{
+		#if sys
+		var exePath = Sys.programPath();
+		if(exePath != null && exePath.length > 0) {
+			var installDir = getInstallDirectory();
+			if(installDir != null && installDir.length > 0) {
+				var exeName = exePath.indexOf('/') >= 0 ? exePath.substring(exePath.lastIndexOf('/') + 1) : exePath;
+				var candidatePath = Path.join([installDir, exeName]);
+				if(FileSystem.exists(candidatePath) && !FileSystem.isDirectory(candidatePath)) {
+					return candidatePath;
+				}
+			}
+		}
+		return exePath;
+		#else
+		return '';
 		#end
 	}
 
@@ -1225,20 +2085,37 @@ class UpdateManager
 		#end
 	}
 
-	private static function getRelativePathForInstallTarget(filePath:String):String
+	private static function getActiveInstallTargetKind():String
+	{
+		return _includeModInUpdate ? 'mod' : 'engine';
+	}
+
+	private static function getRelativePathForInstallTarget(filePath:String, targetKind:String = null):String
 	{
 		var normalized = normalizeInstallPath(filePath);
 		if(normalized.length == 0) return '';
+		var effectiveTargetKind = targetKind != null && targetKind.length > 0 ? targetKind : getActiveInstallTargetKind();
 		var parts = normalized.split('/');
 
-		if(parts.length >= 2 && parts[0] == 'mods') {
-			if(parts.length > 2) {
-				return parts.slice(2).join('/');
+		if(effectiveTargetKind == 'engine') {
+			if(parts.length >= 2 && parts[0] == 'mods') {
+				return '';
 			}
+			if(parts.length > 1 && parts[0] == 'assets') {
+				return parts.slice(1).join('/');
+			}
+			return normalized;
+		}
+
+		if(parts.length >= 3 && parts[0] == 'mods' && isLikelyModRootFolderName(parts[1])) {
+			return parts.slice(2).join('/');
+		}
+
+		if(parts.length >= 2 && parts[0] == 'mods') {
 			return parts.length > 1 ? parts[1] : '';
 		}
 
-		if(parts.length > 1 && isLikelyModRootFolderName(parts[0])) {
+		if(parts.length >= 2 && isLikelyModRootFolderName(parts[0])) {
 			return parts.slice(1).join('/');
 		}
 
@@ -1261,10 +2138,20 @@ class UpdateManager
 		return lower.indexOf('mod') >= 0 || lower.indexOf('favorite') >= 0 || lower.indexOf('internet') >= 0 || lower.indexOf('ife') >= 0;
 	}
 
+	private static function getActiveUpdateKindLabel():String
+	{
+		return activeUpdateType == 'mod' ? 'mod' : 'engine';
+	}
+
+	public static function getUpdateTitleText():String
+	{
+		return activeUpdateType == 'mod' ? 'Updating mod...' : 'Updating engine...';
+	}
+
 	private static function getModStagedPath(downloadDir:String, relativePath:String):String
 	{
 		#if sys
-		var normalized = getRelativePathForInstallTarget(relativePath);
+		var normalized = getRelativePathForInstallTarget(relativePath, getActiveInstallTargetKind());
 		if(normalized.length > 0) {
 			return Path.join([downloadDir, normalized]);
 		}
@@ -1279,16 +2166,30 @@ class UpdateManager
 		var sourceRoot = tempDir != null ? tempDir : '';
 		var targetRoot = installDir != null ? installDir : '';
 		#if sys
-		if(_includeModInUpdate && sourceRoot.length > 0 && FileSystem.exists(sourceRoot)) {
-			var existingModRoot = getExistingModInstallRoot(installDir, sourceRoot);
-			if(existingModRoot.length > 0) {
-				targetRoot = existingModRoot;
-			} else {
+		if(sourceRoot.length > 0 && installDir != null && installDir.length > 0) {
+			if(_includeModInUpdate) {
 				targetRoot = Path.join([installDir, 'mods']);
+			} else {
+				// Engine updates install into the game directory that contains the executable.
+				targetRoot = installDir;
 			}
 		}
 		#end
 		return {sourceRoot: sourceRoot, targetRoot: targetRoot};
+	}
+
+	private static function getExpectedInstallTargetPath(relativePath:String, installDir:String, targetKind:String = null):String
+	{
+		if(relativePath == null || relativePath.length == 0 || installDir == null || installDir.length == 0) return '';
+		var effectiveTargetKind = targetKind != null && targetKind.length > 0 ? targetKind : getActiveInstallTargetKind();
+		if(effectiveTargetKind == 'mod') {
+			var existingModRoot = getExistingModInstallRoot(installDir);
+			if(existingModRoot != null && existingModRoot.length > 0) {
+				return Path.join([existingModRoot, relativePath]);
+			}
+		}
+		var targetRoot = effectiveTargetKind == 'mod' ? Path.join([installDir, 'mods']) : installDir;
+		return Path.join([targetRoot, relativePath]);
 	}
 
 	private static function getExistingModInstallRoot(installDir:String, ?excludeDir:String):String
@@ -1526,7 +2427,8 @@ class UpdateManager
 
 	public static function shouldAutoApplyPendingUpdate():Bool
 	{
-		return _includeModInUpdate && modUpdateAvailable && !engineUpdateAvailable;
+		// Keep mod updates on the same restart-and-apply path as engine updates.
+		return false;
 	}
 
 	private static function applyPendingInstallInPlace(tempDir:String):Void

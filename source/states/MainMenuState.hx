@@ -451,15 +451,26 @@ class MainMenuState extends MusicBeatState
 		{
 			openSubState(new UpdateOptionsSubState(function(includeMod:Bool)
 			{
-				if (!includeMod)
+				UpdateManager.downloadAndApplyUpdates(onUpdateComplete, includeMod);
+				openSubState(new UpdateProgressSubState(onUpdateComplete, includeMod));
+			}, function()
+			{
+				if (UpdateManager.engineUpdateAvailable && UpdateManager.modUpdateAvailable)
 				{
-					setUpdateNotificationVisible(true);
-					return;
+					openSubState(new UpdateOptionsSubState(function(modInclude:Bool)
+					{
+						if (modInclude)
+						{
+							UpdateManager.downloadAndApplyUpdates(onUpdateComplete, true);
+							openSubState(new UpdateProgressSubState(onUpdateComplete, true));
+						}
+						else
+						{
+							setUpdateNotificationVisible(true);
+						}
+					}, null, 'mod'));
 				}
-
-				openSubState(new UpdateProgressSubState(onUpdateComplete));
-				UpdateManager.downloadAndApplyUpdates(onUpdateComplete, true);
-			}));
+			}, 'engine'));
 		}
 	}
 
@@ -505,8 +516,7 @@ class MainMenuState extends MusicBeatState
 class UpdateOptionsSubState extends MusicBeatSubstate
 {
 	var onComplete:Bool->Void;
-	var includeModCheckbox:CheckboxThingie;
-	var toggleArea:FlxSprite;
+	var onSkip:Void->Void;
 	var confirmationBg:FlxSprite;
 	var updateButton:FlxButton;
 	var laterButton:FlxButton;
@@ -514,11 +524,14 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 	var includeMod:Bool = false;
 	var startUpdateCallback:Void->Void;
 	var releaseUrl:String = '';
+	var promptKind:String = 'engine';
 
-	public function new(onComplete:Bool->Void)
+	public function new(onComplete:Bool->Void, ?onSkip:Void->Void, ?promptKind:String)
 	{
 		super();
 		this.onComplete = onComplete;
+		this.onSkip = onSkip;
+		if(promptKind != null && promptKind.length > 0) this.promptKind = promptKind;
 	}
 
 	override function create()
@@ -544,9 +557,14 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 		title.scrollFactor.set(0, 0);
 		add(title);
 
+		var isModPrompt = promptKind == 'mod';
 		var descText = 'Nothing to update.';
-		if(UpdateManager.engineUpdateAvailable && UpdateManager.modUpdateAvailable) {
-			descText = 'Install the latest engine and mod updates?';
+		if(isModPrompt) {
+			descText = 'A newer Internet Favorites mod version is available.\nDo you want to install the mod update?';
+		} else if(UpdateManager.pendingModUpdatePrompt && UpdateManager.updateReadyToApply) {
+			descText = 'The engine update is ready.\nInstall the mod update now or later?';
+		} else if(UpdateManager.engineUpdateAvailable && UpdateManager.modUpdateAvailable) {
+			descText = 'The engine update will be installed first.\nAfter that, you can install the mod update now or later.';
 		} else if(UpdateManager.engineUpdateAvailable) {
 			descText = 'Install the latest engine update?';
 		} else if(UpdateManager.modUpdateAvailable) {
@@ -558,26 +576,11 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 		desc.scrollFactor.set(0, 0);
 		add(desc);
 
-		if(UpdateManager.engineUpdateAvailable && UpdateManager.modUpdateAvailable) {
-			var label = new FlxText(0, desc.y + 74, 0, 'Include mod update', 20);
-			label.x = confirmationBg.x + 180;
-			label.scrollFactor.set(0, 0);
-			add(label);
-
-			includeModCheckbox = new CheckboxThingie(confirmationBg.x + 420, label.y - 4, false);
-			includeModCheckbox.scale.set(1.35, 1.35);
-			includeModCheckbox.updateHitbox();
-			includeModCheckbox.scrollFactor.set(0, 0);
-			add(includeModCheckbox);
-
-			toggleArea = new FlxSprite(confirmationBg.x + 360, label.y - 12);
-			toggleArea.makeGraphic(150, 70, 0x11FFFFFF);
-			toggleArea.scrollFactor.set(0, 0);
-			add(toggleArea);
-		}
-
-		releaseUrl = UpdateManager.latestReleaseUrl.length > 0 ? UpdateManager.latestReleaseUrl : 'https://github.com/${UpdateManager.REPO}/releases';
-		var releaseTagText = UpdateManager.latestReleaseTag.length > 0 ? UpdateManager.latestReleaseTag : 'latest release';
+		var selectedReleaseKind = isModPrompt ? 'mod' : 'engine';
+		releaseUrl = UpdateManager.getReleaseUrlForUpdateKind(selectedReleaseKind);
+		if(releaseUrl.length == 0) releaseUrl = UpdateManager.latestReleaseUrl.length > 0 ? UpdateManager.latestReleaseUrl : 'https://github.com/${UpdateManager.REPO}/releases';
+		var releaseTagText = UpdateManager.getReleaseTagForUpdateKind(selectedReleaseKind);
+		if(releaseTagText.length == 0) releaseTagText = UpdateManager.latestReleaseTag.length > 0 ? UpdateManager.latestReleaseTag : 'latest release';
 		changelogLinkText = new FlxText(0, confirmationBg.y + confirmationBg.height - 98, 620, 'Update Changelog (${releaseTagText})', 16);
 		changelogLinkText.alignment = CENTER;
 		changelogLinkText.x = confirmationBg.x + 20;
@@ -587,16 +590,14 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 		add(changelogLinkText);
 
 		var buttonY:Float = confirmationBg.y + confirmationBg.height - 54;
-		updateButton = new FlxButton(0, buttonY, 'Update', function() {
-			startUpdateCallback();
-		});
+		updateButton = new FlxButton(0, buttonY, 'Update');
 		updateButton.scale.set(1.08, 1.08);
 		updateButton.updateHitbox();
 		updateButton.x = confirmationBg.x + 210;
 		updateButton.scrollFactor.set(0, 0);
 		add(updateButton);
 
-		laterButton = new FlxButton(0, buttonY, 'Later', close);
+		laterButton = new FlxButton(0, buttonY, 'Skip');
 		laterButton.scale.set(1.08, 1.08);
 		laterButton.updateHitbox();
 		laterButton.x = confirmationBg.x + 370;
@@ -604,7 +605,13 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 		add(laterButton);
 
 		startUpdateCallback = function() {
-			includeMod = UpdateManager.engineUpdateAvailable && UpdateManager.modUpdateAvailable ? includeModCheckbox.daValue : true;
+			includeMod = promptKind == 'mod';
+			if(!includeMod && UpdateManager.pendingModUpdatePrompt && UpdateManager.updateReadyToApply) {
+				includeMod = true;
+			}
+			if(!includeMod && UpdateManager.modUpdateAvailable && !UpdateManager.engineUpdateAvailable) {
+				includeMod = true;
+			}
 			onComplete(includeMod);
 			close();
 		};
@@ -622,14 +629,6 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 
 		if (FlxG.mouse.justPressed)
 		{
-			if (includeModCheckbox != null)
-			{
-				if (FlxG.mouse.overlaps(includeModCheckbox) || (toggleArea != null && FlxG.mouse.overlaps(toggleArea)))
-				{
-					includeModCheckbox.daValue = !includeModCheckbox.daValue;
-					return;
-				}
-			}
 			if (changelogLinkText != null && FlxG.mouse.overlaps(changelogLinkText))
 			{
 				CoolUtil.browserLoad(releaseUrl);
@@ -646,6 +645,7 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 					menu.setUpdateNotificationVisible(true);
 				}
 				close();
+				if (onSkip != null) onSkip();
 				return;
 			}
 			if (updateButton != null && FlxG.mouse.overlaps(updateButton))
@@ -673,6 +673,7 @@ class UpdateOptionsSubState extends MusicBeatSubstate
 class UpdateProgressSubState extends MusicBeatSubstate
 {
 	var resultCallback:Bool->String->Void;
+	var initialUpdateType:String;
 	var bg:FlxSprite;
 	var title:FlxText;
 	var statusText:FlxText;
@@ -683,10 +684,11 @@ class UpdateProgressSubState extends MusicBeatSubstate
 	var completionTimer:Float = 0;
 	var completionStarted:Bool = false;
 
-	public function new(resultCallback:Bool->String->Void)
+	public function new(resultCallback:Bool->String->Void, includeMod:Bool = false)
 	{
 		super();
 		this.resultCallback = resultCallback;
+		this.initialUpdateType = includeMod ? 'mod' : 'engine';
 	}
 
 	override function create()
@@ -701,7 +703,7 @@ class UpdateProgressSubState extends MusicBeatSubstate
 		bg.scrollFactor.set(0, 0);
 		add(bg);
 
-		title = new FlxText(0, bg.y + 24, 620, 'Updating game...', 26);
+		title = new FlxText(0, bg.y + 24, 620, UpdateManager.getUpdateTitleText(), 26);
 		title.alignment = CENTER;
 		title.x = bg.x + 20;
 		title.scrollFactor.set(0, 0);
@@ -742,10 +744,16 @@ class UpdateProgressSubState extends MusicBeatSubstate
 	}
 
 	var autoApplyTriggered:Bool = false;
+	var modPromptShown:Bool = false;
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (title != null)
+		{
+			title.text = UpdateManager.getUpdateTitleText();
+		}
 
 		if (UpdateManager.updateThreadFinished)
 		{
@@ -776,19 +784,40 @@ class UpdateProgressSubState extends MusicBeatSubstate
 
 		if (UpdateManager.updateReadyToApply)
 		{
+			if (UpdateManager.pendingModUpdatePrompt && !modPromptShown && subState == null)
+			{
+				modPromptShown = true;
+				detailText.text = 'Engine update staged. Choose whether to install the mod update now.';
+				statusText.text = 'Engine update ready';
+				if(restartButton != null) restartButton.visible = false;
+				openSubState(new UpdateOptionsSubState(function(includeMod:Bool)
+				{
+					if (includeMod)
+					{
+						UpdateManager.downloadModUpdateAfterEngine(resultCallback);
+					}
+					else
+					{
+						detailText.text = 'Engine update staged. You can install the mod update later.';
+						statusText.text = 'Engine update ready';
+						if(restartButton != null) restartButton.visible = true;
+					}
+				}, null, 'mod'));
+				return;
+			}
 			if (UpdateManager.shouldAutoApplyPendingUpdate() && !autoApplyTriggered)
 			{
 				autoApplyTriggered = true;
-				detailText.text = 'Applying mod update in place...';
-				statusText.text = 'Applying mod update';
+				detailText.text = 'Applying update in place...';
+				statusText.text = UpdateManager.activeUpdateType == 'mod' ? 'Applying mod update' : 'Applying engine update';
 				if(restartButton != null) restartButton.visible = false;
 				UpdateManager.applyPendingUpdate();
 			}
 			else
 			{
 				detailText.text = 'Update downloaded and staged. Click Restart to close the game, apply the new files, and relaunch.';
-				statusText.text = 'Update ready to apply';
-				if(restartButton != null) restartButton.visible = !UpdateManager.shouldAutoApplyPendingUpdate();
+				statusText.text = UpdateManager.pendingModUpdatePrompt ? 'Engine update ready — mod update can be installed after restart' : (UpdateManager.activeUpdateType == 'mod' ? 'Mod update ready to apply' : 'Engine update ready to apply');
+				if(restartButton != null) restartButton.visible = true;
 			}
 		}
 		else if (statusText != null)
