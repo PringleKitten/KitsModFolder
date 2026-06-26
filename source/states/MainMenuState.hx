@@ -8,6 +8,7 @@ import options.OptionsState;
 import states.editors.MasterEditorMenu;
 import backend.UpdateManager;
 import objects.UpdateNotificationBar;
+import objects.UpToDateNotification;
 
 enum MainMenuColumn {
 	LEFT;
@@ -41,6 +42,7 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 	var updateNotificationBar:UpdateNotificationBar;
 	var hasCheckedUpdates:Bool = false;
+	var upToDateBanner:UpToDateNotification;
 
 	override function create()
 	{
@@ -151,6 +153,13 @@ class MainMenuState extends MusicBeatState
 			updateNotificationBar = null;
 		}
 
+		if(upToDateBanner != null)
+		{
+			remove(upToDateBanner);
+			upToDateBanner.destroy();
+			upToDateBanner = null;
+		}
+
 		var shouldShowUpdateBanner = (engineAvail || (modAvail && UpdateManager.hasInternetFavoritesMod)) && (engineAvail || UpdateManager.hasInternetFavoritesMod);
 		if(shouldShowUpdateBanner && updateNotificationBar == null)
 		{
@@ -159,6 +168,11 @@ class MainMenuState extends MusicBeatState
 				UpdateManager.latestEngineVersionDisplay, UpdateManager.latestModVersionDisplay,
 				startPendingUpdate, function() {});
 			add(updateNotificationBar);
+		}
+		else if(!shouldShowUpdateBanner)
+		{
+			upToDateBanner = new UpToDateNotification(UpdateManager.CURRENT_ENGINE_VERSION, UpdateManager.CURRENT_MOD_VERSION);
+			add(upToDateBanner);
 		}
 	}
 
