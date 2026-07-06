@@ -101,19 +101,25 @@ function onSongStart()
     debugPrint('')
     debugPrint('')
 end
+local nogz = false
+local nohz = false
 function onEvent(n,v1,v2)
     if n == 'nz' then
         av1 = tonumber(v1)
         av2 = tonumber(v2)
         if av1 == 1 then
             setProperty('camZoomsHud', false)
+            nohz = true
         elseif av1 == 2 then
             setProperty('camZoomsHud', true)
+            nohz = false
         end
         if av2 == 1 then
             setProperty('camZoomsBg', false)
+            nogz = true
         elseif av2 == 2 then
             setProperty('camZoomsBg', true)
+            nogz = false
         end
     end
     if n == 'makeText' then
@@ -150,6 +156,13 @@ function onBeatHit()
         setProperty('camZoomsHud', false)
         setProperty('camHUD.zoom', getProperty('camHUD.zoom') + zv1)
         setProperty('camGame.zoom', getProperty('camGame.zoom') + zv2)
+    else
+        if not nohz then
+            setProperty('camZoomsBg', true)
+        end
+        if not nogz then
+            setProperty('camZoomsHud', true)
+        end
     end
 end
 function onTimerCompleted(tag)
