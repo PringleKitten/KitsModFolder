@@ -16,6 +16,7 @@ class Bar extends FlxSpriteGroup
 	// you might need to change this if you want to use a custom bar
 	public var barWidth(default, set):Int = 1;
 	public var barHeight(default, set):Int = 1;
+	public var numDivisions:Int = 0;
 	public var barOffset:FlxPoint = new FlxPoint(3, 3);
 
 	public function new(x:Float, y:Float, image:String = 'healthBar', valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1)
@@ -65,6 +66,16 @@ class Bar extends FlxSpriteGroup
 	{
 		bounds.min = min;
 		bounds.max = max;
+	}
+
+	public function setRange(min:Float, max:Float):Void
+	{
+		setBounds(min, max);
+	}
+
+	public function setParent(parent:Dynamic, name:String):Void
+	{
+		// compatibility stub for FlxBar-style usage
 	}
 
 	public function setColors(left:FlxColor = null, right:FlxColor = null)
