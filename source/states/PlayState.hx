@@ -1561,7 +1561,6 @@ class PlayState extends MusicBeatState
 				oldNote = swagNote;
 			}
 		}
-		trace('["${SONG.song.toUpperCase()}" CHART INFO]: Ghost Notes Cleared: $ghostNotesCaught');
 		for (event in songData.events) //Event Notes
 			for (i in 0...event[1].length)
 				makeEvent(event, i);
@@ -1741,8 +1740,6 @@ class PlayState extends MusicBeatState
 	{
 		if(finishTimer != null) return;
 
-		trace('resynced vocals at ' + Math.floor(Conductor.songPosition));
-
 		FlxG.sound.music.play();
 		#if FLX_PITCH FlxG.sound.music.pitch = playbackRate; #end
 		Conductor.songPosition = FlxG.sound.music.time + Conductor.offset;
@@ -1788,7 +1785,6 @@ class PlayState extends MusicBeatState
 		timer += elapsed;
 
 		if (timer >= 2) {
-			trace('UPDATED');
 			resetRPC(true);
 			timer = 0;
 		}
@@ -1880,7 +1876,6 @@ class PlayState extends MusicBeatState
 		if (!ClientPrefs.data.noReset && controls.RESET && canReset && !inCutscene && startedCountdown && !endingSong)
 		{
 			health = 0;
-			trace("RESET = True");
 		}
 		doDeathCheck();
 
@@ -2595,9 +2590,6 @@ class PlayState extends MusicBeatState
 				{
 					var difficulty:String = Difficulty.getFilePath();
 
-					trace('LOADING NEXT SONG');
-					trace(Paths.formatToSongPath(PlayState.storyPlaylist[0]) + difficulty);
-
 					FlxTransitionableState.skipNextTransIn = true;
 					FlxTransitionableState.skipNextTransOut = true;
 					prevCamFollow = camFollow;
@@ -2612,7 +2604,6 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				trace('WENT BACK TO FREEPLAY??');
 				Mods.loadTopMod();
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 
@@ -3553,7 +3544,6 @@ class PlayState extends MusicBeatState
 		{
 			newScript = new HScript(null, file);
 			if (newScript.exists('onCreate')) newScript.call('onCreate');
-			trace('initialized hscript interp successfully: $file');
 			hscriptArray.push(newScript);
 		}
 		catch(e:IrisError)
