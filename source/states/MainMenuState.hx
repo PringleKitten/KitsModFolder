@@ -18,7 +18,7 @@ enum MainMenuColumn {
 
 class MainMenuState extends MusicBeatState
 {
-	public static var internetFavsVersion:String = '6.1'; // This is also used for Discord RPC
+	public static var internetFavsVersion:String = '6.2'; // This is also used for Discord RPC
 	public static var curSelected:Int = 0;
 	public static var curColumn:MainMenuColumn = CENTER;
 	public var allowMouse:Bool = true; //Turn this off to block mouse movement in menus
@@ -43,6 +43,7 @@ class MainMenuState extends MusicBeatState
 	
 	var updateNotificationBar:UpdateNotificationBar;
 	var hasCheckedUpdates:Bool = false;
+	var pendingUpdateCheckStart:Bool = false;
 
 	override function create()
 	{
@@ -113,7 +114,11 @@ class MainMenuState extends MusicBeatState
 		if(ClientPrefs.data.checkForUpdates && !hasCheckedUpdates)
 		{
 			hasCheckedUpdates = true;
-			checkForUpdatesAsync();
+			pendingUpdateCheckStart = true;
+			if(UpdateManager.isVersionInitializationReady())
+				checkForUpdatesAsync();
+			else
+				UpdateManager.initializeVersionsAsync();
 		}
 
 		#if ACHIEVEMENTS_ALLOWED
@@ -149,6 +154,15 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if(pendingUpdateCheckStart && UpdateManager.isVersionInitializationReady())
+		{
+			pendingUpdateCheckStart = false;
+			var versionInitError:String = UpdateManager.getVersionInitializationError();
+			if(versionInitError != null && versionInitError.length > 0)
+				trace('Update version initialization failed: $versionInitError');
+			checkForUpdatesAsync();
+		}
+
 		if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.8)
 			FlxG.sound.music.volume = Math.min(FlxG.sound.music.volume + 0.5 * elapsed, 0.8);
 
@@ -398,8 +412,13 @@ class MainMenuState extends MusicBeatState
 
 	function checkForUpdatesAsync():Void
 	{
-		// Initialize versions first
-		UpdateManager.initializeVersions();
+		// Version initialization is started before this and may complete asynchronously.
+		if(!UpdateManager.isVersionInitializationReady())
+		{
+			UpdateManager.initializeVersionsAsync();
+			pendingUpdateCheckStart = true;
+			return;
+		}
 		UpdateManager.checkForUpdates(onUpdateCheckComplete);
 	}
 	

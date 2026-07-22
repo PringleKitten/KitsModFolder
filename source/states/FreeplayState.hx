@@ -22,6 +22,8 @@ import openfl.filters.ShaderFilter;
 import haxe.Json;
 import sys.FileSystem;
 import sys.io.File;
+import sys.thread.FixedThreadPool;
+import sys.thread.Mutex;
 import objects.Note.EventNote;
 import shaders.ErrorHandledShader.ErrorHandledRuntimeShader;
 
@@ -92,9 +94,34 @@ class FreeplayState extends MusicBeatState
 	var densityBars:Array<FlxSprite> = [];
 	var densityBarCount:Int = 36;
 	var densityCache:Map<String, SongDensityData> = [];
+	var densityPendingJobs:Map<String, Bool> = [];
+	var densityCompletedJobs:Map<String, SongDensityData> = [];
+	var densityJobsMutex:Mutex = new Mutex();
+	var densityThreadPool:FixedThreadPool = null;
 	var headerCreditsCache:Map<String, String> = [];
+	var previewPrewarmPending:Map<String, Bool> = [];
+	var previewFileTextCache:Map<String, String> = [];
+	var previewDirListCache:Map<String, Array<String>> = [];
+	var previewFileCacheMutex:Mutex = new Mutex();
+	var previewSoundPreloads:Map<String, flash.media.Sound> = [];
+	var previewSoundMutex:Mutex = new Mutex();
 	var currentDensityData:SongDensityData = null;
 	var bpmChangesExpanded:Bool = false;
+	var freeplayLoadOverlayBG:FlxSprite;
+	var freeplayLoadOverlayPanel:FlxSprite;
+	var freeplayLoadBarBack:FlxSprite;
+	var freeplayLoadBarFill:FlxSprite;
+	var freeplayLoadTitle:FlxText;
+	var freeplayLoadStatus:FlxText;
+	var freeplayLoadMode:String = '';
+	var freeplayLoadProgress:Float = 0;
+	var freeplayLoadPulse:Float = 0;
+	var pendingPreviewSongIndex:Int = -1;
+	var pendingPreviewDifficulty:Int = -1;
+	var pendingPreviewStage:Int = 0;
+	var pendingSongSongIndex:Int = -1;
+	var pendingSongDifficulty:Int = -1;
+	var pendingSongStage:Int = 0;
 
 	override function create()
 	{
@@ -151,6 +178,7 @@ class FreeplayState extends MusicBeatState
 		bg.antialiasing = ClientPrefs.data.antialiasing;
 		add(bg);
 		bg.screenCenter();
+		densityThreadPool = new FixedThreadPool(LoadingState.getUsableThreadCount(Std.int(Math.max(1, songs.length))));
 		buildModernFreeplayLayout();
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -167,7 +195,7 @@ class FreeplayState extends MusicBeatState
 			songText.snapToPosition();
 
 			Mods.currentModDirectory = songs[i].folder;
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			var icon:HealthIcon = new HealthIcon(getHealthIconFromCharacter(songs[i].songCharacter));
 			icon.sprTracker = songText;
 
 			
@@ -231,8 +259,10 @@ class FreeplayState extends MusicBeatState
 		
 		player = new MusicPlayer(this);
 		add(player);
+		createFreeplayLoadingOverlay();
 		
 		changeSelection();
+		warmVisibleDensityCache();
 		updateTexts();
 		super.create();
 	}
@@ -247,6 +277,323 @@ class FreeplayState extends MusicBeatState
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
 	{
 		songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
+	}
+
+	function createFreeplayLoadingOverlay():Void
+	{
+		freeplayLoadOverlayBG = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xB0000000);
+		freeplayLoadOverlayBG.visible = false;
+		add(freeplayLoadOverlayBG);
+
+		var panelWidth:Int = Std.int(Math.min(920, FlxG.width - 120));
+		freeplayLoadOverlayPanel = new FlxSprite(0, 0).makeGraphic(panelWidth, 170, 0xEE10192A);
+		freeplayLoadOverlayPanel.screenCenter();
+		freeplayLoadOverlayPanel.visible = false;
+		add(freeplayLoadOverlayPanel);
+
+		freeplayLoadTitle = new FlxText(freeplayLoadOverlayPanel.x + 28, freeplayLoadOverlayPanel.y + 22, freeplayLoadOverlayPanel.width - 56, '', 30);
+		freeplayLoadTitle.setFormat(Paths.font('vcr.ttf'), 30, 0xFFF4FAFF, CENTER);
+		freeplayLoadTitle.visible = false;
+		add(freeplayLoadTitle);
+
+		freeplayLoadStatus = new FlxText(freeplayLoadOverlayPanel.x + 28, freeplayLoadOverlayPanel.y + 68, freeplayLoadOverlayPanel.width - 56, '', 18);
+		freeplayLoadStatus.setFormat(Paths.font('vcr.ttf'), 18, 0xFFB8D3F0, CENTER);
+		freeplayLoadStatus.visible = false;
+		add(freeplayLoadStatus);
+
+		freeplayLoadBarBack = new FlxSprite(freeplayLoadOverlayPanel.x + 34, freeplayLoadOverlayPanel.y + 118).makeGraphic(panelWidth - 68, 22, 0xFF0C1320);
+		freeplayLoadBarBack.visible = false;
+		add(freeplayLoadBarBack);
+
+		freeplayLoadBarFill = new FlxSprite(freeplayLoadBarBack.x + 3, freeplayLoadBarBack.y + 3).makeGraphic(1, 16, 0xFF7AD7FF);
+		freeplayLoadBarFill.visible = false;
+		add(freeplayLoadBarFill);
+	}
+
+	inline function isFreeplayLoadActive():Bool
+	{
+		return freeplayLoadMode != null && freeplayLoadMode.length > 0;
+	}
+
+	function setFreeplayLoadOverlayVisible(visible:Bool):Void
+	{
+		freeplayLoadOverlayBG.visible = visible;
+		freeplayLoadOverlayPanel.visible = visible;
+		freeplayLoadTitle.visible = visible;
+		freeplayLoadStatus.visible = visible;
+		freeplayLoadBarBack.visible = visible;
+		freeplayLoadBarFill.visible = visible;
+	}
+
+	function redrawFreeplayLoadBar():Void
+	{
+		var usableWidth:Int = Std.int(Math.max(1, freeplayLoadBarBack.width - 6));
+		var fillWidth:Int = Std.int(Math.max(1, Math.floor(usableWidth * FlxMath.bound(freeplayLoadProgress, 0, 1))));
+		freeplayLoadBarFill.setGraphicSize(fillWidth, Std.int(freeplayLoadBarFill.height));
+		freeplayLoadBarFill.updateHitbox();
+		freeplayLoadBarFill.x = freeplayLoadBarBack.x + 3;
+		freeplayLoadBarFill.y = freeplayLoadBarBack.y + 3;
+	}
+
+	function showFreeplayLoadOverlay(mode:String, title:String, status:String, progress:Float):Void
+	{
+		freeplayLoadMode = mode;
+		freeplayLoadTitle.text = title;
+		freeplayLoadStatus.text = status;
+		freeplayLoadProgress = FlxMath.bound(progress, 0, 1);
+		freeplayLoadPulse = 0;
+		redrawFreeplayLoadBar();
+		setFreeplayLoadOverlayVisible(true);
+	}
+
+	function updateFreeplayLoadOverlay(progress:Float, ?status:String):Void
+	{
+		freeplayLoadProgress = FlxMath.bound(progress, 0, 1);
+		if(status != null)
+			freeplayLoadStatus.text = status;
+		redrawFreeplayLoadBar();
+	}
+
+	function hideFreeplayLoadOverlay():Void
+	{
+		freeplayLoadMode = '';
+		pendingPreviewSongIndex = -1;
+		pendingPreviewDifficulty = -1;
+		pendingPreviewStage = 0;
+		pendingSongSongIndex = -1;
+		pendingSongDifficulty = -1;
+		pendingSongStage = 0;
+		freeplayLoadProgress = 0;
+		setFreeplayLoadOverlayVisible(false);
+	}
+
+	function showFreeplayLoadError(errorText:String):Void
+	{
+		hideFreeplayLoadOverlay();
+		missingText.text = errorText;
+		missingText.screenCenter(Y);
+		missingText.visible = true;
+		missingTextBG.visible = true;
+		FlxG.sound.play(Paths.sound('cancelMenu'));
+	}
+
+	function beginPreviewLoad():Void
+	{
+		pendingPreviewSongIndex = curSelected;
+		pendingPreviewDifficulty = curDifficulty;
+		pendingPreviewStage = 0;
+		queuePreviewPrewarm(songs[curSelected].songName, curDifficulty);
+		showFreeplayLoadOverlay('preview', 'PREPARING PREVIEW', 'Warming chart, events, and audio...', 0.08);
+	}
+
+	function beginSongLoad():Void
+	{
+		pendingSongSongIndex = curSelected;
+		pendingSongDifficulty = curDifficulty;
+		pendingSongStage = 0;
+		showFreeplayLoadOverlay('song', 'LOADING SONG', 'Preparing chart and asset queue...', 0.04);
+	}
+
+	function tryStartPreviewPlayback(songIndex:Int, difficulty:Int):Bool
+	{
+		resetPreviewCamera();
+		destroyFreeplayVocals();
+		FlxG.sound.music.volume = 0;
+		lastBeatTriggered = -1;
+
+		Mods.currentModDirectory = songs[songIndex].folder;
+		var songLower:String = songs[songIndex].songName.toLowerCase();
+		var chartName:String = Highscore.formatSong(songLower, difficulty);
+
+		try
+		{
+			Song.loadFromJson(chartName, songLower);
+		}
+		catch(e:haxe.Exception)
+		{
+			var errorStr:String = e.message;
+			if(errorStr.contains('There is no TEXT asset with an ID of')) errorStr = 'Missing file: ' + errorStr.substring(errorStr.indexOf(songLower), errorStr.length-1);
+			else errorStr += '\n\n' + e.stack;
+			showFreeplayLoadError('ERROR WHILE LOADING PREVIEW:\n$errorStr');
+			return false;
+		}
+
+		if (PlayState.SONG.needsVoices)
+		{
+			vocals = new FlxSound();
+			try
+			{
+				var playerVocals:String = getVocalFromCharacter(PlayState.SONG.player1);
+				var loadedVocals = Paths.voices(PlayState.SONG.song, (playerVocals != null && playerVocals.length > 0) ? playerVocals : 'Player');
+				if(loadedVocals == null) loadedVocals = Paths.voices(PlayState.SONG.song);
+				
+				if(loadedVocals != null && loadedVocals.length > 0)
+				{
+					vocals.loadEmbedded(loadedVocals);
+					FlxG.sound.list.add(vocals);
+					vocals.persist = vocals.looped = true;
+					vocals.volume = 0.8;
+					vocals.play();
+					vocals.pause();
+				}
+				else vocals = FlxDestroyUtil.destroy(vocals);
+			}
+			catch(e:Dynamic)
+			{
+				vocals = FlxDestroyUtil.destroy(vocals);
+			}
+			
+			opponentVocals = new FlxSound();
+			try
+			{
+				var oppVocals:String = getVocalFromCharacter(PlayState.SONG.player2);
+				var loadedVocals = Paths.voices(PlayState.SONG.song, (oppVocals != null && oppVocals.length > 0) ? oppVocals : 'Opponent');
+				
+				if(loadedVocals != null && loadedVocals.length > 0)
+				{
+					opponentVocals.loadEmbedded(loadedVocals);
+					FlxG.sound.list.add(opponentVocals);
+					opponentVocals.persist = opponentVocals.looped = true;
+					opponentVocals.volume = 0.8;
+					opponentVocals.play();
+					opponentVocals.pause();
+				}
+				else opponentVocals = FlxDestroyUtil.destroy(opponentVocals);
+			}
+			catch(e:Dynamic)
+			{
+				opponentVocals = FlxDestroyUtil.destroy(opponentVocals);
+			}
+		}
+
+		Conductor.bpm = PlayState.SONG.bpm;
+		Conductor.offset = Reflect.hasField(PlayState.SONG, 'offset') ? PlayState.SONG.offset : 0;
+		Conductor.songPosition = 0;
+		Conductor.mapBPMChanges(PlayState.SONG);
+		buildPreviewSectionBPMData();
+		loadPreviewEvents(Paths.formatToSongPath(songs[songIndex].songName));
+		// Apply pre-loaded sounds into Paths cache so playMusic finds them without hitting disk
+		flushPreviewSoundPreloads();
+		FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.8);
+		setupPreviewLoopRestart();
+		FlxG.sound.music.pause();
+		previewLastMusicTime = -1;
+
+		instPlaying = songIndex;
+
+		player.playingMusic = true;
+		player.curTime = 0;
+		player.switchPlayMusic();
+		previewPendingSongStart = true;
+		return true;
+	}
+
+	function tryPrepareSongGameplayLoad(songIndex:Int, difficulty:Int):Bool
+	{
+		var songLowercase:String = Paths.formatToSongPath(songs[songIndex].songName);
+		var chartName:String = Highscore.formatSong(songLowercase, difficulty);
+
+		try
+		{
+			Song.loadFromJson(chartName, songLowercase);
+			PlayState.isStoryMode = false;
+			PlayState.storyDifficulty = difficulty;
+			trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
+		}
+		catch(e:haxe.Exception)
+		{
+			var errorStr:String = e.message;
+			if(errorStr.contains('There is no TEXT asset with an ID of')) errorStr = 'Missing file: ' + errorStr.substring(errorStr.indexOf(songLowercase), errorStr.length-1);
+			else errorStr += '\n\n' + e.stack;
+			showFreeplayLoadError('ERROR WHILE LOADING CHART:\n$errorStr');
+			return false;
+		}
+
+		@:privateAccess
+		if(PlayState._lastLoadedModDirectory != Mods.currentModDirectory)
+		{
+			trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
+			Paths.freeGraphicsFromMemory();
+		}
+
+		LoadingState.loadNextDirectory();
+		LoadingState.prepareToSong();
+		return true;
+	}
+
+	function processPendingFreeplayLoad(elapsed:Float):Bool
+	{
+		if(!isFreeplayLoadActive())
+			return false;
+
+		freeplayLoadPulse += elapsed;
+		switch(freeplayLoadMode)
+		{
+			case 'preview':
+				var previewFloor:Float = 0.08 + (Math.sin(freeplayLoadPulse * 3.4) * 0.04);
+				if(pendingPreviewSongIndex < 0 || pendingPreviewSongIndex >= songs.length)
+				{
+					hideFreeplayLoadOverlay();
+					return false;
+				}
+
+				var prewarmKey:String = getPreviewPrewarmKey(songs[pendingPreviewSongIndex].songName, pendingPreviewDifficulty);
+				if(pendingPreviewStage == 0)
+				{
+					updateFreeplayLoadOverlay(Math.max(0.1, previewFloor), 'Warming chart, events, and audio...');
+					if(!isPreviewPrewarmPending(prewarmKey))
+						pendingPreviewStage = 1;
+				}
+				else if(pendingPreviewStage == 1)
+				{
+					updateFreeplayLoadOverlay(0.62, 'Binding preview audio and event data...');
+					if(tryStartPreviewPlayback(pendingPreviewSongIndex, pendingPreviewDifficulty))
+					{
+						updateFreeplayLoadOverlay(1, 'Preview ready');
+						hideFreeplayLoadOverlay();
+					}
+					return true;
+				}
+
+			case 'song':
+				if(pendingSongSongIndex < 0 || pendingSongSongIndex >= songs.length)
+				{
+					hideFreeplayLoadOverlay();
+					return false;
+				}
+
+				if(pendingSongStage == 0)
+				{
+					updateFreeplayLoadOverlay(0.12, 'Preparing chart and asset queue...');
+					if(tryPrepareSongGameplayLoad(pendingSongSongIndex, pendingSongDifficulty))
+						pendingSongStage = 1;
+					return true;
+				}
+
+				var songProgress:Float = 0.18 + (Math.sin(freeplayLoadPulse * 3.0) * 0.03);
+				if(LoadingState.loadMax > 0)
+					songProgress = 0.15 + (0.85 * (LoadingState.loaded / LoadingState.loadMax));
+				updateFreeplayLoadOverlay(songProgress, LoadingState.loadMax > 0 ? 'Preloading ${LoadingState.loaded} / ${LoadingState.loadMax} assets...' : 'Scanning stage, character, and song assets...');
+
+				if(LoadingState.checkLoaded())
+				{
+					updateFreeplayLoadOverlay(1, 'Launching song...');
+					LoadingState.finishLoading();
+					persistentUpdate = false;
+					FlxG.sound.music.stop();
+					stopMusicPlay = true;
+					destroyFreeplayVocals();
+					#if (MODS_ALLOWED && DISCORD_ALLOWED)
+					DiscordClient.loadModRPC();
+					#end
+					hideFreeplayLoadOverlay();
+					MusicBeatState.switchState(new PlayState());
+					return true;
+				}
+				return true;
+		}
+
+		return true;
 	}
 
 	function weekIsLocked(name:String):Bool
@@ -363,15 +710,304 @@ class FreeplayState extends MusicBeatState
 		return Paths.formatToSongPath(songName) + '::' + difficulty;
 	}
 
-	function loadSongDensityData(songName:String, difficulty:Int):SongDensityData
+	function createFallbackDensityData():SongDensityData
 	{
-		var key:String = getDensityCacheKey(songName, difficulty);
-		if(densityCache.exists(key))
-			return densityCache.get(key);
-
 		var fallbackBars:Array<Float> = [];
 		for(i in 0...densityBarCount) fallbackBars.push(0);
-		var fallback:SongDensityData = new SongDensityData(0, 0, 0, 0, fallbackBars);
+		return new SongDensityData(0, 0, 0, 0, fallbackBars, '', '');
+	}
+
+	function getPreviewPrewarmKey(songName:String, difficulty:Int):String
+	{
+		return Paths.formatToSongPath(songName) + '::' + difficulty + '::preview';
+	}
+
+	function cachePreviewFileText(filePath:String):String
+	{
+		if(filePath == null || filePath.length < 1)
+			return null;
+
+		previewFileCacheMutex.acquire();
+		var hasCached:Bool = previewFileTextCache.exists(filePath);
+		var cached:String = hasCached ? previewFileTextCache.get(filePath) : null;
+		previewFileCacheMutex.release();
+		if(hasCached)
+			return cached;
+
+		var content:String = null;
+		try
+		{
+			content = File.getContent(filePath);
+		}
+		catch(e:Dynamic) {}
+
+		if(content != null)
+		{
+			previewFileCacheMutex.acquire();
+			previewFileTextCache.set(filePath, content);
+			previewFileCacheMutex.release();
+		}
+		return content;
+	}
+
+	function cachePreviewDirList(folder:String):Array<String>
+	{
+		if(folder == null || folder.length < 1)
+			return [];
+
+		previewFileCacheMutex.acquire();
+		var hasCached:Bool = previewDirListCache.exists(folder);
+		var cached:Array<String> = hasCached ? previewDirListCache.get(folder) : null;
+		previewFileCacheMutex.release();
+		if(hasCached)
+			return cached != null ? cached : [];
+
+		var entries:Array<String> = [];
+		try
+		{
+			if(FileSystem.exists(folder) && FileSystem.isDirectory(folder))
+				entries = FileSystem.readDirectory(folder);
+		}
+		catch(e:Dynamic) {}
+
+		previewFileCacheMutex.acquire();
+		previewDirListCache.set(folder, entries);
+		previewFileCacheMutex.release();
+		return entries;
+	}
+
+	function preloadPreviewSoundsInBackground(songPath:String, song:backend.Song.SwagSong):Void
+	{
+		inline function trySoundFile(key:String):Void
+		{
+			var file:String = Paths.getPath(
+				Language.getFileTranslation(key) + '.${Paths.SOUND_EXT}', SOUND, 'songs', true);
+			if(file == null || file.length < 1 || Paths.currentTrackedSounds.exists(file))
+				return;
+			try
+			{
+				if(FileSystem.exists(file))
+				{
+					var snd:flash.media.Sound = flash.media.Sound.fromFile(file);
+					if(snd != null)
+					{
+						previewSoundMutex.acquire();
+						previewSoundPreloads.set(file, snd);
+						previewSoundMutex.release();
+					}
+				}
+			}
+			catch(e:Dynamic) {}
+		}
+
+		trySoundFile('$songPath/Inst');
+
+		if(song == null || !song.needsVoices)
+			return;
+
+		var p1Vocal:String = null;
+		var p2Vocal:String = null;
+		try { p1Vocal = getVocalFromCharacter(song.player1 != null ? song.player1 : 'bf'); } catch(e:Dynamic) {}
+		try { p2Vocal = getVocalFromCharacter(song.player2 != null ? song.player2 : 'dad'); } catch(e:Dynamic) {}
+		var vBase:String = '$songPath/Voices';
+		trySoundFile(vBase + (p1Vocal != null && p1Vocal.length > 0 ? '-' + p1Vocal : '-Player'));
+		trySoundFile(vBase + (p2Vocal != null && p2Vocal.length > 0 ? '-' + p2Vocal : '-Opponent'));
+		trySoundFile(vBase);
+	}
+
+	function flushPreviewSoundPreloads():Void
+	{
+		previewSoundMutex.acquire();
+		for(file => snd in previewSoundPreloads)
+		{
+			if(!Paths.currentTrackedSounds.exists(file))
+				Paths.currentTrackedSounds.set(file, snd);
+			if(!Paths.localTrackedAssets.contains(file))
+				Paths.localTrackedAssets.push(file);
+		}
+		previewSoundPreloads.clear();
+		previewSoundMutex.release();
+	}
+
+	function prewarmPreviewLuaDirectory(folder:String, seenFiles:Map<String, Bool>):Void
+	{
+		if(folder == null || folder.length < 1 || !FileSystem.exists(folder) || !FileSystem.isDirectory(folder))
+			return;
+
+		try
+		{
+			for(entry in cachePreviewDirList(folder))
+			{
+				var entryPath:String = haxe.io.Path.join([folder, entry]);
+				if(FileSystem.isDirectory(entryPath))
+				{
+					prewarmPreviewLuaDirectory(entryPath, seenFiles);
+					continue;
+				}
+
+				if(!entry.toLowerCase().endsWith('.lua') || seenFiles.exists(entryPath))
+					continue;
+
+				seenFiles.set(entryPath, true);
+				cachePreviewFileText(entryPath);
+			}
+		}
+		catch(e:Dynamic) {}
+	}
+
+	function queuePreviewPrewarm(songName:String, difficulty:Int):Void
+	{
+		var prewarmKey:String = getPreviewPrewarmKey(songName, difficulty);
+		densityJobsMutex.acquire();
+		var alreadyQueued:Bool = previewPrewarmPending.exists(prewarmKey);
+		if(!alreadyQueued)
+			previewPrewarmPending.set(prewarmKey, true);
+		densityJobsMutex.release();
+		if(alreadyQueued)
+			return;
+
+		if(densityThreadPool == null)
+			densityThreadPool = new FixedThreadPool(LoadingState.getUsableThreadCount(Std.int(Math.max(1, songs.length))));
+
+		densityThreadPool.run(() -> {
+			var songPath:String = Paths.formatToSongPath(songName);
+			var previewChart:backend.Song.SwagSong = null;
+			try
+			{
+				var raw:String = Song.preloadChartRaw(Highscore.formatSong(songPath, difficulty), songPath);
+				if(raw != null) previewChart = Song.parseJSON(raw, songPath, null);
+			}
+			catch(e:Dynamic)
+			{
+				try
+				{
+					var raw:String = Song.preloadChartRaw(songPath, songPath);
+					if(raw != null && previewChart == null) previewChart = Song.parseJSON(raw, songPath, null);
+				}
+				catch(e2:Dynamic) {}
+			}
+
+			try Song.preloadChartRaw('events', songPath) catch(e:Dynamic) {}
+
+			// Pre-convert the chart to psych_v1 off-thread, the same way LoadingState precaches images/
+			// sounds before PlayState starts. tryStartPreviewPlayback()/tryPrepareSongGameplayLoad() call
+			// Song.loadFromJson()/Song.getChart() synchronously on the main thread right after this job
+			// finishes, so warming the converted-chart cache here turns that into a cheap Json.parse
+			// instead of a full raw-read + convert() stall.
+			try Song.precacheConvertedChart(Highscore.formatSong(songPath, difficulty), songPath) catch(e:Dynamic) {}
+			try Song.precacheConvertedChart('events', songPath) catch(e:Dynamic) {}
+
+			// Pre-load audio off the main thread so Sound.fromFile doesn't stall on Space press
+			preloadPreviewSoundsInBackground(songPath, previewChart);
+
+			#if MODS_ALLOWED
+			var seenFiles:Map<String, Bool> = [];
+			for(folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'scripts/'))
+			{
+				cachePreviewDirList(folder);
+				prewarmPreviewLuaDirectory(folder, seenFiles);
+			}
+
+			for(folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'data/$songPath/'))
+			{
+				cachePreviewDirList(folder);
+				prewarmPreviewLuaDirectory(folder, seenFiles);
+			}
+
+			for(filePath in Mods.directoriesWithFile(Paths.getSharedPath(), 'data/' + songPath + '/credits.lua'))
+				cachePreviewFileText(filePath);
+			#end
+
+			densityJobsMutex.acquire();
+			previewPrewarmPending.remove(prewarmKey);
+			densityJobsMutex.release();
+		});
+	}
+
+	function isPreviewPrewarmPending(key:String):Bool
+	{
+		densityJobsMutex.acquire();
+		var pending:Bool = previewPrewarmPending.exists(key);
+		densityJobsMutex.release();
+		return pending;
+	}
+
+	function queueDensityLoad(songName:String, difficulty:Int):Void
+	{
+		var key:String = getDensityCacheKey(songName, difficulty);
+		if(densityCache.exists(key) && densityCache.get(key) != null && densityCache.get(key).analyzed)
+			return;
+		if(densityThreadPool == null)
+			densityThreadPool = new FixedThreadPool(LoadingState.getUsableThreadCount(1));
+
+		densityJobsMutex.acquire();
+		var alreadyQueued:Bool = densityPendingJobs.exists(key);
+		if(!alreadyQueued)
+			densityPendingJobs.set(key, true);
+		densityJobsMutex.release();
+		if(alreadyQueued)
+			return;
+
+		densityThreadPool.run(() -> {
+			var result:SongDensityData = null;
+			try
+			{
+				result = buildSongDensityData(songName, difficulty, densityBarCount);
+			}
+			catch(e:Dynamic)
+			{
+				result = createFallbackDensityData();
+			}
+
+			densityJobsMutex.acquire();
+			densityPendingJobs.remove(key);
+			densityCompletedJobs.set(key, result != null ? result : createFallbackDensityData());
+			densityJobsMutex.release();
+		});
+	}
+
+	function isDensityLoadPending(key:String):Bool
+	{
+		densityJobsMutex.acquire();
+		var pending:Bool = densityPendingJobs.exists(key);
+		densityJobsMutex.release();
+		return pending;
+	}
+
+	function flushDensityResults():Bool
+	{
+		var changed:Bool = false;
+		var currentKey:String = songs != null && songs.length > 0 && curSelected >= 0 && curSelected < songs.length ? getDensityCacheKey(songs[curSelected].songName, curDifficulty) : null;
+		var currentChanged:Bool = false;
+
+		densityJobsMutex.acquire();
+		for(key => data in densityCompletedJobs)
+		{
+			densityCache.set(key, data);
+			changed = true;
+			if(currentKey != null && key == currentKey)
+				currentChanged = true;
+		}
+		densityCompletedJobs.clear();
+		densityJobsMutex.release();
+
+		return changed && currentChanged;
+	}
+
+	function warmVisibleDensityCache():Void
+	{
+		if(songs == null || songs.length < 1)
+			return;
+
+		for(song in songs)
+			queueDensityLoad(song.songName, curDifficulty);
+	}
+
+	static function buildSongDensityData(songName:String, difficulty:Int, densityBarCount:Int):SongDensityData
+	{
+		var fallbackBars:Array<Float> = [];
+		for(i in 0...densityBarCount) fallbackBars.push(0);
+		var fallback:SongDensityData = new SongDensityData(0, 0, 0, 0, fallbackBars, '', '');
 
 		var chart:SwagSong = null;
 		var songPath:String = Paths.formatToSongPath(songName);
@@ -390,14 +1026,21 @@ class FreeplayState extends MusicBeatState
 		}
 
 		if(chart == null || chart.notes == null)
-		{
-			densityCache.set(key, fallback);
 			return fallback;
-		}
 
 		var noteTimes:Array<Float> = [];
+		var estimatedSongLength:Float = 0;
+		var sectionBpm:Float = chart.bpm > 0 ? chart.bpm : 100;
 		for(section in chart.notes)
 		{
+			if(section != null && section.changeBPM && section.bpm > 0)
+				sectionBpm = section.bpm;
+
+			var sectionBeats:Float = 4;
+			if(section != null && section.sectionBeats > 0)
+				sectionBeats = section.sectionBeats;
+			estimatedSongLength += (60000 / Math.max(1, sectionBpm)) * Math.max(0, sectionBeats);
+
 			if(section == null || section.sectionNotes == null)
 				continue;
 			for(note in section.sectionNotes)
@@ -405,25 +1048,23 @@ class FreeplayState extends MusicBeatState
 				if(note == null || note.length < 2)
 					continue;
 
-				// Ignore chart event rows and malformed data; only real note lanes count for density.
-				var noteLane:Int = Std.int(note[1]);
+				var noteLane:Null<Int> = Std.parseInt(Std.string(note[1]).trim());
+				if(noteLane == null)
+					continue;
 				if(noteLane < 0)
 					continue;
 
-				var time:Null<Float> = note[0];
-				if(time != null && !Math.isNaN(time))
+				var time:Float = Std.parseFloat(Std.string(note[0]).trim());
+				if(!Math.isNaN(time))
 					noteTimes.push(time);
 			}
 		}
 
 		if(noteTimes.length < 1)
-		{
-			densityCache.set(key, fallback);
 			return fallback;
-		}
 
 		noteTimes.sort(function(a:Float, b:Float) return FlxSort.byValues(FlxSort.ASCENDING, a, b));
-		var songLengthMs:Float = Math.max(1, noteTimes[noteTimes.length - 1]);
+		var songLengthMs:Float = Math.max(1, Math.max(noteTimes[noteTimes.length - 1], estimatedSongLength));
 		var windowMs:Float = Math.max(1, songLengthMs / densityBarCount);
 		var bins:Array<Float> = [];
 		for(i in 0...densityBarCount) bins.push(0);
@@ -444,7 +1085,6 @@ class FreeplayState extends MusicBeatState
 			dens.push(d);
 		}
 
-		// Smooth neighboring bins for a more stable difficulty profile.
 		var densSmooth:Array<Float> = [];
 		for(i in 0...dens.length)
 		{
@@ -471,7 +1111,7 @@ class FreeplayState extends MusicBeatState
 		var p90Index:Int = sortedDens.length > 0 ? Std.int(Math.floor((sortedDens.length - 1) * 0.90)) : 0;
 		var p90:Float = sortedDens.length > 0 ? sortedDens[p90Index] : 0;
 		var rawRating:Float = (avg * 0.45) + (p90 * 0.45) + (stdDev * 0.40);
-		var rating:Float = FlxMath.bound(rawRating / 1.8, 1, 20);
+		var rating:Float = Math.max(1, rawRating / 1.8);
 
 		var bpm:Float = chart.bpm > 0 ? chart.bpm : 0;
 		var sectionBPMs:Array<Float> = [];
@@ -513,14 +1153,30 @@ class FreeplayState extends MusicBeatState
 		var hasBpmChanges:Bool = sectionBPMs.length > 1;
 		var bpmChangesLabel:String = sectionBPMs.length > 0 ? sectionBPMs.map(function(v:Float) return Std.string(CoolUtil.floorDecimal(v, 2))).join(', ') : Std.string(CoolUtil.floorDecimal(bpm, 2));
 
-		var p1:String = chart.player1 != null ? Std.string(chart.player1) : 'bf';
-		var p2:String = chart.player2 != null ? Std.string(chart.player2) : 'dad';
-		if(p1.length < 1) p1 = 'bf';
-		if(p2.length < 1) p2 = 'dad';
-		var result:SongDensityData = new SongDensityData(bpm, CoolUtil.floorDecimal(rating, 2), avg, peak, densSmooth.copy(), p1, p2,
-			CoolUtil.floorDecimal(bpm, 2), CoolUtil.floorDecimal(avgBpm, 2), CoolUtil.floorDecimal(maxBpm, 2), bpmChangesLabel, hasBpmChanges);
-		densityCache.set(key, result);
-		return result;
+		var p1:String = chart.player1 != null ? Std.string(chart.player1).trim() : '';
+		var p2:String = chart.player2 != null ? Std.string(chart.player2).trim() : '';
+		return new SongDensityData(bpm, CoolUtil.floorDecimal(rating, 2), avg, peak, densSmooth.copy(), p1, p2,
+			CoolUtil.floorDecimal(bpm, 2), CoolUtil.floorDecimal(avgBpm, 2), CoolUtil.floorDecimal(maxBpm, 2), bpmChangesLabel, hasBpmChanges, true);
+	}
+
+	function loadSongDensityData(songName:String, difficulty:Int):SongDensityData
+	{
+		var key:String = getDensityCacheKey(songName, difficulty);
+		if(densityCache.exists(key))
+		{
+			var cached:SongDensityData = densityCache.get(key);
+			if(cached != null)
+			{
+				if(!cached.analyzed)
+					queueDensityLoad(songName, difficulty);
+				return cached;
+			}
+		}
+
+		queueDensityLoad(songName, difficulty);
+		var fallback:SongDensityData = createFallbackDensityData();
+		densityCache.set(key, fallback);
+		return fallback;
 	}
 
 	function updatePreviewBpmDisplay():Void
@@ -556,11 +1212,25 @@ class FreeplayState extends MusicBeatState
 			return;
 
 		var songPath:String = Paths.formatToSongPath(songs[curSelected].songName);
+		flushDensityResults();
 		currentDensityData = loadSongDensityData(songs[curSelected].songName, curDifficulty);
+		var densityKey:String = getDensityCacheKey(songs[curSelected].songName, curDifficulty);
+		var densityReady:Bool = !isDensityLoadPending(densityKey);
 		var bpmValue:Float = currentDensityData != null ? currentDensityData.bpm : 0;
 		var densityValue:Float = currentDensityData != null ? currentDensityData.rating : 0;
-		updatePreviewBpmDisplay();
-		densityText.text = 'DENSITY RATING  ' + Std.string(CoolUtil.floorDecimal(densityValue, 2)) + ' / 20';
+		if(densityReady)
+		{
+			updatePreviewBpmDisplay();
+			densityText.text = 'DENSITY RATING  ' + Std.string(CoolUtil.floorDecimal(densityValue, 2));
+			if(songs.length > 0)
+				queuePreviewPrewarm(songs[curSelected].songName, curDifficulty);
+		}
+		else
+		{
+			bpmText.text = 'BPM  ANALYZING...';
+			bpmChangesText.text = '';
+			densityText.text = 'DENSITY RATING  ANALYZING...';
+		}
 		songTickerText.text = songs[curSelected].songName.toUpperCase();
 		var tickerSize:Int = 30;
 		if(songTickerText.textField != null)
@@ -579,43 +1249,202 @@ class FreeplayState extends MusicBeatState
 			applySongHeaderSubtitleLayout(buildCenteredHeaderText('DIFF: ' + Difficulty.getString(curDifficulty).toUpperCase(), 'BPM: ' + Std.string(CoolUtil.floorDecimal(bpmValue, 2))));
 		if(densityP1Icon != null && densityP2Icon != null)
 		{
-			var iconP1:String = currentDensityData != null ? currentDensityData.player1 : 'bf'; // right side
-			var iconP2:String = currentDensityData != null ? currentDensityData.player2 : 'dad'; // left side
+			var rawIconP1:String = currentDensityData != null ? currentDensityData.player1 : '';
+			var rawIconP2:String = currentDensityData != null ? currentDensityData.player2 : '';
+			var p1IsBar:Bool = isDensityPlaceholderIcon(rawIconP1);
+			var p2IsBar:Bool = isDensityPlaceholderIcon(rawIconP2);
+			var songIcon:String = songs[curSelected] != null ? songs[curSelected].songCharacter : '';
+			var songIconValid:Bool = isDensityDisplayIcon(songIcon);
+			var iconP1:String = isDensityDisplayIcon(rawIconP1) ? rawIconP1.trim() : '';
+			var iconP2:String = isDensityDisplayIcon(rawIconP2) ? rawIconP2.trim() : '';
+			var soloLabel:Bool = false;
+			var singleIconOnly:Bool = false;
+			var singleIconIsLeft:Bool = false;
+
+			if(p1IsBar && p2IsBar)
+			{
+				if(songIconValid)
+				{
+					iconP2 = songIcon;
+					iconP1 = 'bf';
+				}
+				else
+					soloLabel = true;
+			}
+			else if(p1IsBar && !p2IsBar)
+			{
+				if(isDensityDisplayIcon(iconP2))
+				{
+					singleIconOnly = true;
+					singleIconIsLeft = true;
+				}
+				else if(songIconValid)
+				{
+					iconP2 = songIcon;
+					iconP1 = '';
+					singleIconOnly = true;
+					singleIconIsLeft = false;
+				}
+				else
+					soloLabel = true;
+			}
+			else if(p2IsBar && !p1IsBar)
+			{
+				if(isDensityDisplayIcon(iconP1))
+				{
+					singleIconOnly = true;
+					singleIconIsLeft = false;
+				}
+				else if(songIconValid)
+				{
+					iconP1 = songIcon;
+					iconP2 = '';
+					singleIconOnly = true;
+					singleIconIsLeft = true;
+				}
+				else
+					soloLabel = true;
+			}
+			else if(!isDensityDisplayIcon(iconP1) && !isDensityDisplayIcon(iconP2))
+			{
+				soloLabel = true;
+			}
+
+			// iconP1/iconP2 are character names at this point (e.g. from the chart's player1/player2
+			// fields, or the freeplay song's character) -- resolve them to the actual healthicon
+			// defined in that character's json, since the two don't always match.
+			if(iconP1 != null && iconP1.length > 0)
+				iconP1 = getHealthIconFromCharacter(iconP1);
+			if(iconP2 != null && iconP2.length > 0)
+				iconP2 = getHealthIconFromCharacter(iconP2);
+
 			var iconSize:Int = Std.int(Math.max(44.0, Math.min(74.0, vsPanel.height - 20)));
 			var vsCenterX:Float = vsPanel.x + (vsPanel.width * 0.5);
-			var vsTextWidth:Float = 64;
-			if(iconP2 != densityLeftIconChar)
+			var vsTextWidth:Float = soloLabel ? 120 : (singleIconOnly ? 92 : 64);
+			if(soloLabel)
 			{
-				densityP2Icon.changeIcon(iconP2);
-				densityP2Icon.setGraphicSize(iconSize);
-				densityP2Icon.updateHitbox();
-				densityLeftIconChar = iconP2;
+				densityP1Icon.visible = false;
+				densityP2Icon.visible = false;
+				densityVsText.text = 'SOLO';
+				densityVsText.size = 30;
+				densityVsText.alpha = 0.95;
 			}
-			if(iconP1 != densityRightIconChar)
+			else if(singleIconOnly)
 			{
-				densityP1Icon.changeIcon(iconP1);
-				densityP1Icon.setGraphicSize(iconSize);
-				densityP1Icon.updateHitbox();
-				densityRightIconChar = iconP1;
+				densityP1Icon.visible = !singleIconIsLeft;
+				densityP2Icon.visible = singleIconIsLeft;
+				densityVsText.text = '';
+				densityVsText.size = 22;
+				densityVsText.alpha = 0;
+
+				if(singleIconIsLeft)
+				{
+					if(iconP2 != densityLeftIconChar)
+					{
+						densityP2Icon.changeIcon(iconP2);
+						densityP2Icon.setGraphicSize(iconSize);
+						densityP2Icon.updateHitbox();
+						densityLeftIconChar = iconP2;
+					}
+					densityP2Icon.autoAdjustOffset = false;
+					densityP2Icon.offset.set(0, 0);
+					densityP2Icon.x = vsCenterX - (iconSize * 0.5);
+					densityP2Icon.y = vsPanel.y - vsPanel.height / 3.9;
+				}
+				else
+				{
+					if(iconP1 != densityRightIconChar)
+					{
+						densityP1Icon.changeIcon(iconP1);
+						densityP1Icon.setGraphicSize(iconSize);
+						densityP1Icon.updateHitbox();
+						densityRightIconChar = iconP1;
+					}
+					densityP1Icon.autoAdjustOffset = false;
+					densityP1Icon.offset.set(0, 0);
+					densityP1Icon.x = vsCenterX - (iconSize * 0.5);
+					densityP1Icon.y = vsPanel.y - vsPanel.height / 3.9;
+				}
 			}
-			densityP1Icon.autoAdjustOffset = false;
-			densityP2Icon.autoAdjustOffset = false;
-			densityP1Icon.offset.set(0, 0);
-			densityP2Icon.offset.set(0, 0);
-			
-			densityP2Icon.x = vsCenterX - 220;
-			densityP1Icon.x = vsCenterX + 60;
+			else
+			{
+				densityP1Icon.visible = true;
+				densityP2Icon.visible = true;
+				densityVsText.alpha = 0.85;
+				densityVsText.text = 'VS';
+				densityVsText.size = 22;
+
+				if(iconP2 != densityLeftIconChar)
+				{
+					densityP2Icon.changeIcon(iconP2);
+					densityP2Icon.setGraphicSize(iconSize);
+					densityP2Icon.updateHitbox();
+					densityLeftIconChar = iconP2;
+				}
+				if(iconP1 != densityRightIconChar)
+				{
+					densityP1Icon.changeIcon(iconP1);
+					densityP1Icon.setGraphicSize(iconSize);
+					densityP1Icon.updateHitbox();
+					densityRightIconChar = iconP1;
+				}
+				densityP1Icon.autoAdjustOffset = false;
+				densityP2Icon.autoAdjustOffset = false;
+				densityP1Icon.offset.set(0, 0);
+				densityP2Icon.offset.set(0, 0);
+				
+				densityP2Icon.x = vsCenterX - 220;
+				densityP1Icon.x = vsCenterX + 60;
+			}
 
 			// Lock both icons cleanly into the absolute vertical center of the vsPanel
 			densityP1Icon.y = vsPanel.y - vsPanel.height / 3.9;
 			densityP2Icon.y = vsPanel.y - vsPanel.height / 3.9;
 
-			densityVsText.size = 22;
 			densityVsText.fieldWidth = vsTextWidth;
 			densityVsText.x = vsCenterX - (vsTextWidth * 0.5);
 			densityVsText.y = vsPanel.y + (vsPanel.height - densityVsText.height) * 0.5;
 		}
 		updateDensityBars();
+	}
+
+	function isDensityPlaceholderIcon(rawIcon:String):Bool
+	{
+		if(rawIcon == null)
+			return false;
+
+		var lowerIcon:String = rawIcon.toLowerCase().trim();
+		return lowerIcon.length < 1 || lowerIcon.indexOf('bar') != -1 || lowerIcon == 'gf-invis';
+	}
+
+	function isDensityDisplayIcon(rawIcon:String):Bool
+	{
+		if(rawIcon == null)
+			return false;
+
+		var lowerIcon:String = rawIcon.toLowerCase().trim();
+		return lowerIcon.length > 0 && lowerIcon != 'bf' && lowerIcon != 'gf-invis' && lowerIcon.indexOf('bar') == -1;
+	}
+
+	function getCurrentWeekIconCharacter():String
+	{
+		if(songs == null || curSelected < 0 || curSelected >= songs.length)
+			return '';
+
+		var weekIndex:Int = songs[curSelected].week;
+		if(weekIndex < 0 || weekIndex >= WeekData.weeksList.length)
+			return '';
+
+		var weekKey:String = WeekData.weeksList[weekIndex];
+		if(weekKey == null || !WeekData.weeksLoaded.exists(weekKey))
+			return '';
+
+		var weekData:WeekData = WeekData.weeksLoaded.get(weekKey);
+		if(weekData == null || weekData.weekCharacters == null || weekData.weekCharacters.length < 1)
+			return '';
+
+		var weekIcon:String = weekData.weekCharacters[0];
+		return weekIcon != null ? weekIcon.trim() : '';
 	}
 
 	function applySongHeaderSubtitleLayout(value:String):Void
@@ -874,12 +1703,7 @@ class FreeplayState extends MusicBeatState
 
 		for(filePath in Mods.directoriesWithFile(Paths.getSharedPath(), 'data/' + songPath + '/credits.lua'))
 		{
-			var content:String = null;
-			try
-			{
-				content = File.getContent(filePath);
-			}
-			catch(e:Dynamic) {}
+			var content:String = cachePreviewFileText(filePath);
 			if(content == null || content.length < 1)
 				continue;
 
@@ -1304,24 +2128,9 @@ function updateDensityBars():Void
 		normalized = StringTools.replace(normalized, '"', '');
 		normalized = StringTools.replace(normalized, '\'', '');
 
-		return normalized.indexOf('camhud') != -1
-			|| normalized.indexOf('camone') != -1
-			|| normalized.indexOf('camtwo') != -1
-			|| normalized.indexOf('camgame') != -1
+		return normalized.indexOf('camhud.zoom') != -1
 			|| normalized.indexOf('hud.zoom') != -1
-			|| normalized.indexOf('hud.angle') != -1
-			|| normalized.indexOf('camone.zoom') != -1
-			|| normalized.indexOf('camone.angle') != -1
-			|| normalized.indexOf('camtwo.zoom') != -1
-			|| normalized.indexOf('camtwo.angle') != -1
-			|| normalized.indexOf('camgame.zoom') != -1
-			|| normalized.indexOf('camgame.angle') != -1
-			|| normalized.indexOf('game.zoom') != -1
-			|| normalized.indexOf('game.angle') != -1
-			|| normalized.indexOf('camuizoom') != -1
-			|| normalized.indexOf('defaultcamuizoom') != -1
-			|| normalized.indexOf('camuiangle') != -1
-			|| normalized.indexOf('defaultcamuiangle') != -1;
+			|| normalized.indexOf('defaultcamuizoom') != -1;
 	}
 
 	inline function hasAnyPreviewCamHUDReference(eventName:String, value1:String, value2:String):Bool
@@ -1337,7 +2146,7 @@ function updateDensityBars():Void
 			return false;
 
 		var lowerPath:String = normalizePreviewPropertyPath(path);
-		return isPreviewCameraZoomProperty(lowerPath) || isPreviewCameraAngleProperty(lowerPath);
+		return isPreviewCameraZoomProperty(lowerPath);
 	}
 
 	inline function normalizePreviewPropertyPath(path:String):String
@@ -1371,14 +2180,6 @@ function updateDensityBars():Void
 
 	function isPreviewZoomToggleProperty(path:String):Bool
 	{
-		if(path == null)
-			return false;
-
-		switch(normalizePreviewPropertyPath(path))
-		{
-			case 'camzooms', 'camzoomshud', 'camzoomsbg', 'camerazoomonbeat':
-				return true;
-		}
 		return false;
 	}
 
@@ -1436,31 +2237,21 @@ function updateDensityBars():Void
 		if(eventName == null)
 			return false;
 
-		if(hasAnyPreviewCamHUDReference(eventName, value1, value2))
-			return true;
-
 		var lowerEvent:String = eventName.toLowerCase().trim();
-		if(lowerEvent.length < 1)
-			return isPreviewEmptyEventCommand(value1)
-				|| isBeatZoomToken(value1) || isBeatZoomToken(value2)
-				|| isAddCameraZoomToken(value1) || isAddCameraZoomToken(value2);
-
-		if(isBeatZoomEventName(eventName) || isBeatZoomToken(value1) || isBeatZoomToken(value2) || isAddCameraZoomToken(value1) || isAddCameraZoomToken(value2))
-			return true;
 
 		switch(lowerEvent)
 		{
-			case 'nz', 'screen shake', 'add camera zoom', 'add camera zoom edit', '__tweensongspeed':
+			case 'nz':
 				return true;
-			case '__tweenzoom', '__tweenangle':
-				return isPreviewCameraTarget(value1) || hasPreviewCamHUDReference(value1);
+			case 'add camera zoom', 'add camera zoom edit', 'beatzoom':
+				return true;
+			case '__tweenzoom':
+				return isPreviewCameraTarget(value1) || hasPreviewCamHUDReference(value1) || isPreviewCameraZoomProperty(value1);
 			case 'set property':
 				return isPreviewUIProperty(value1);
 		}
 
-		if(isPreviewCameraZoomProperty(value1) || isPreviewCameraAngleProperty(value1))
-			return true;
-		return isPreviewBeatZoomEvent(eventName, value1, value2);
+		return false;
 	}
 
 	function normalizePreviewTargetName(target:String):String
@@ -1471,24 +2262,19 @@ function updateDensityBars():Void
 		lowered = StringTools.replace(lowered, '"', '');
 		lowered = StringTools.replace(lowered, '\'', '');
 		lowered = StringTools.replace(lowered, ' ', '');
-		switch(lowered)
-		{
-			case 'one', 'two', 'camone', 'camtwo', 'camgame', 'game', 'camera':
-				return 'camhud';
-		}
 		return lowered;
 	}
 
 	inline function isPreviewCameraTarget(target:String):Bool
 	{
 		var lowerTarget:String = normalizePreviewTargetName(target);
-		return lowerTarget == 'camhud' || lowerTarget == 'hud' || lowerTarget == 'camui' || lowerTarget == 'ui';
+		return lowerTarget == 'hud';
 	}
 
 	function applyPreviewCameraZoomTween(target:String, targetZoom:Float, duration:Float, ?easeName:String = 'linear'):Void
 	{
 		var effectiveTarget:String = normalizePreviewTargetName(target);
-		if(effectiveTarget != 'camhud' && effectiveTarget != 'hud' && !hasPreviewCamHUDReference(target))
+		if(effectiveTarget != 'hud')
 			return;
 
 		// Tween zoom targets should become the new resting base to avoid post-tween snap-back.
@@ -1511,7 +2297,7 @@ function updateDensityBars():Void
 	function applyPreviewCameraAngleTween(target:String, targetAngle:Float, duration:Float, ?easeName:String = 'linear'):Void
 	{
 		var effectiveTarget:String = normalizePreviewTargetName(target);
-		if(effectiveTarget != 'camhud' && effectiveTarget != 'hud' && !hasPreviewCamHUDReference(target))
+		if(effectiveTarget != 'hud')
 			return;
 
 		if(previewCustomAngleTween != null)
@@ -3525,23 +4311,18 @@ function updateDensityBars():Void
 		if(eventName == null)
 			return false;
 
-		if(hasAnyPreviewCamHUDReference(eventName, value1, value2))
-			return true;
-
 		var lowerEvent:String = eventName.toLowerCase().trim();
-		if(lowerEvent == 'add camera zoom' || lowerEvent == 'add camera zoom edit')
+
+		if(lowerEvent == 'add camera zoom' || lowerEvent == 'add camera zoom edit' || lowerEvent == 'beatzoom')
 			return true;
 
 		if(lowerEvent == 'set property')
 			return isPreviewCameraZoomProperty(value1);
 
-		if(lowerEvent.length < 1 && isPreviewEmptyEventCommand(value1))
-			return true;
+		if(lowerEvent == '__tweenzoom')
+			return isPreviewCameraTarget(value1) || isPreviewCameraZoomProperty(value1);
 
-		if(isBeatZoomToken(value1) || isBeatZoomToken(value2))
-			return true;
-
-		return lowerEvent.indexOf('camera zoom') != -1 || (lowerEvent.indexOf('zoom') != -1 && parsePreviewEventFloat(value1) != null);
+		return false;
 	}
 
 	function queuePreviewEventsFromLuaContent(content:String):Void
@@ -4290,7 +5071,7 @@ function updateDensityBars():Void
 
 		try
 		{
-			for(entry in FileSystem.readDirectory(folder))
+			for(entry in cachePreviewDirList(folder))
 			{
 				var entryPath:String = haxe.io.Path.join([folder, entry]);
 				if(FileSystem.isDirectory(entryPath))
@@ -4306,11 +5087,9 @@ function updateDensityBars():Void
 					continue;
 
 				seenFiles.set(entryPath, true);
-				try
-				{
-					queuePreviewEventsFromLuaContent(File.getContent(entryPath));
-				}
-				catch(e:Dynamic) {}
+				var content:String = cachePreviewFileText(entryPath);
+				if(content != null)
+					queuePreviewEventsFromLuaContent(content);
 			}
 		}
 		catch(e:Dynamic) {}
@@ -4346,11 +5125,9 @@ function updateDensityBars():Void
 						continue;
 
 					seenFiles.set(filePath, true);
-					try
-					{
-						queuePreviewEventsFromLuaContent(File.getContent(filePath));
-					}
-					catch(e:Dynamic) {}
+					var content:String = cachePreviewFileText(filePath);
+					if(content != null)
+						queuePreviewEventsFromLuaContent(content);
 				}
 			}
 		}
@@ -4520,13 +5297,13 @@ function updateDensityBars():Void
 
 			if(FileSystem.exists(fragPath))
 			{
-				frag = File.getContent(fragPath);
+				frag = cachePreviewFileText(fragPath);
 				found = true;
 			}
 
 			if(FileSystem.exists(vertPath))
 			{
-				vert = File.getContent(vertPath);
+				vert = cachePreviewFileText(vertPath);
 				found = true;
 			}
 
@@ -4623,74 +5400,15 @@ function updateDensityBars():Void
 
 		var trimmedPath:String = normalizePreviewPropertyPath(trimPreviewToken(path));
 		var lowerPath:String = trimmedPath;
-		if(isPreviewZoomToggleProperty(lowerPath))
-		{
-			var toggle:Null<Bool> = parsePreviewToggleValue(trimPreviewToken(value));
-			if(toggle == null)
-				return;
-
-			if(!toggle && !shouldApplyPreviewZoomDisable())
-				return;
-
-			switch(lowerPath)
-			{
-				case 'camzooms', 'camerazoomonbeat':
-					previewScriptCamZoomHud = toggle;
-					previewScriptCamZoomBg = toggle;
-					previewBeatZoomEnabled = toggle;
-					previewZoomsDisabled = !toggle;
-				case 'camzoomshud':
-					previewScriptCamZoomHud = toggle;
-					previewZoomsDisabled = !(previewScriptCamZoomHud || previewScriptCamZoomBg);
-				case 'camzoomsbg':
-					previewScriptCamZoomBg = toggle;
-					previewZoomsDisabled = !(previewScriptCamZoomHud || previewScriptCamZoomBg);
-			}
-			return;
-		}
-
-		if(!hasPreviewCamHUDReference(lowerPath) && lowerPath != 'defaultcamuizoom' && lowerPath != 'defaultcamuiangle')
+		if(!isPreviewCameraZoomProperty(lowerPath))
 			return;
 		var floatValue:Null<Float> = parsePreviewEventFloat(trimPreviewToken(value));
-
-		function parseAdditiveSelfProperty(rawValue:String, baseValue:Float):Null<Float>
+		if(floatValue != null)
 		{
-			if(rawValue == null)
-				return null;
-
-			var matcher:EReg = ~/getProperty\s*\(\s*["']([^"']+)["']\s*\)\s*([\+\-])\s*\(?\s*([-+]?[0-9]*\.?[0-9]+)\s*\)?/i;
-			if(!matcher.match(rawValue))
-				return null;
-
-			var refPath:String = matcher.matched(1);
-			if(refPath == null || refPath.toLowerCase().trim() != lowerPath)
-				return null;
-
-			var sign:String = matcher.matched(2);
-			var delta:Null<Float> = parsePreviewEventFloat(matcher.matched(3));
-			if(delta == null)
-				return null;
-
-			return sign == '-' ? (baseValue - delta) : (baseValue + delta);
-		}
-
-		if(!isPreviewCameraZoomProperty(lowerPath) && !isPreviewCameraAngleProperty(lowerPath))
-			return;
-
-		if(isPreviewCameraZoomProperty(lowerPath))
 			previewExternalZoomControl = true;
-
-		if(floatValue == null && isPreviewCameraZoomProperty(lowerPath))
-			floatValue = parseAdditiveSelfProperty(value, FlxG.camera.zoom);
-		if(floatValue == null && isPreviewCameraAngleProperty(lowerPath))
-			floatValue = parseAdditiveSelfProperty(value, FlxG.camera.angle);
-		if(floatValue != null && isPreviewCameraZoomProperty(lowerPath))
-		{
 			previewBaseCamZoom = Math.max(0.2, floatValue);
 			FlxG.camera.zoom = floatValue;
 		}
-		else if(floatValue != null && isPreviewCameraAngleProperty(lowerPath))
-			FlxG.camera.angle = floatValue;
 	}
 
 	inline function isPreviewCameraZoomProperty(path:String):Bool
@@ -4698,35 +5416,14 @@ function updateDensityBars():Void
 		if(path == null)
 			return false;
 		var lowerPath:String = normalizePreviewPropertyPath(path);
-		if(lowerPath == 'defaultcamuizoom')
-			return true;
 		return lowerPath == 'camhud.zoom'
-			|| lowerPath == 'camone.zoom'
-			|| lowerPath == 'camtwo.zoom'
-			|| lowerPath == 'camgame.zoom'
-			|| lowerPath == 'game.zoom'
-			|| lowerPath == 'camera.zoom'
 			|| lowerPath == 'hud.zoom'
-			|| lowerPath == 'camuizoom'
 			|| lowerPath == 'defaultcamuizoom';
 	}
 
 	inline function isPreviewCameraAngleProperty(path:String):Bool
 	{
-		if(path == null)
-			return false;
-		var lowerPath:String = normalizePreviewPropertyPath(path);
-		if(lowerPath == 'defaultcamuiangle')
-			return true;
-		return lowerPath == 'camhud.angle'
-			|| lowerPath == 'camone.angle'
-			|| lowerPath == 'camtwo.angle'
-			|| lowerPath == 'camgame.angle'
-			|| lowerPath == 'game.angle'
-			|| lowerPath == 'camera.angle'
-			|| lowerPath == 'hud.angle'
-			|| lowerPath == 'camuiangle'
-			|| lowerPath == 'defaultcamuiangle';
+		return false;
 	}
 
 	function blockBeatZoomForCustom(?duration:Float = -1):Void
@@ -4775,7 +5472,6 @@ function updateDensityBars():Void
 		value1 = trimPreviewToken(value1);
 		value2 = trimPreviewToken(value2);
 		var lowerEvent:String = eventName.toLowerCase().trim();
-		var lowerValue2:String = value2 != null ? value2.toLowerCase().trim() : '';
 
 		switch(lowerEvent)
 		{
@@ -4796,32 +5492,34 @@ function updateDensityBars():Void
 				return didCustomZoom;
 		}
 
-		if(lowerEvent == 'nz')
+		if(lowerEvent == '__tweenzoom')
 		{
-			var startupWindowMs:Float = Math.max(350, ClientPrefs.data.noteOffset + 350);
-			if(previewLastMusicTime < startupWindowMs || Conductor.songPosition <= startupWindowMs)
-				return false;
-
-			var nzHudCmd:Null<Float> = parsePreviewEventFloat(value1);
-
-			var nzDisable:Bool = (nzHudCmd != null && nzHudCmd == 1);
-			var nzEnable:Bool = (nzHudCmd != null && nzHudCmd == 2);
-			var hasMeaningfulNzToggle:Bool = shouldApplyPreviewZoomDisable() || hasPreviewUpcomingZoomReenable();
-
-			if(nzDisable && hasMeaningfulNzToggle)
-				previewZoomsDisabled = true;
-			else if(nzEnable)
-				previewZoomsDisabled = false;
-			else if(nzHudCmd == null && hasMeaningfulNzToggle)
-				previewZoomsDisabled = false;
-			return false;
+			if(isPreviewCameraTarget(value1))
+			{
+				var tweenZoomPayload = parseTweenEventValueEx(value2);
+				if(tweenZoomPayload.a != null)
+				{
+					var tweenZoomDuration:Float = tweenZoomPayload.b != null && tweenZoomPayload.b >= 0 ? tweenZoomPayload.b : 0;
+					applyPreviewCameraZoomTween(value1, tweenZoomPayload.a, tweenZoomDuration, tweenZoomPayload.ease);
+					previewExternalZoomControl = true;
+					didCustomZoom = true;
+				}
+			}
+			return didCustomZoom;
 		}
 
-		if(allowLuaOnEventHandlers)
-			didCustomZoom = triggerPreviewLuaOnEventHandlers(eventName, value1, value2) || didCustomZoom;
+		if(lowerEvent == 'set property')
+		{
+			applyPreviewProperty(value1, value2);
+			if(isPreviewCameraZoomProperty(value1))
+			{
+				triggerPreviewCustomZoomReturn(0.16);
+				didCustomZoom = true;
+			}
+			return didCustomZoom;
+		}
 
-		if(lowerEvent == 'add camera zoom' || lowerEvent == 'add camera zoom edit' || lowerEvent == 'add camera zoom edit2'
-			|| isAddCameraZoomToken(value1) || isAddCameraZoomToken(value2))
+		if(lowerEvent == 'add camera zoom' || lowerEvent == 'add camera zoom edit')
 		{
 			if(!previewScriptCamZoomHud)
 				return didCustomZoom;
@@ -4832,7 +5530,6 @@ function updateDensityBars():Void
 			FlxG.camera.zoom += addCamZoom;
 			previewExternalZoomControl = true;
 
-			// Do not cancel active scripted tween zooms; let their own duration/ease finish naturally.
 			if(previewCustomZoomTween == null)
 				triggerPreviewCustomZoomReturn(0.16);
 			else
@@ -4841,226 +5538,31 @@ function updateDensityBars():Void
 			return didCustomZoom;
 		}
 
-		if(isBeatZoomEventName(eventName) || isBeatZoomToken(value1) || isBeatZoomToken(value2))
+		if(lowerEvent == 'beatzoom')
 		{
+			var beatToggle:Null<Bool> = parsePreviewToggleValue(value1);
+			previewBeatZoomToggleMode = true;
 			previewHasBeatZoomEvent = true;
-			var beatHud:Null<Float> = parsePreviewEventFloat(value1);
-
-			if(beatHud != null)
-				previewBeatZoomHud = beatHud;
-
-			var explicitToggle:Null<Bool> = null;
-			if(beatHud == null)
-				explicitToggle = parsePreviewToggleValue(value1);
-
-			if(previewBeatZoomToggleMode && explicitToggle == null)
-			{
-				previewBeatZoomEnabled = !previewBeatZoomEnabled;
-				previewScriptCamZoomHud = previewBeatZoomEnabled;
-				return didCustomZoom;
-			}
-
-			if(explicitToggle != null)
-			{
-				if(explicitToggle || shouldApplyPreviewZoomDisable())
-				{
-					previewBeatZoomEnabled = explicitToggle;
-					previewScriptCamZoomHud = explicitToggle;
-				}
-			}
+			if(beatToggle != null)
+				previewBeatZoomEnabled = beatToggle;
 			else
-				previewBeatZoomEnabled = true;
+				previewBeatZoomEnabled = !previewBeatZoomEnabled;
 			return didCustomZoom;
 		}
 
-		// Some songs (e.g. Ievan Polkka) drive camera zoom via empty-name
-		// events with value1 commands like zi/zo. Mirror that behavior here.
-		if(lowerEvent.length < 1)
+		if(lowerEvent == 'nz')
 		{
-			var emptyCmd:String = value1 != null ? value1.toLowerCase().trim() : '';
-			var emptyMul:Null<Float> = parsePreviewEventFloat(value2);
-			if(emptyMul == null)
-				emptyMul = 1;
+			var hudZoomToggle:Null<Bool> = parsePreviewToggleValue(value1);
+			if(hudZoomToggle != null)
+				previewScriptCamZoomHud = hudZoomToggle;
 
-			function parseCsvArg(index:Int):String
-			{
-				if(value2 == null)
-					return '';
-				var parts:Array<String> = value2.split(',');
-				if(index < 0 || index >= parts.length)
-					return '';
-				return parts[index].trim();
-			}
-
-			function parseCsvFloat(index:Int):Null<Float>
-			{
-				return parsePreviewEventFloat(parseCsvArg(index));
-			}
-
-			function handleLevitatingShaderEvent(payload:String):Bool
-			{
-				if(payload == null || payload.length < 1)
-					return false;
-
-				var vt:Array<String> = [];
-				for(part in payload.split(','))
-					vt.push(part != null ? part.trim() : '');
-				if(vt.length < 2)
-					return false;
-
-				if(!ensurePreviewMirrorRepeatShader())
-					return false;
-
-				var shaderTarget:String = vt[0].toLowerCase();
-				if(shaderTarget != 'both' && shaderTarget != 'barrel' && shaderTarget != 'barrelhud')
-					return false;
-
-				var shaderVar:String = vt[1].toLowerCase();
-				if(shaderVar == 'flip')
-				{
-					previewShaderFlip = !previewShaderFlip;
-					setPreviewShaderBool('flip', previewShaderFlip);
-					return true;
-				}
-
-				var shaderValue:Null<Float> = vt.length > 2 ? parsePreviewEventFloat(vt[2]) : null;
-				if(shaderValue == null)
-					return false;
-
-				var beatDuration:Float = vt.length > 3 ? (parsePreviewEventFloat(vt[3]) != null ? parsePreviewEventFloat(vt[3]) : 0) : 0;
-				var easeNameLocal:String = vt.length > 4 && vt[4].length > 0 ? vt[4] : 'cubeOut';
-				var tweenDuration:Float = Math.max(0, (Conductor.stepCrochet * 0.001) * beatDuration);
-				tweenPreviewShaderFloat(shaderVar, shaderValue, tweenDuration, easeNameLocal);
-				return true;
-			}
-
-			function applyCustomZoomSequence(target:String, firstZoom:Null<Float>, firstDuration:Null<Float>, firstEase:String, secondZoom:Null<Float>, secondDuration:Null<Float>, secondEase:String):Void
-			{
-				var z1:Float = firstZoom != null ? firstZoom : FlxG.camera.zoom;
-				var d1:Float = firstDuration != null && firstDuration > 0 ? firstDuration : 0;
-				var e1:String = firstEase != null && firstEase.length > 0 ? firstEase : 'linear';
-
-				var hasSecond:Bool = secondZoom != null;
-				var z2:Float = hasSecond ? secondZoom : z1;
-				var d2:Float = secondDuration != null && secondDuration > 0 ? secondDuration : 0;
-				var e2:String = secondEase != null && secondEase.length > 0 ? secondEase : 'linear';
-
-				if(previewCustomZoomTween != null)
-				{
-					previewCustomZoomTween.cancel();
-					previewCustomZoomTween = null;
-				}
-
-				var totalLock:Float = d1 + (hasSecond ? d2 : 0);
-				if(totalLock <= 0)
-					totalLock = 0.08;
-				blockBeatZoomForCustom(totalLock);
-
-				if(d1 <= 0)
-				{
-					previewBaseCamZoom = Math.max(0.2, z1);
-					applyPreviewCameraZoomTween(target, z1, 0, e1);
-					if(hasSecond)
-					{
-						if(d2 <= 0)
-						{
-							previewBaseCamZoom = Math.max(0.2, z2);
-							applyPreviewCameraZoomTween(target, z2, 0, e2);
-						}
-						else
-						{
-							applyPreviewCameraZoomTween(target, z2, d2, e2);
-							previewBaseCamZoom = Math.max(0.2, z2);
-						}
-					}
-					return;
-				}
-
-				previewCustomZoomTween = FlxTween.tween(FlxG.camera, {zoom: z1}, d1, {
-					ease: getPreviewEaseFunc(e1),
-					onComplete: function(_)
-					{
-						previewBaseCamZoom = Math.max(0.2, z1);
-						if(hasSecond)
-						{
-							if(d2 <= 0)
-							{
-								previewBaseCamZoom = Math.max(0.2, z2);
-								applyPreviewCameraZoomTween(target, z2, 0, e2);
-								previewCustomZoomTween = null;
-							}
-							else
-							{
-								applyPreviewCameraZoomTween(target, z2, d2, e2);
-								previewBaseCamZoom = Math.max(0.2, z2);
-								previewCustomZoomTween = null;
-							}
-						}
-						else
-							previewCustomZoomTween = null;
-					}
-				});
-			}
-
-			switch(emptyCmd)
-			{
-				case 'shader':
-					if(handleLevitatingShaderEvent(value2))
-					{
-						didCustomZoom = true;
-						return didCustomZoom;
-					}
-
-				case 'zi':
-						previewBaseCamZoom = Math.max(0.2, previewBaseCamZoom + (0.2 * emptyMul));
-						FlxG.camera.zoom = Math.max(FlxG.camera.zoom, previewBaseCamZoom);
-						didCustomZoom = true;
-					return didCustomZoom;
-
-				case 'zo':
-						previewBaseCamZoom = Math.max(0.2, previewBaseCamZoom - (0.2 * emptyMul));
-						FlxG.camera.zoom = Math.max(previewBaseCamZoom, FlxG.camera.zoom - (0.2 * emptyMul));
-						didCustomZoom = true;
-					return didCustomZoom;
-
-				case 'zoomz', 'zoomh':
-					applyCustomZoomSequence('hud', parseCsvFloat(0), parseCsvFloat(1), parseCsvArg(2), parseCsvFloat(3), parseCsvFloat(4), parseCsvArg(5));
-					didCustomZoom = true;
-					return didCustomZoom;
-
-				case 'sz2':
-					var sz2Zoom:Null<Float> = parsePreviewEventFloat(value2);
-					if(sz2Zoom != null)
-					{
-						previewSZ2Counter++;
-						var sz2Start:Float = sz2Zoom;
-						var sz2Duration:Float = 0.3;
-						if(previewSZ2Counter >= 2)
-						{
-							sz2Start += 0.1;
-							sz2Duration = 0.5;
-							previewSZ2Counter = 0;
-						}
-						previewBaseCamZoom = Math.max(0.2, sz2Start);
-						FlxG.camera.zoom = sz2Start;
-						applyPreviewCameraZoomTween('camhud', 1, sz2Duration, 'sineOut');
-						didCustomZoom = true;
-					}
-					return didCustomZoom;
-
-				case 'sg':
-					var sgDelta:Null<Float> = parseCsvFloat(0);
-					var sgDuration:Null<Float> = parseCsvFloat(1);
-					var sgEase:String = parseCsvArg(2);
-					if(sgDelta != null)
-					{
-						var sgTarget:Float = FlxG.camera.zoom + sgDelta;
-						applyPreviewCameraZoomTween('camhud', sgTarget, sgDuration != null ? sgDuration : 0, sgEase);
-						didCustomZoom = true;
-					}
-					return didCustomZoom;
-			}
+			if(hudZoomToggle != null)
+				previewExternalZoomControl = true;
+			return didCustomZoom;
 		}
+
+		return false;
+		return false;
 
 		switch(lowerEvent)
 		{
@@ -5491,8 +5993,20 @@ function updateDensityBars():Void
 		var shiftMult:Int = 1;
 		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
 
+		if(processPendingFreeplayLoad(elapsed))
+		{
+			if(persistentUpdate)
+			{
+				updateTexts(elapsed);
+				super.update(elapsed);
+			}
+			return;
+		}
+
 		if (!player.playingMusic)
 		{
+			if(flushDensityResults())
+				refreshModernSongDetails();
 			
 			if(cheatedSC == -1 && rcheaT == -1) scoreText.text = Language.getPhrase('personal_best', 'PERSONAL BEST: {1} ({2}%) {5}x\nLast Play: {3} ({4}%) {6}x', [lerpScore, ratingSplit.join('.'), recentScore, rratingSplit.join('.'), rate, rrate]);
 			
@@ -5591,81 +6105,7 @@ function updateDensityBars():Void
 		{
 			if(instPlaying != curSelected && !player.playingMusic)
 			{
-				resetPreviewCamera();
-				destroyFreeplayVocals();
-				FlxG.sound.music.volume = 0;
-				lastBeatTriggered = -1;
-
-				Mods.currentModDirectory = songs[curSelected].folder;
-				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
-				Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-				if (PlayState.SONG.needsVoices)
-				{
-					vocals = new FlxSound();
-					try
-					{
-						var playerVocals:String = getVocalFromCharacter(PlayState.SONG.player1);
-						var loadedVocals = Paths.voices(PlayState.SONG.song, (playerVocals != null && playerVocals.length > 0) ? playerVocals : 'Player');
-						if(loadedVocals == null) loadedVocals = Paths.voices(PlayState.SONG.song);
-						
-						if(loadedVocals != null && loadedVocals.length > 0)
-						{
-							vocals.loadEmbedded(loadedVocals);
-							FlxG.sound.list.add(vocals);
-							vocals.persist = vocals.looped = true;
-							vocals.volume = 0.8;
-							vocals.play();
-							vocals.pause();
-						}
-						else vocals = FlxDestroyUtil.destroy(vocals);
-					}
-					catch(e:Dynamic)
-					{
-						vocals = FlxDestroyUtil.destroy(vocals);
-					}
-					
-					opponentVocals = new FlxSound();
-					try
-					{
-						//trace('please work...');
-						var oppVocals:String = getVocalFromCharacter(PlayState.SONG.player2);
-						var loadedVocals = Paths.voices(PlayState.SONG.song, (oppVocals != null && oppVocals.length > 0) ? oppVocals : 'Opponent');
-						
-						if(loadedVocals != null && loadedVocals.length > 0)
-						{
-							opponentVocals.loadEmbedded(loadedVocals);
-							FlxG.sound.list.add(opponentVocals);
-							opponentVocals.persist = opponentVocals.looped = true;
-							opponentVocals.volume = 0.8;
-							opponentVocals.play();
-							opponentVocals.pause();
-							//trace('yaaay!!');
-						}
-						else opponentVocals = FlxDestroyUtil.destroy(opponentVocals);
-					}
-					catch(e:Dynamic)
-					{
-						//trace('FUUUCK');
-						opponentVocals = FlxDestroyUtil.destroy(opponentVocals);
-					}
-				}
-				Conductor.bpm = PlayState.SONG.bpm;
-				Conductor.offset = Reflect.hasField(PlayState.SONG, 'offset') ? PlayState.SONG.offset : 0;
-				Conductor.songPosition = 0;
-				Conductor.mapBPMChanges(PlayState.SONG);
-				buildPreviewSectionBPMData();
-				loadPreviewEvents(Paths.formatToSongPath(songs[curSelected].songName));
-				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.8);
-				setupPreviewLoopRestart();
-				FlxG.sound.music.pause();
-				previewLastMusicTime = -1;
-
-				instPlaying = curSelected;
-
-				player.playingMusic = true;
-				player.curTime = 0;
-				player.switchPlayMusic();
-				previewPendingSongStart = true;
+				beginPreviewLoad();
 			}
 			else if (instPlaying == curSelected && player.playingMusic)
 			{
@@ -5676,52 +6116,7 @@ function updateDensityBars():Void
 		}
 		else if (controls.ACCEPT && !player.playingMusic)
 		{
-			persistentUpdate = false;
-			var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
-			var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
-
-			try
-			{
-				Song.loadFromJson(poop, songLowercase);
-				PlayState.isStoryMode = false;
-				PlayState.storyDifficulty = curDifficulty;
-
-				trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
-			}
-			catch(e:haxe.Exception)
-			{
-				trace('ERROR! ${e.message}');
-
-				var errorStr:String = e.message;
-				if(errorStr.contains('There is no TEXT asset with an ID of')) errorStr = 'Missing file: ' + errorStr.substring(errorStr.indexOf(songLowercase), errorStr.length-1); //Missing chart
-				else errorStr += '\n\n' + e.stack;
-
-				missingText.text = 'ERROR WHILE LOADING CHART:\n$errorStr';
-				missingText.screenCenter(Y);
-				missingText.visible = true;
-				missingTextBG.visible = true;
-				FlxG.sound.play(Paths.sound('cancelMenu'));
-
-				updateTexts(elapsed);
-				super.update(elapsed);
-				return;
-			}
-
-			@:privateAccess
-			if(PlayState._lastLoadedModDirectory != Mods.currentModDirectory)
-			{
-				trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
-				Paths.freeGraphicsFromMemory();
-			}
-			LoadingState.prepareToSong();
-			LoadingState.loadAndSwitchState(new PlayState());
-			FlxG.sound.music.stop();
-			stopMusicPlay = true;
-
-			destroyFreeplayVocals();
-			#if (MODS_ALLOWED && DISCORD_ALLOWED)
-			DiscordClient.loadModRPC();
-			#end
+			beginSongLoad();
 		}
 		else if(controls.RESET && !player.playingMusic)
 		{
@@ -5912,6 +6307,8 @@ function updateDensityBars():Void
 		positionHighscore();
 		missingText.visible = false;
 		missingTextBG.visible = false;
+		queueDensityLoad(songs[curSelected].songName, curDifficulty);
+		queuePreviewPrewarm(songs[curSelected].songName, curDifficulty);
 		refreshModernSongDetails();
 	}
 
@@ -6052,8 +6449,48 @@ function updateDensityBars():Void
 		}
 	}
 
+	private function getHealthIconFromCharacter(char:String):String {
+		try
+		{
+			var path:String = Paths.getPath('characters/$char.json', TEXT);
+			#if MODS_ALLOWED
+			if (sys.FileSystem.exists(path))
+			{
+				var rawJson:String = sys.io.File.getContent(path);
+				if (rawJson != null && rawJson.length > 0)
+				{
+					var json:Dynamic = haxe.Json.parse(rawJson);
+					if (json.healthicon != null && json.healthicon.length > 0)
+						return json.healthicon;
+				}
+			}
+			#else
+			if (OpenFlAssets.exists(path))
+			{
+				var rawJson:String = Assets.getText(path);
+				if (rawJson != null && rawJson.length > 0)
+				{
+					var json:Dynamic = haxe.Json.parse(rawJson);
+					if (json.healthicon != null && json.healthicon.length > 0)
+						return json.healthicon;
+				}
+			}
+			#end
+		}
+		catch (e:Dynamic) {}
+		return char; // Default back to character name if json isn't found
+	}
+
 	override function destroy():Void
 	{
+		if(densityThreadPool != null)
+		{
+			densityThreadPool.shutdown();
+			densityThreadPool = null;
+		}
+		previewSoundMutex.acquire();
+		previewSoundPreloads.clear();
+		previewSoundMutex.release();
 		super.destroy();
 
 		FlxG.autoPause = ClientPrefs.data.autoPause;
@@ -6076,9 +6513,10 @@ class SongDensityData
 	public var maxBpm:Float;
 	public var bpmChangesLabel:String;
 	public var hasBpmChanges:Bool;
+	public var analyzed:Bool;
 
-	public function new(bpm:Float, rating:Float, avgNps:Float, peakNps:Float, timeline:Array<Float>, ?player1:String = 'bf', ?player2:String = 'dad',
-		?mainBpm:Float = 0, ?avgBpm:Float = 0, ?maxBpm:Float = 0, ?bpmChangesLabel:String = '', ?hasBpmChanges:Bool = false)
+	public function new(bpm:Float, rating:Float, avgNps:Float, peakNps:Float, timeline:Array<Float>, ?player1:String = '', ?player2:String = '',
+		?mainBpm:Float = 0, ?avgBpm:Float = 0, ?maxBpm:Float = 0, ?bpmChangesLabel:String = '', ?hasBpmChanges:Bool = false, ?analyzed:Bool = false)
 	{
 		this.bpm = bpm;
 		this.rating = rating;
@@ -6092,6 +6530,7 @@ class SongDensityData
 		this.maxBpm = maxBpm > 0 ? maxBpm : bpm;
 		this.bpmChangesLabel = (bpmChangesLabel != null && bpmChangesLabel.length > 0) ? bpmChangesLabel : Std.string(CoolUtil.floorDecimal(this.mainBpm, 2));
 		this.hasBpmChanges = hasBpmChanges;
+		this.analyzed = analyzed;
 	}
 }
 

@@ -6,6 +6,7 @@ import haxe.io.Path;
 import sys.io.File;
 import sys.FileSystem;
 import sys.thread.Thread;
+import sys.thread.Mutex;
 
 #if cpp
 import lime.system.System;
@@ -54,6 +55,10 @@ class UpdateManager
 	private static var _updateCheckFallbackAttempted:Bool = false;
 	private static var _downloadInProgress:Bool = false;
 	private static var _versionsInitialized:Bool = false;
+	private static var _versionInitInProgress:Bool = false;
+	private static var _versionInitFinished:Bool = false;
+	private static var _versionInitError:String = '';
+	private static var _versionInitMutex:Mutex = new Mutex();
 	public static var postCloseInstallPending:Bool = false;
 	public static var updateReadyToApply:Bool = false;
 	public static var pendingModUpdatePrompt:Bool = false;
@@ -80,6 +85,12 @@ class UpdateManager
 	public static function initializeVersions():Void
 	{
 		if(_versionsInitialized) return;
+		initializeVersionsCore();
+	}
+
+	static function initializeVersionsCore():Void
+	{
+		if(_versionsInitialized) return;
 		
 		// Get engine version from MainMenuState
 		#if sys
@@ -97,6 +108,69 @@ class UpdateManager
 		
 		_versionsInitialized = true;
 		trace('UpdateManager initialized - Engine: $CURRENT_ENGINE_VERSION, Mod: $CURRENT_MOD_VERSION, ModInstalled: $hasInternetFavoritesMod');
+	}
+
+	public static function initializeVersionsAsync():Void
+	{
+		if(_versionsInitialized) return;
+
+		_versionInitMutex.acquire();
+		if(_versionInitInProgress)
+		{
+			_versionInitMutex.release();
+			return;
+		}
+		_versionInitInProgress = true;
+		_versionInitFinished = false;
+		_versionInitError = '';
+		_versionInitMutex.release();
+
+		Thread.create(function() {
+			var errorText:String = '';
+			try
+			{
+				initializeVersionsCore();
+			}
+			catch(e:Dynamic)
+			{
+				errorText = Std.string(e);
+				CURRENT_ENGINE_VERSION = CURRENT_ENGINE_VERSION != null && CURRENT_ENGINE_VERSION.length > 0 ? CURRENT_ENGINE_VERSION : '5.0';
+				CURRENT_MOD_VERSION = '0.0.0';
+				hasInternetFavoritesMod = false;
+				_versionsInitialized = true;
+			}
+
+			_versionInitMutex.acquire();
+			_versionInitError = errorText;
+			_versionInitInProgress = false;
+			_versionInitFinished = true;
+			_versionInitMutex.release();
+		});
+	}
+
+	public static function isVersionInitializationReady():Bool
+	{
+		if(_versionsInitialized) return true;
+		_versionInitMutex.acquire();
+		var ready:Bool = _versionInitFinished && !_versionInitInProgress;
+		_versionInitMutex.release();
+		return ready;
+	}
+
+	public static function isVersionInitializationRunning():Bool
+	{
+		_versionInitMutex.acquire();
+		var running:Bool = _versionInitInProgress;
+		_versionInitMutex.release();
+		return running;
+	}
+
+	public static function getVersionInitializationError():String
+	{
+		_versionInitMutex.acquire();
+		var error:String = _versionInitError;
+		_versionInitMutex.release();
+		return error;
 	}
 	
 	/**

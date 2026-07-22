@@ -2,6 +2,7 @@ package backend;
 
 import haxe.Json;
 import lime.utils.Assets;
+import sys.thread.Mutex;
 
 import objects.Note;
 
@@ -121,6 +122,127 @@ class Song
 
 	public static var chartPath:String;
 	public static var loadedSongName:String;
+	static var rawChartCache:Map<String, String> = [];
+	static var rawChartCacheMutex:Mutex = new Mutex();
+
+	public static function getChartPath(jsonInput:String, ?folder:String):String
+	{
+		if(folder == null) folder = jsonInput;
+
+		var formattedFolder:String = Paths.formatToSongPath(folder);
+		var formattedSong:String = Paths.formatToSongPath(jsonInput);
+		return Paths.json('$formattedFolder/$formattedSong');
+	}
+
+	static function getCachedRawChart(path:String):String
+	{
+		rawChartCacheMutex.acquire();
+		var cached:String = rawChartCache.get(path);
+		rawChartCacheMutex.release();
+		return cached;
+	}
+
+	static function setCachedRawChart(path:String, rawData:String):Void
+	{
+		if(path == null || rawData == null)
+			return;
+
+		rawChartCacheMutex.acquire();
+		rawChartCache.set(path, rawData);
+		rawChartCacheMutex.release();
+	}
+
+	public static function clearChartCache():Void
+	{
+		rawChartCacheMutex.acquire();
+		rawChartCache.clear();
+		rawChartCacheMutex.release();
+
+		clearConvertedChartCache();
+	}
+
+	// Caches the *converted* (psych_v1, etc) chart as JSON text, keyed by resolved path + target format.
+	// This lets a background thread do the expensive raw-read + convert() work once, then the main
+	// thread (or any other thread) can turn that cached text back into a fresh SwagSong with just a
+	// cheap Json.parse, instead of re-reading the file and re-running convert() synchronously.
+	static var convertedChartCache:Map<String, String> = [];
+	static var convertedChartCacheMutex:Mutex = new Mutex();
+
+	static function convertedChartCacheKey(path:String, convertTo:String):String
+		return path + '::' + (convertTo != null ? convertTo : 'raw');
+
+	static function getCachedConvertedChart(key:String):String
+	{
+		convertedChartCacheMutex.acquire();
+		var cached:String = convertedChartCache.get(key);
+		convertedChartCacheMutex.release();
+		return cached;
+	}
+
+	static function setCachedConvertedChart(key:String, json:String):Void
+	{
+		if(key == null || json == null)
+			return;
+
+		convertedChartCacheMutex.acquire();
+		convertedChartCache.set(key, json);
+		convertedChartCacheMutex.release();
+	}
+
+	public static function clearConvertedChartCache():Void
+	{
+		convertedChartCacheMutex.acquire();
+		convertedChartCache.clear();
+		convertedChartCacheMutex.release();
+	}
+
+	// Meant to be called from a background thread (e.g. FreeplayState's density/preview thread pool),
+	// the same way LoadingState precaches images/sounds off the main thread. Does the full read + JSON
+	// parse + psych_v1 convert() up front and stashes the result, so a later synchronous getChart()/
+	// loadFromJson() call on the main thread is just a cache hit.
+	public static function precacheConvertedChart(jsonInput:String, ?folder:String, ?convertTo:String = 'psych_v1'):Void
+	{
+		if(folder == null) folder = jsonInput;
+		var path:String = getChartPath(jsonInput, folder);
+		var key:String = convertedChartCacheKey(path, convertTo);
+
+		if(getCachedConvertedChart(key) != null)
+			return; // already warmed by another job
+
+		try
+		{
+			var rawData:String = preloadChartRaw(jsonInput, folder);
+			if(rawData == null)
+				return;
+
+			var parsed:SwagSong = parseJSON(rawData, jsonInput, convertTo);
+			if(parsed != null)
+				setCachedConvertedChart(key, Json.stringify(parsed));
+		}
+		catch(e:Dynamic) {} // if precaching fails, the main thread will just fall back to parsing normally
+	}
+
+	public static function preloadChartRaw(jsonInput:String, ?folder:String):String
+	{
+		var path:String = getChartPath(jsonInput, folder);
+		var rawData:String = getCachedRawChart(path);
+
+		if(rawData == null)
+		{
+			#if MODS_ALLOWED
+			if(FileSystem.exists(path))
+				rawData = File.getContent(path);
+			else
+			#end
+				rawData = Assets.getText(path);
+
+			if(rawData != null)
+				setCachedRawChart(path, rawData);
+		}
+
+		return rawData;
+	}
+
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
 		if(folder == null) folder = jsonInput;
@@ -136,23 +258,30 @@ class Song
 	}
 
 	static var _lastPath:String;
-	public static function getChart(jsonInput:String, ?folder:String):SwagSong
+	public static function getChart(jsonInput:String, ?folder:String, ?convertTo:String = 'psych_v1'):SwagSong
 	{
 		if(folder == null) folder = jsonInput;
-		var rawData:String = null;
-		
-		var formattedFolder:String = Paths.formatToSongPath(folder);
-		var formattedSong:String = Paths.formatToSongPath(jsonInput);
-		_lastPath = Paths.json('$formattedFolder/$formattedSong');
+		_lastPath = getChartPath(jsonInput, folder);
 
-		#if MODS_ALLOWED
-		if(FileSystem.exists(_lastPath))
-			rawData = File.getContent(_lastPath);
-		else
-		#end
-			rawData = Assets.getText(_lastPath);
+		var cacheKey:String = convertedChartCacheKey(_lastPath, convertTo);
+		var cachedJson:String = getCachedConvertedChart(cacheKey);
+		if(cachedJson != null)
+		{
+			try
+			{
+				return cast Json.parse(cachedJson);
+			}
+			catch(e:Dynamic) {} // cache got corrupted somehow, fall through to a normal load
+		}
 
-		return rawData != null ? parseJSON(rawData, jsonInput) : null;
+		var rawData:String = preloadChartRaw(jsonInput, folder);
+		if(rawData == null)
+			return null;
+
+		var parsed:SwagSong = parseJSON(rawData, jsonInput, convertTo);
+		if(parsed != null)
+			setCachedConvertedChart(cacheKey, Json.stringify(parsed));
+		return parsed;
 	}
 
 	public static function parseJSON(rawData:String, ?nameForError:String = null, ?convertTo:String = 'psych_v1'):SwagSong
