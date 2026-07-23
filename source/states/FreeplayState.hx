@@ -17,7 +17,6 @@ import flixel.util.FlxDestroyUtil;
 import flixel.util.FlxSort;
 
 import openfl.utils.Assets;
-import openfl.filters.ShaderFilter;
 
 import haxe.Json;
 import sys.FileSystem;
@@ -25,7 +24,6 @@ import sys.io.File;
 import sys.thread.FixedThreadPool;
 import sys.thread.Mutex;
 import objects.Note.EventNote;
-import shaders.ErrorHandledShader.ErrorHandledRuntimeShader;
 
 class FreeplayState extends MusicBeatState
 {
@@ -379,6 +377,19 @@ class FreeplayState extends MusicBeatState
 
 	function beginPreviewLoad():Void
 	{
+		if(currentDensityData != null && currentDensityData.rating >= 500 && !pendingHighDensityBypass)
+		{
+			pendingHighDensityConfirm = true;
+			highDensitySongIndex = curSelected;
+			highDensityDifficulty = curDifficulty;
+			missingText.text = 'HIGH CHART DENSITY DETECTED (${CoolUtil.floorDecimal(currentDensityData.rating, 2)})!\nPreviewing may cause performance issues.\n\nPress ACCEPT to preview anyway\nPress BACK to cancel';
+			missingText.screenCenter(Y);
+			missingText.visible = true;
+			missingTextBG.visible = true;
+			pendingPreviewSongIndex = curSelected;
+			return;
+		}
+
 		pendingPreviewSongIndex = curSelected;
 		pendingPreviewDifficulty = curDifficulty;
 		pendingPreviewStage = 0;
@@ -1947,7 +1958,6 @@ function updateDensityBars():Void
 	var previewSectionBeatIndex:Int = -1;
 	var previewZoomTween:FlxTween = null;
 	var previewCustomZoomTween:FlxTween = null;
-	var previewCustomAngleTween:FlxTween = null;
 	var previewSongSpeedTween:FlxTween = null;
 	var previewSongSpeed:Float = 1;
 	var previewCustomZoomLock:Float = 0;
@@ -1970,21 +1980,17 @@ function updateDensityBars():Void
 	var previewScriptCamZoomBg:Bool = true;
 	var previewZoomToggleEventCount:Int = 0;
 	var previewZoomToggleHasEnable:Bool = false;
-	var previewCameraShaderName:String = '';
-	var previewShaderFloatValues:Map<String, Float> = [];
-	var previewShaderFloatTweens:Map<String, FlxTween> = [];
-	var previewShaderFlip:Bool = false;
 	var previewStartupGateActive:Bool = false;
 	var previewStartupStableTime:Float = 0;
 	var previewEventPushSerial:Int = 0;
 	final previewStartupStableThreshold:Float = 0.18;
-	#if (!flash && sys)
-	var previewRuntimeShaders:Map<String, Array<String>> = [];
-	var previewCameraShaders:Map<String, ErrorHandledRuntimeShader> = [];
-	#end
 	var previewLastMusicTime:Float = -1;
 	var previewPendingSongStart:Bool = false;
 	var previewLuaOnEventRules:Array<Dynamic> = [];
+	var pendingHighDensityConfirm:Bool = false;
+	var pendingHighDensityBypass:Bool = false;
+	var highDensitySongIndex:Int = -1;
+	var highDensityDifficulty:Int = -1;
 
 	inline function parsePreviewEventFloat(value:String):Null<Float>
 	{
@@ -2035,17 +2041,9 @@ function updateDensityBars():Void
 		previewScriptCamZoomBg = true;
 		previewZoomToggleEventCount = 0;
 		previewZoomToggleHasEnable = false;
-		previewCameraShaderName = '';
-		previewShaderFloatValues = [];
-		previewShaderFloatTweens = [];
-		previewShaderFlip = false;
 		previewStartupGateActive = false;
 		previewStartupStableTime = 0;
 		previewEventPushSerial = 0;
-		#if (!flash && sys)
-		previewRuntimeShaders = [];
-		previewCameraShaders = [];
-		#end
 		previewLastMusicTime = -1;
 		previewPendingSongStart = false;
 		previewLuaOnEventRules = [];
@@ -2203,14 +2201,7 @@ function updateDensityBars():Void
 			if(eName == 'nz')
 			{
 				var hudCmd:Null<Float> = parsePreviewEventFloat(v1);
-				if(hudCmd != null && hudCmd == 2)
-					return true;
-			}
-
-			if(eName == 'set property' && isPreviewZoomToggleProperty(v1))
-			{
-				var toggle:Null<Bool> = parsePreviewToggleValue(v2);
-				if(toggle == true)
+				if(hudCmd != null && hudCmd == 1)
 					return true;
 			}
 		}
@@ -2294,25 +2285,6 @@ function updateDensityBars():Void
 		});
 	}
 
-	function applyPreviewCameraAngleTween(target:String, targetAngle:Float, duration:Float, ?easeName:String = 'linear'):Void
-	{
-		var effectiveTarget:String = normalizePreviewTargetName(target);
-		if(effectiveTarget != 'hud')
-			return;
-
-		if(previewCustomAngleTween != null)
-		{
-			previewCustomAngleTween.cancel();
-			previewCustomAngleTween = null;
-		}
-
-		var tweenDur:Float = Math.max(0.01, duration);
-		previewCustomAngleTween = FlxTween.tween(FlxG.camera, {angle: targetAngle}, tweenDur, {
-			ease: getPreviewEaseFunc(easeName),
-			onComplete: function(_) previewCustomAngleTween = null
-		});
-	}
-
 	function applyPreviewSongSpeedTween(targetSongSpeed:Float, duration:Float, ?easeName:String = 'linear'):Void
 	{
 		if(previewSongSpeedTween != null)
@@ -2354,10 +2326,6 @@ function updateDensityBars():Void
 		var normalizedValue2:String = trimPreviewToken(coercePreviewEventValue(value2));
 		var loweredEvent:String = normalizedEvent.toLowerCase().trim();
 		var loweredValue1:String = normalizePreviewPropertyPath(normalizedValue1);
-		if(loweredEvent.indexOf('__tweenwindow') == 0 || loweredEvent.indexOf('__setwindow') == 0)
-			return;
-		if(loweredEvent == 'set property' && loweredValue1.indexOf('window') != -1)
-			return;
 
 		var isUIEvent:Bool = isPreviewUIEvent(normalizedEvent, normalizedValue1, normalizedValue2);
 		if(normalizedEvent.length < 1 && !isUIEvent)
@@ -2812,8 +2780,6 @@ function updateDensityBars():Void
 
 		var lines:Array<String> = content.split('\n');
 		var zoomFunctionActions:Map<String, Dynamic> = inferLuaZoomActionFunctions(lines);
-		var windowWrappers:Map<String, Dynamic> = inferLuaWindowTweenWrappers(lines);
-		var windowFunctionActions:Map<String, Dynamic> = inferLuaWindowActionFunctions(lines);
 		var inOnEvent:Bool = false;
 		var onEventDepth:Int = 0;
 		var onEventNameParam:String = 'name';
@@ -2969,188 +2935,6 @@ function updateDensityBars():Void
 						}
 					}
 				}
-
-				var tweenAngleMatch:EReg = ~/doTweenAngle\s*\((.*)\)/i;
-				if(tweenAngleMatch.match(line))
-				{
-					var args:Array<String> = splitLuaArgs(tweenAngleMatch.matched(1));
-					if(args.length > 3)
-					{
-						var target:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[1], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-						if(isPreviewCameraTarget(target))
-						{
-							var angleValue:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[2], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							var angleDuration:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[3], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							var angleEase:String = args.length > 4 ? applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[4], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates) : 'linear';
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, '__TweenAngle', target, angleValue + ',' + angleDuration + ',' + angleEase);
-						}
-					}
-				}
-
-				var tweenXMatch:EReg = ~/doTweenX\s*\((.*)\)/i;
-				if(tweenXMatch.match(line))
-				{
-					var args:Array<String> = splitLuaArgs(tweenXMatch.matched(1));
-					if(args.length > 3)
-					{
-						var targetVar:String = args[1] != null ? args[1].toLowerCase().trim() : '';
-						if(targetVar == 'wnd' || targetVar.indexOf('window') != -1)
-						{
-							var xValue:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[2], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							var xDuration:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[3], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							var xEase:String = args.length > 4 ? applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[4], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates) : 'linear';
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, '__TweenWindowX', xValue, xDuration + '|' + xEase);
-						}
-					}
-				}
-
-				var tweenYMatch:EReg = ~/doTweenY\s*\((.*)\)/i;
-				if(tweenYMatch.match(line))
-				{
-					var args:Array<String> = splitLuaArgs(tweenYMatch.matched(1));
-					if(args.length > 3)
-					{
-						var targetVar:String = args[1] != null ? args[1].toLowerCase().trim() : '';
-						if(targetVar == 'wnd' || targetVar.indexOf('window') != -1)
-						{
-							var yValue:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[2], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							var yDuration:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[3], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							var yEase:String = args.length > 4 ? applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[4], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates) : 'linear';
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, '__TweenWindowY', yValue, yDuration + '|' + yEase);
-						}
-					}
-				}
-
-				var startTweenMatch:EReg = ~/startTween\s*\((.*)\)/i;
-				if(startTweenMatch.match(line))
-				{
-					var args:Array<String> = splitLuaArgs(startTweenMatch.matched(1));
-					if(args.length > 3)
-					{
-						var target:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[1], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-						var tweenTable:String = args[2] != null ? args[2] : '';
-						var duration:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(args[3], onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-						var easeRaw:String = args.length > 4 ? extractLuaTableRaw(args[4], 'ease') : null;
-						var ease:String = easeRaw != null ? applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(easeRaw, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates) : 'linear';
-
-						var zoomRaw:String = extractLuaTableRaw(tweenTable, 'zoom');
-						if(zoomRaw != null && isPreviewCameraTarget(target))
-						{
-							var zoom:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(zoomRaw, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, '__TweenZoom', target, zoom + ',' + duration + ',' + ease);
-						}
-
-						var angleRaw:String = extractLuaTableRaw(tweenTable, 'angle');
-						if(angleRaw != null && isPreviewCameraTarget(target))
-						{
-							var angle:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(angleRaw, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, '__TweenAngle', target, angle + ',' + duration + ',' + ease);
-						}
-
-						var speedRaw:String = extractLuaTableRaw(tweenTable, 'songSpeed');
-						if(speedRaw != null)
-						{
-							var speed:String = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(speedRaw, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, '__TweenSongSpeed', speed, duration + '|' + ease);
-						}
-					}
-				}
-
-				var setWindowMatch:EReg = ~/setWindow\s*\((.*)\)/i;
-				if(setWindowMatch.match(line))
-				{
-					var setWindowArgs:Array<String> = splitLuaArgs(setWindowMatch.matched(1));
-					if(setWindowArgs.length >= 2)
-					{
-						var looksLikeTableCsv:Bool = false;
-						if(setWindowArgs.length >= 4)
-						{
-							var tableRef:EReg = ~/^[A-Za-z_][A-Za-z0-9_]*\s*\[\s*[1-4]\s*\]$/;
-							looksLikeTableCsv = tableRef.match(setWindowArgs[0].trim()) && tableRef.match(setWindowArgs[1].trim()) && tableRef.match(setWindowArgs[2].trim()) && tableRef.match(setWindowArgs[3].trim());
-						}
-
-						if(looksLikeTableCsv)
-						{
-							var csvTemplate:String = encodeLuaOnEventTemplate(onEventValue2Param, onEventNameParam, onEventValue1Param, onEventValue2Param);
-							csvTemplate = applyLuaOnEventAliasTemplates(csvTemplate, onEventAliasTemplates);
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, '__SetWindowFromCsv', csvTemplate, '');
-						}
-						else
-						{
-							var packed:String = setWindowArgs[0] + '|' + setWindowArgs[1] + '|' + (setWindowArgs.length > 2 ? setWindowArgs[2] : '') + '|' + (setWindowArgs.length > 3 ? setWindowArgs[3] : '');
-							packed = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(packed, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, '__SetWindow', packed, '');
-						}
-					}
-				}
-
-				var customCall:EReg = ~/^([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*;?$/;
-				if(customCall.match(line))
-				{
-					var callName:String = customCall.matched(1).toLowerCase();
-					if(windowFunctionActions.exists(callName))
-					{
-						var callArgs:Array<String> = splitLuaArgs(customCall.matched(2));
-						var wrapperW:Dynamic = windowFunctionActions.get(callName);
-						var wrapperParamsW:Array<String> = wrapperW.paramNames;
-						var wrapperActionsW:Array<Dynamic> = wrapperW.actions;
-						for(a in wrapperActionsW)
-						{
-							var av1:String = applyLuaFunctionArgs(a.value1, wrapperParamsW, callArgs);
-							var av2:String = applyLuaFunctionArgs(a.value2, wrapperParamsW, callArgs);
-							av1 = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(av1, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							av2 = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(av2, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, a.event, av1, av2);
-						}
-					}
-
-					if(windowWrappers.exists(callName))
-					{
-						var callArgs:Array<String> = splitLuaArgs(customCall.matched(2));
-						var wrapper:Dynamic = windowWrappers.get(callName);
-						if(wrapper.hasWindowTween)
-						{
-							var axisRaw:String = wrapper.axisParam < callArgs.length ? callArgs[wrapper.axisParam] : '';
-							var amountRaw:String = wrapper.valueParam < callArgs.length ? callArgs[wrapper.valueParam] : '';
-							var durationRaw:String = wrapper.durationParam < callArgs.length ? callArgs[wrapper.durationParam] : '0';
-							var easeRaw:String = wrapper.easeParam < callArgs.length ? callArgs[wrapper.easeParam] : 'linear';
-							axisRaw = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(axisRaw, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							amountRaw = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(amountRaw, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							durationRaw = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(durationRaw, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							easeRaw = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(easeRaw, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							var axisValue:Null<Float> = parsePreviewEventFloat(axisRaw);
-							if(axisValue != null)
-							{
-								if(axisValue == 1)
-								{
-									var evX:String = wrapper.xRelative ? '__TweenWindowXRel' : '__TweenWindowX';
-									pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, evX, amountRaw, durationRaw + '|' + easeRaw);
-								}
-								else if(axisValue == 2)
-								{
-									var evY:String = wrapper.yRelative ? '__TweenWindowYRel' : '__TweenWindowY';
-									pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, evY, amountRaw, durationRaw + '|' + easeRaw);
-								}
-							}
-						}
-					}
-
-					if(zoomFunctionActions.exists(callName))
-					{
-						var callArgs:Array<String> = splitLuaArgs(customCall.matched(2));
-						var wrapper:Dynamic = zoomFunctionActions.get(callName);
-						var wrapperParams:Array<String> = wrapper.paramNames;
-						var wrapperActions:Array<Dynamic> = wrapper.actions;
-						for(a in wrapperActions)
-						{
-							var av1:String = applyLuaFunctionArgs(a.value1, wrapperParams, callArgs);
-							var av2:String = applyLuaFunctionArgs(a.value2, wrapperParams, callArgs);
-							av1 = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(av1, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							av2 = applyLuaOnEventAliasTemplates(encodeLuaOnEventTemplate(av2, onEventNameParam, onEventValue1Param, onEventValue2Param), onEventAliasTemplates);
-							pushLuaOnEventHandler(activeEventNames, activeValue1Keys, activeValue2Keys, activeEventNamesNot, activeValue1KeysNot, activeValue2KeysNot, a.event, av1, av2);
-						}
-					}
-				}
 			}
 
 			if(line == 'end')
@@ -3231,143 +3015,6 @@ function updateDensityBars():Void
 		return didCustomZoom;
 	}
 
-	function inferLuaWindowTweenWrappers(lines:Array<String>):Map<String, Dynamic>
-	{
-		var wrappers:Map<String, Dynamic> = [];
-		var inFunc:Bool = false;
-		var funcDepth:Int = 0;
-		var funcName:String = '';
-		var paramNames:Array<String> = [];
-		var aliases:Map<String, String> = [];
-		var info:Dynamic = null;
-
-		for(raw in lines)
-		{
-			var cut:Int = raw.indexOf('--');
-			var line:String = (cut >= 0 ? raw.substr(0, cut) : raw).trim();
-			if(line.length < 1)
-				continue;
-
-			if(!inFunc)
-			{
-				var f:EReg = ~/^function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)/i;
-				if(f.match(line))
-				{
-					funcName = f.matched(1);
-					paramNames = [];
-					for(p in splitLuaArgs(f.matched(2)))
-						paramNames.push(p.toLowerCase().trim());
-
-					var axisParam:Int = 0;
-					var valueParam:Int = 1;
-					var durationParam:Int = 2;
-					var easeParam:Int = 3;
-					for(i in 0...paramNames.length)
-					{
-						var pn:String = paramNames[i];
-						if(pn == 'a' || pn.indexOf('axis') != -1)
-							axisParam = i;
-						if(pn == 'v' || pn == 'val' || pn.indexOf('value') != -1)
-							valueParam = i;
-						if(pn == 'd' || pn.indexOf('dur') != -1 || pn.indexOf('time') != -1)
-							durationParam = i;
-						if(pn == 'e' || pn.indexOf('ease') != -1)
-							easeParam = i;
-					}
-
-					info = {
-						axisParam: axisParam,
-						valueParam: valueParam,
-						durationParam: durationParam,
-						easeParam: easeParam,
-						hasWindowTween: false,
-						xRelative: false,
-						yRelative: false
-					};
-					aliases = [];
-					inFunc = true;
-					funcDepth = 0;
-				}
-				continue;
-			}
-
-			var localAlias:EReg = ~/^local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([A-Za-z_][A-Za-z0-9_]*)/i;
-			if(localAlias.match(line))
-			{
-				var lhs:String = localAlias.matched(1).toLowerCase();
-				var rhs:String = localAlias.matched(2).toLowerCase();
-				if(paramNames.indexOf(rhs) != -1)
-					aliases.set(lhs, rhs);
-				else if(aliases.exists(rhs))
-					aliases.set(lhs, aliases.get(rhs));
-			}
-
-			var tweenX:EReg = ~/doTweenX\s*\((.*)\)/i;
-			if(tweenX.match(line))
-			{
-				var args:Array<String> = splitLuaArgs(tweenX.matched(1));
-				if(args.length > 2)
-				{
-					var target:String = args[1].toLowerCase().trim();
-					if(target == 'wnd' || target.indexOf('window') != -1)
-					{
-						info.hasWindowTween = true;
-						var expr:String = args[2].toLowerCase();
-						var vName:String = info.valueParam < paramNames.length ? paramNames[info.valueParam] : 'v';
-						var hasValue:Bool = expr.indexOf(vName) != -1;
-						if(!hasValue)
-							for(k => original in aliases)
-								if(original == vName && expr.indexOf(k) != -1)
-									hasValue = true;
-
-						if(hasValue && (expr.indexOf('+') != -1 || expr.indexOf('-') != -1 || expr.indexOf('origin') != -1 || expr.indexOf('current') != -1))
-							info.xRelative = true;
-					}
-				}
-			}
-
-			var tweenY:EReg = ~/doTweenY\s*\((.*)\)/i;
-			if(tweenY.match(line))
-			{
-				var args:Array<String> = splitLuaArgs(tweenY.matched(1));
-				if(args.length > 2)
-				{
-					var target:String = args[1].toLowerCase().trim();
-					if(target == 'wnd' || target.indexOf('window') != -1)
-					{
-						info.hasWindowTween = true;
-						var expr:String = args[2].toLowerCase();
-						var vName:String = info.valueParam < paramNames.length ? paramNames[info.valueParam] : 'v';
-						var hasValue:Bool = expr.indexOf(vName) != -1;
-						if(!hasValue)
-							for(k => original in aliases)
-								if(original == vName && expr.indexOf(k) != -1)
-									hasValue = true;
-
-						if(hasValue && (expr.indexOf('+') != -1 || expr.indexOf('-') != -1 || expr.indexOf('origin') != -1 || expr.indexOf('current') != -1))
-							info.yRelative = true;
-					}
-				}
-			}
-
-			if(line == 'end')
-			{
-				if(funcDepth <= 0)
-				{
-					wrappers.set(funcName.toLowerCase(), info);
-					inFunc = false;
-					continue;
-				}
-				funcDepth--;
-			}
-
-			if(line.endsWith(' then') || line.endsWith(' do') || line.startsWith('function '))
-				funcDepth++;
-		}
-
-		return wrappers;
-	}
-
 	function inferLuaZoomActionFunctions(lines:Array<String>):Map<String, Dynamic>
 	{
 		var wrappers:Map<String, Dynamic> = [];
@@ -3418,26 +3065,6 @@ function updateDensityBars():Void
 						event: '__TweenZoom',
 						value1: target,
 						value2: zoom + ',' + duration + ',' + ease
-					});
-				}
-			}
-
-			var tweenAngleMatch:EReg = ~/doTweenAngle\s*\((.*)\)/i;
-			if(tweenAngleMatch.match(line))
-			{
-				var args:Array<String> = splitLuaArgs(tweenAngleMatch.matched(1));
-				if(args.length > 3)
-				{
-					var target:String = args[1] != null ? args[1] : 'camhud';
-					if(!isPreviewCameraTarget(target))
-						continue;
-					var angle:String = args[2] != null ? args[2] : '';
-					var duration:String = args[3] != null ? args[3] : '0';
-					var ease:String = args.length > 4 ? args[4] : 'linear';
-					actions.push({
-						event: '__TweenAngle',
-						value1: target,
-						value2: angle + ',' + duration + ',' + ease
 					});
 				}
 			}
@@ -3494,9 +3121,7 @@ function updateDensityBars():Void
 			if(customCall.match(line))
 			{
 				var callName:String = customCall.matched(1).toLowerCase();
-				if(callName != 'triggerevent' && callName != 'setproperty' && callName != 'setpropertyfromclass'
-					&& callName != 'dotweenzoom' && callName != 'dotweenangle' && callName != 'dotweenx' && callName != 'dotweeny'
-					&& callName != 'starttween' && callName != 'setwindow')
+				if(callName != 'triggerevent' && callName != 'setproperty' && callName != 'setpropertyfromclass' && callName != 'dotweenzoom')
 				{
 					functionCalls.push({
 						name: callName,
@@ -3589,88 +3214,6 @@ function updateDensityBars():Void
 			wrapper.actions = expanded;
 			wrapper.calls = [];
 			wrappers.set(name, wrapper);
-		}
-
-		return wrappers;
-	}
-
-	function inferLuaWindowActionFunctions(lines:Array<String>):Map<String, Dynamic>
-	{
-		var wrappers:Map<String, Dynamic> = [];
-		var inFunc:Bool = false;
-		var funcDepth:Int = 0;
-		var funcName:String = '';
-		var paramNames:Array<String> = [];
-		var actions:Array<Dynamic> = [];
-
-		for(raw in lines)
-		{
-			var cut:Int = raw.indexOf('--');
-			var line:String = (cut >= 0 ? raw.substr(0, cut) : raw).trim();
-			if(line.length < 1)
-				continue;
-
-			if(!inFunc)
-			{
-				var f:EReg = ~/^function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)/i;
-				if(f.match(line))
-				{
-					funcName = f.matched(1);
-					paramNames = [];
-					for(p in splitLuaArgs(f.matched(2)))
-						paramNames.push(p.toLowerCase().trim());
-					actions = [];
-					inFunc = true;
-					funcDepth = 0;
-				}
-				continue;
-			}
-
-			var setWindowMatch:EReg = ~/setWindow\s*\((.*)\)/i;
-			if(setWindowMatch.match(line))
-			{
-				var args:Array<String> = splitLuaArgs(setWindowMatch.matched(1));
-				if(args.length >= 2)
-				{
-					actions.push({
-						event: '__SetWindow',
-						value1: (args.length > 0 ? args[0] : '') + '|' + (args.length > 1 ? args[1] : '') + '|' + (args.length > 2 ? args[2] : '') + '|' + (args.length > 3 ? args[3] : ''),
-						value2: ''
-					});
-				}
-			}
-
-			var propMatch:EReg = ~/setProperty\s*\((.*)\)/i;
-			if(propMatch.match(line))
-			{
-				// Window property actions intentionally unsupported in preview.
-			}
-
-			var propClassMatch:EReg = ~/setPropertyFromClass\s*\((.*)\)/i;
-			if(propClassMatch.match(line))
-			{
-				// Window property actions intentionally unsupported in preview.
-			}
-
-			if(line == 'end')
-			{
-				if(funcDepth <= 0)
-				{
-					if(actions.length > 0)
-					{
-						wrappers.set(funcName.toLowerCase(), {
-							paramNames: paramNames.copy(),
-							actions: actions.copy()
-						});
-					}
-					inFunc = false;
-					continue;
-				}
-				funcDepth--;
-			}
-
-			if(line.endsWith(' then') || line.endsWith(' do') || line.startsWith('function '))
-				funcDepth++;
 		}
 
 		return wrappers;
@@ -4350,9 +3893,7 @@ function updateDensityBars():Void
 					merged.push(range);
 			}
 		}
-		var windowWrappers:Map<String, Dynamic> = inferLuaWindowTweenWrappers(lines);
 		var zoomFunctionActions:Map<String, Dynamic> = inferLuaZoomActionFunctions(lines);
-		var windowFunctionActions:Map<String, Dynamic> = inferLuaWindowActionFunctions(lines);
 		var gatedSteps:Array<Int> = [];
 		var gatedBeats:Array<Int> = [];
 		var onBeatHitDepth:Int = 0;
@@ -4684,383 +4225,6 @@ function updateDensityBars():Void
 					}
 				}
 			}
-
-			var tweenAngleMatch:EReg = ~/doTweenAngle\s*\((.*)\)/i;
-			if(tweenAngleMatch.match(line))
-			{
-				var tweenAngleArgs:Array<String> = splitLuaArgs(tweenAngleMatch.matched(1));
-				if(tweenAngleArgs.length > 3)
-				{
-					var angleTarget:String = tweenAngleArgs[1] != null ? tweenAngleArgs[1] : 'camhud';
-					if(!isPreviewCameraTarget(angleTarget))
-						continue;
-
-					var targetAngle:Null<Float> = parsePreviewEventFloat(tweenAngleArgs[2]);
-					var angleDuration:Null<Float> = parsePreviewEventFloat(tweenAngleArgs[3]);
-					var angleEase:String = tweenAngleArgs.length > 4 ? tweenAngleArgs[4] : 'linear';
-					if(targetAngle != null)
-					{
-						if(angleDuration == null || angleDuration < 0)
-							angleDuration = 0;
-
-						if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							previewBeatLoopEvents.push({
-								strumTime: 0,
-								event: '__TweenAngle',
-								value1: angleTarget,
-								value2: Std.string(targetAngle) + ',' + Std.string(angleDuration) + ',' + angleEase
-							});
-							continue;
-						}
-
-						if(inStartupFunc && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							pushPreviewEvent(0, '__TweenAngle', angleTarget, Std.string(targetAngle) + ',' + Std.string(angleDuration) + ',' + angleEase);
-							continue;
-						}
-
-						if(!pushPreviewEventAtGates('__TweenAngle', angleTarget, Std.string(targetAngle) + ',' + Std.string(angleDuration) + ',' + angleEase, gatedSteps, gatedBeats))
-							continue;
-					}
-				}
-			}
-
-			var tweenXMatch:EReg = ~/doTweenX\s*\((.*)\)/i;
-			if(tweenXMatch.match(line))
-			{
-				var tweenXArgs:Array<String> = splitLuaArgs(tweenXMatch.matched(1));
-				if(tweenXArgs.length > 3)
-				{
-					var targetVar:String = tweenXArgs[1] != null ? tweenXArgs[1].toLowerCase().trim() : '';
-					if(targetVar == 'wnd' || targetVar.indexOf('window') != -1)
-					{
-						var targetX:Null<Float> = parsePreviewEventFloat(tweenXArgs[2]);
-						var xDuration:Null<Float> = parsePreviewEventFloat(tweenXArgs[3]);
-						var xEase:String = tweenXArgs.length > 4 ? tweenXArgs[4] : 'linear';
-						if(targetX != null)
-						{
-							if(xDuration == null || xDuration < 0)
-								xDuration = 0;
-
-							if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-							{
-								previewBeatLoopEvents.push({
-									strumTime: 0,
-									event: '__TweenWindowX',
-									value1: Std.string(targetX),
-									value2: Std.string(xDuration) + '|' + xEase
-								});
-								continue;
-							}
-
-							if(inStartupFunc && gatedSteps.length < 1 && gatedBeats.length < 1)
-							{
-								pushPreviewEvent(0, '__TweenWindowX', Std.string(targetX), Std.string(xDuration) + '|' + xEase);
-								continue;
-							}
-
-							if(!pushPreviewEventAtGates('__TweenWindowX', Std.string(targetX), Std.string(xDuration) + '|' + xEase, gatedSteps, gatedBeats))
-								continue;
-						}
-					}
-				}
-			}
-
-			var tweenYMatch:EReg = ~/doTweenY\s*\((.*)\)/i;
-			if(tweenYMatch.match(line))
-			{
-				var tweenYArgs:Array<String> = splitLuaArgs(tweenYMatch.matched(1));
-				if(tweenYArgs.length > 3)
-				{
-					var targetVarY:String = tweenYArgs[1] != null ? tweenYArgs[1].toLowerCase().trim() : '';
-					if(targetVarY == 'wnd' || targetVarY.indexOf('window') != -1)
-					{
-						var targetY:Null<Float> = parsePreviewEventFloat(tweenYArgs[2]);
-						var yDuration:Null<Float> = parsePreviewEventFloat(tweenYArgs[3]);
-						var yEase:String = tweenYArgs.length > 4 ? tweenYArgs[4] : 'linear';
-						if(targetY != null)
-						{
-							if(yDuration == null || yDuration < 0)
-								yDuration = 0;
-
-							if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-							{
-								previewBeatLoopEvents.push({
-									strumTime: 0,
-									event: '__TweenWindowY',
-									value1: Std.string(targetY),
-									value2: Std.string(yDuration) + '|' + yEase
-								});
-								continue;
-							}
-
-							if(inStartupFunc && gatedSteps.length < 1 && gatedBeats.length < 1)
-							{
-								pushPreviewEvent(0, '__TweenWindowY', Std.string(targetY), Std.string(yDuration) + '|' + yEase);
-								continue;
-							}
-
-							if(!pushPreviewEventAtGates('__TweenWindowY', Std.string(targetY), Std.string(yDuration) + '|' + yEase, gatedSteps, gatedBeats))
-								continue;
-						}
-					}
-				}
-			}
-
-			var startTweenMatch:EReg = ~/startTween\s*\((.*)\)/i;
-			if(startTweenMatch.match(line))
-			{
-				var startTweenArgs:Array<String> = splitLuaArgs(startTweenMatch.matched(1));
-				if(startTweenArgs.length > 3)
-				{
-					var startTarget:String = startTweenArgs[1] != null ? startTweenArgs[1] : '';
-					var tweenTable:String = startTweenArgs[2] != null ? startTweenArgs[2] : '';
-					var startDuration:Null<Float> = parsePreviewEventFloat(startTweenArgs[3]);
-					var startEase:String = startTweenArgs.length > 4 ? extractLuaTableString(startTweenArgs[4], 'ease') : 'linear';
-					if(startDuration == null || startDuration < 0)
-						startDuration = 0;
-
-					var tableZoom:Null<Float> = extractLuaTableNumber(tweenTable, 'zoom');
-					if(tableZoom != null && isPreviewCameraTarget(startTarget))
-					{
-						previewHasSongCustomZoom = true;
-						if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							previewBeatLoopEvents.push({
-								strumTime: 0,
-								event: '__TweenZoom',
-								value1: startTarget,
-								value2: Std.string(tableZoom) + ',' + Std.string(startDuration) + ',' + startEase
-							});
-						}
-						else
-						{
-							pushPreviewEventAtGates('__TweenZoom', startTarget, Std.string(tableZoom) + ',' + Std.string(startDuration) + ',' + startEase, gatedSteps, gatedBeats);
-						}
-					}
-
-					var tableAngle:Null<Float> = extractLuaTableNumber(tweenTable, 'angle');
-					if(tableAngle != null && isPreviewCameraTarget(startTarget))
-					{
-						if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							previewBeatLoopEvents.push({
-								strumTime: 0,
-								event: '__TweenAngle',
-								value1: startTarget,
-								value2: Std.string(tableAngle) + ',' + Std.string(startDuration) + ',' + startEase
-							});
-						}
-						else
-						{
-							pushPreviewEventAtGates('__TweenAngle', startTarget, Std.string(tableAngle) + ',' + Std.string(startDuration) + ',' + startEase, gatedSteps, gatedBeats);
-						}
-					}
-
-					var tableSongSpeed:Null<Float> = extractLuaTableNumber(tweenTable, 'songSpeed');
-					if(tableSongSpeed != null)
-					{
-						if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							previewBeatLoopEvents.push({
-								strumTime: 0,
-								event: '__TweenSongSpeed',
-								value1: Std.string(tableSongSpeed),
-								value2: Std.string(startDuration) + '|' + startEase
-							});
-						}
-						else
-						{
-							pushPreviewEventAtGates('__TweenSongSpeed', Std.string(tableSongSpeed), Std.string(startDuration) + '|' + startEase, gatedSteps, gatedBeats);
-						}
-					}
-				}
-			}
-
-			var setWindowMatch:EReg = ~/setWindow\s*\((.*)\)/i;
-			if(setWindowMatch.match(line))
-			{
-				var setWindowArgs:Array<String> = splitLuaArgs(setWindowMatch.matched(1));
-				if(setWindowArgs.length >= 2)
-				{
-					var packed:String = setWindowArgs[0] + '|' + setWindowArgs[1] + '|' + (setWindowArgs.length > 2 ? setWindowArgs[2] : '') + '|' + (setWindowArgs.length > 3 ? setWindowArgs[3] : '');
-					if(inStartupFunc && gatedSteps.length < 1 && gatedBeats.length < 1)
-					{
-						pushPreviewEvent(0, '__SetWindow', packed, '');
-						continue;
-					}
-					pushPreviewEventAtGates('__SetWindow', packed, '', gatedSteps, gatedBeats);
-				}
-			}
-
-			var customCall:EReg = ~/^([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*;?$/;
-			if(customCall.match(line))
-			{
-				var callName:String = customCall.matched(1).toLowerCase();
-				var callArgs:Array<String> = splitLuaArgs(customCall.matched(2));
-				if(windowFunctionActions.exists(callName))
-				{
-					var wrapperW:Dynamic = windowFunctionActions.get(callName);
-					var wrapperParamsW:Array<String> = wrapperW.paramNames;
-					var wrapperActionsW:Array<Dynamic> = wrapperW.actions;
-					for(a in wrapperActionsW)
-					{
-						var actionValue1:String = applyLuaFunctionArgs(a.value1, wrapperParamsW, callArgs);
-						var actionValue2:String = applyLuaFunctionArgs(a.value2, wrapperParamsW, callArgs);
-						if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							previewBeatLoopEvents.push({
-								strumTime: 0,
-								event: a.event,
-								value1: actionValue1,
-								value2: actionValue2
-							});
-							continue;
-						}
-						if(inStartupFunc && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							pushPreviewEvent(0, a.event, actionValue1, actionValue2);
-							continue;
-						}
-						pushPreviewEventAtGates(a.event, actionValue1, actionValue2, gatedSteps, gatedBeats);
-					}
-				}
-
-				if(zoomFunctionActions.exists(callName))
-				{
-					var wrapper:Dynamic = zoomFunctionActions.get(callName);
-					var wrapperParams:Array<String> = wrapper.paramNames;
-					var wrapperActions:Array<Dynamic> = wrapper.actions;
-					for(a in wrapperActions)
-					{
-						var actionValue1:String = applyLuaFunctionArgs(a.value1, wrapperParams, callArgs);
-						var actionValue2:String = applyLuaFunctionArgs(a.value2, wrapperParams, callArgs);
-
-						if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							previewBeatLoopEvents.push({
-								strumTime: 0,
-								event: a.event,
-								value1: actionValue1,
-								value2: actionValue2
-							});
-							if(isPreviewBeatZoomEvent(a.event, actionValue1, actionValue2))
-								previewHasSongCustomZoom = true;
-							continue;
-						}
-
-						if(inStartupFunc && gatedSteps.length < 1 && gatedBeats.length < 1)
-						{
-							pushPreviewEvent(0, a.event, actionValue1, actionValue2);
-							if(isPreviewBeatZoomEvent(a.event, actionValue1, actionValue2))
-								previewHasSongCustomZoom = true;
-							continue;
-						}
-
-						if(pushPreviewEventAtGates(a.event, actionValue1, actionValue2, gatedSteps, gatedBeats))
-						{
-							if(isPreviewBeatZoomEvent(a.event, actionValue1, actionValue2))
-								previewHasSongCustomZoom = true;
-						}
-					}
-				}
-
-				if(windowWrappers.exists(callName))
-				{
-					var wrapper:Dynamic = windowWrappers.get(callName);
-					if(!wrapper.hasWindowTween)
-						continue;
-					var axis:Null<Float> = wrapper.axisParam < callArgs.length ? parsePreviewEventFloat(callArgs[wrapper.axisParam]) : null;
-					var amount:Null<Float> = wrapper.valueParam < callArgs.length ? parsePreviewEventFloat(callArgs[wrapper.valueParam]) : null;
-					var duration:Null<Float> = wrapper.durationParam < callArgs.length ? parsePreviewEventFloat(callArgs[wrapper.durationParam]) : null;
-					var wrapperEase:String = wrapper.easeParam < callArgs.length ? callArgs[wrapper.easeParam] : 'linear';
-					if(duration == null || duration < 0)
-						duration = 0;
-
-					if(axis != null && amount != null)
-					{
-						if(axis == 1)
-						{
-							var evX:String = wrapper.xRelative ? '__TweenWindowXRel' : '__TweenWindowX';
-							if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-							{
-								previewBeatLoopEvents.push({
-									strumTime: 0,
-									event: evX,
-									value1: Std.string(amount),
-									value2: Std.string(duration) + '|' + wrapperEase
-								});
-							}
-							else if(inStartupFunc && gatedSteps.length < 1 && gatedBeats.length < 1)
-							{
-								pushPreviewEvent(0, evX, Std.string(amount), Std.string(duration) + '|' + wrapperEase);
-							}
-							else
-							{
-								pushPreviewEventAtGates(evX, Std.string(amount), Std.string(duration) + '|' + wrapperEase, gatedSteps, gatedBeats);
-							}
-						}
-						else if(axis == 2)
-						{
-							var evY:String = wrapper.yRelative ? '__TweenWindowYRel' : '__TweenWindowY';
-							if(inOnBeatHit && onBeatHitDepth <= 0 && gatedSteps.length < 1 && gatedBeats.length < 1)
-							{
-								previewBeatLoopEvents.push({
-									strumTime: 0,
-									event: evY,
-									value1: Std.string(amount),
-									value2: Std.string(duration) + '|' + wrapperEase
-								});
-							}
-							else if(inStartupFunc && gatedSteps.length < 1 && gatedBeats.length < 1)
-							{
-								pushPreviewEvent(0, evY, Std.string(amount), Std.string(duration) + '|' + wrapperEase);
-							}
-							else
-							{
-								pushPreviewEventAtGates(evY, Std.string(amount), Std.string(duration) + '|' + wrapperEase, gatedSteps, gatedBeats);
-							}
-						}
-					}
-				}
-			}
-
-			var initShaderMatch:EReg = ~/initLuaShader\s*\((.*)\)/i;
-			if(initShaderMatch.match(line))
-			{
-				var initArgs:Array<String> = splitLuaArgs(initShaderMatch.matched(1));
-				if(initArgs.length > 0)
-					queuePreviewScriptDerivedEvent('__InitShader', initArgs[0], '', inOnBeatHit && onBeatHitDepth <= 0, inStartupFunc, gatedSteps, gatedBeats);
-			}
-
-			var setShaderMatch:EReg = ~/setSpriteShader\s*\((.*)\)/i;
-			if(setShaderMatch.match(line))
-			{
-				var shaderArgs:Array<String> = splitLuaArgs(setShaderMatch.matched(1));
-				if(shaderArgs.length > 1)
-					queuePreviewScriptDerivedEvent('__SetSpriteShader', shaderArgs[0], shaderArgs[1], inOnBeatHit && onBeatHitDepth <= 0, inStartupFunc, gatedSteps, gatedBeats);
-			}
-
-			var removeShaderMatch:EReg = ~/removeSpriteShader\s*\((.*)\)/i;
-			if(removeShaderMatch.match(line))
-			{
-				var removeArgs:Array<String> = splitLuaArgs(removeShaderMatch.matched(1));
-				if(removeArgs.length > 0)
-					queuePreviewScriptDerivedEvent('__RemoveSpriteShader', removeArgs[0], '', inOnBeatHit && onBeatHitDepth <= 0, inStartupFunc, gatedSteps, gatedBeats);
-			}
-
-			var shaderUniformMatch:EReg = ~/^(setShaderFloat|setShaderInt|setShaderBool|setShaderFloatArray|setShaderIntArray|setShaderBoolArray|setShaderSampler2D)\s*\((.*)\)/i;
-			if(shaderUniformMatch.match(line))
-			{
-				var uniformFunc:String = shaderUniformMatch.matched(1);
-				var uniformArgs:Array<String> = splitLuaArgs(shaderUniformMatch.matched(2));
-				if(uniformArgs.length > 2)
-				{
-					var encodedPayload:String = uniformFunc + '|' + uniformArgs[0] + '|' + uniformArgs[1] + '|' + uniformArgs.slice(2).join(',');
-					queuePreviewScriptDerivedEvent('__SetShaderUniform', encodedPayload, '', inOnBeatHit && onBeatHitDepth <= 0, inStartupFunc, gatedSteps, gatedBeats);
-				}
-			}
 		}
 	}
 
@@ -5148,17 +4312,58 @@ function updateDensityBars():Void
 		#end
 	}
 
+	function eventsJsonExists(songPath:String):Bool
+	{
+		#if MODS_ALLOWED
+		var searchPath:String = 'data/' + songPath + '/events.json';
+		for(folder in Mods.directoriesWithFile(Paths.getSharedPath(), searchPath))
+		{
+			if(FileSystem.exists(folder + 'events.json'))
+				return true;
+		}
+		return false;
+		#else
+		return FileSystem.exists(Paths.getPath('data/$songPath/events.json', TEXT, null, true));
+		#end
+	}
+
+	function getChartJsonFileSize(songPath:String, difficulty:Int):Float
+	{
+		var chartName:String = Highscore.formatSong(songPath, difficulty);
+		#if MODS_ALLOWED
+		for(folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'data/$songPath/'))
+		{
+			var filePath:String = folder + chartName + '.json';
+			if(FileSystem.exists(filePath))
+				return FileSystem.stat(filePath).size;
+		}
+		#else
+		var filePath:String = Paths.getPath('data/$songPath/$chartName.json', TEXT, null, true);
+		if(filePath != null && FileSystem.exists(filePath))
+			return FileSystem.stat(filePath).size;
+		#end
+		return 0;
+	}
+
 	function loadPreviewEvents(songPath:String):Void
 	{
 		clearPreviewEventData();
-		queuePreviewEventsFromSong(PlayState.SONG);
 
-		try
+		// Try loading from events.json FIRST. If it exists, use it exclusively (no chart events).
+		// Otherwise, fall back to chart-level events embedded in PlayState.SONG.
+		if(eventsJsonExists(songPath))
 		{
-			var eventsChart:SwagSong = Song.getChart('events', songPath);
-			queuePreviewEventsFromSong(eventsChart);
+			try
+			{
+				var eventsChart:SwagSong = Song.getChart('events', songPath);
+				queuePreviewEventsFromSong(eventsChart);
+			}
+			catch(e:Dynamic) {}
 		}
-		catch(e:Dynamic) {}
+		else
+		{
+			queuePreviewEventsFromSong(PlayState.SONG);
+		}
 
 		queuePreviewEventsFromLua(songPath);
 
@@ -5173,224 +4378,6 @@ function updateDensityBars():Void
 		if(previewBeatZoomToggleMode)
 			previewBeatZoomEnabled = false;
 
-	}
-
-	inline function normalizePreviewShaderTarget(target:String):String
-	{
-		var lowered:String = normalizePreviewTargetName(trimPreviewToken(target));
-		if(lowered == 'camhud' || lowered == 'hud' || lowered == 'camui' || lowered == 'ui')
-			return 'menu-camera';
-		return '';
-	}
-
-	function clearPreviewCameraShader():Void
-	{
-		for(_ => tween in previewShaderFloatTweens)
-			if(tween != null)
-				tween.cancel();
-		previewShaderFloatTweens = [];
-		previewShaderFloatValues = [];
-		previewShaderFlip = false;
-		FlxG.camera.setFilters([]);
-		previewCameraShaderName = '';
-	}
-
-	function getPreviewShaderFloatDefault(prop:String):Float
-	{
-		if(prop == null)
-			return 0;
-		switch(prop.toLowerCase().trim())
-		{
-			case 'zoom': return 1;
-			case 'x', 'y', 'angle': return 0;
-		}
-		return 0;
-	}
-
-	function ensurePreviewMirrorRepeatShader():Bool
-	{
-		if(previewCameraShaderName != 'MirrorRepeatEffect')
-		{
-			#if (!flash && sys)
-			if(!initPreviewRuntimeShader('MirrorRepeatEffect'))
-				return false;
-			#end
-			applyPreviewCameraShader('camHUD', 'MirrorRepeatEffect');
-		}
-
-		if(previewCameraShaderName != 'MirrorRepeatEffect')
-			return false;
-
-		if(!previewShaderFloatValues.exists('x')) previewShaderFloatValues.set('x', 0);
-		if(!previewShaderFloatValues.exists('y')) previewShaderFloatValues.set('y', 0);
-		if(!previewShaderFloatValues.exists('angle')) previewShaderFloatValues.set('angle', 0);
-		if(!previewShaderFloatValues.exists('zoom')) previewShaderFloatValues.set('zoom', 1);
-		return true;
-	}
-
-	function setPreviewShaderFloat(prop:String, value:Float):Void
-	{
-		if(prop == null || prop.length < 1)
-			return;
-		var normalizedProp:String = prop.toLowerCase().trim();
-		previewShaderFloatValues.set(normalizedProp, value);
-		applyPreviewShaderUniform('setShaderFloat|camHUD|' + normalizedProp + '|' + Std.string(value));
-	}
-
-	function setPreviewShaderBool(prop:String, value:Bool):Void
-	{
-		if(prop == null || prop.length < 1)
-			return;
-		applyPreviewShaderUniform('setShaderBool|camHUD|' + prop.toLowerCase().trim() + '|' + (value ? 'true' : 'false'));
-	}
-
-	function tweenPreviewShaderFloat(prop:String, targetValue:Float, duration:Float, easeName:String):Void
-	{
-		if(prop == null || prop.length < 1)
-			return;
-		var normalizedProp:String = prop.toLowerCase().trim();
-		if(previewShaderFloatTweens.exists(normalizedProp))
-		{
-			var oldTween:FlxTween = previewShaderFloatTweens.get(normalizedProp);
-			if(oldTween != null)
-				oldTween.cancel();
-			previewShaderFloatTweens.remove(normalizedProp);
-		}
-
-		var startValue:Float = previewShaderFloatValues.exists(normalizedProp) ? previewShaderFloatValues.get(normalizedProp) : getPreviewShaderFloatDefault(normalizedProp);
-		if(duration <= 0)
-		{
-			setPreviewShaderFloat(normalizedProp, targetValue);
-			return;
-		}
-
-		var shaderTween:FlxTween = FlxTween.num(startValue, targetValue, duration, {
-			ease: getPreviewEaseFunc(easeName),
-			onComplete: function(_)
-			{
-				previewShaderFloatTweens.remove(normalizedProp);
-				setPreviewShaderFloat(normalizedProp, targetValue);
-			}
-		}, function(v:Float)
-		{
-			setPreviewShaderFloat(normalizedProp, v);
-		});
-		previewShaderFloatTweens.set(normalizedProp, shaderTween);
-	}
-
-	#if (!flash && sys)
-	function initPreviewRuntimeShader(name:String):Bool
-	{
-		if(!ClientPrefs.data.shaders)
-			return false;
-
-		if(previewRuntimeShaders.exists(name))
-			return true;
-
-		for(folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'shaders/'))
-		{
-			var fragPath:String = folder + name + '.frag';
-			var vertPath:String = folder + name + '.vert';
-			var found:Bool = false;
-			var frag:String = null;
-			var vert:String = null;
-
-			if(FileSystem.exists(fragPath))
-			{
-				frag = cachePreviewFileText(fragPath);
-				found = true;
-			}
-
-			if(FileSystem.exists(vertPath))
-			{
-				vert = cachePreviewFileText(vertPath);
-				found = true;
-			}
-
-			if(found)
-			{
-				previewRuntimeShaders.set(name, [frag, vert]);
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	function getPreviewRuntimeShader(name:String):Null<ErrorHandledRuntimeShader>
-	{
-		if(!ClientPrefs.data.shaders)
-			return null;
-
-		if(!previewCameraShaders.exists(name))
-		{
-			if(!initPreviewRuntimeShader(name))
-				return null;
-
-			var arr:Array<String> = previewRuntimeShaders.get(name);
-			previewCameraShaders.set(name, new ErrorHandledRuntimeShader(name, arr[0], arr[1]));
-		}
-
-		return previewCameraShaders.get(name);
-	}
-	#end
-
-	function applyPreviewCameraShader(target:String, shaderName:String):Void
-	{
-		var normalizedTarget:String = normalizePreviewShaderTarget(target);
-		var normalizedShader:String = trimPreviewToken(shaderName);
-		if(normalizedTarget != 'menu-camera' || normalizedShader.length < 1)
-			return;
-
-		if(previewCameraShaderName == normalizedShader)
-			return;
-
-		#if (!flash && sys)
-		var shader:Null<ErrorHandledRuntimeShader> = getPreviewRuntimeShader(normalizedShader);
-		if(shader == null)
-			return;
-
-		FlxG.camera.setFilters([new ShaderFilter(shader)]);
-		previewCameraShaderName = normalizedShader;
-		#end
-	}
-
-	function applyPreviewShaderUniform(encoded:String):Void
-	{
-		if(encoded == null || encoded.length < 1)
-			return;
-
-		var parts:Array<String> = encoded.split('|');
-		if(parts.length < 4)
-			return;
-
-		var funcName:String = trimPreviewToken(parts[0]).toLowerCase();
-		var target:String = trimPreviewToken(parts[1]);
-		var prop:String = trimPreviewToken(parts[2]);
-		var rawValue:String = trimPreviewToken(parts.slice(3).join('|'));
-
-		if(normalizePreviewShaderTarget(target) != 'menu-camera' || previewCameraShaderName.length < 1)
-			return;
-
-		#if (!flash && sys)
-		var shader:Null<ErrorHandledRuntimeShader> = previewCameraShaders.get(previewCameraShaderName);
-		if(shader == null || prop.length < 1)
-			return;
-
-		switch(funcName)
-		{
-			case 'setshaderfloat':
-				var f:Null<Float> = parsePreviewEventFloat(rawValue);
-				if(f != null) shader.setFloat(prop, f);
-			case 'setshaderint':
-				var i:Null<Int> = Std.parseInt(rawValue);
-				if(i != null) shader.setInt(prop, i);
-			case 'setshaderbool':
-				var b:Null<Bool> = parsePreviewToggleValue(rawValue);
-				if(b != null) shader.setBool(prop, b);
-			default:
-		}
-		#end
 	}
 
 	function applyPreviewProperty(path:String, value:String):Void
@@ -5419,11 +4406,6 @@ function updateDensityBars():Void
 		return lowerPath == 'camhud.zoom'
 			|| lowerPath == 'hud.zoom'
 			|| lowerPath == 'defaultcamuizoom';
-	}
-
-	inline function isPreviewCameraAngleProperty(path:String):Bool
-	{
-		return false;
 	}
 
 	function blockBeatZoomForCustom(?duration:Float = -1):Void
@@ -5472,25 +4454,6 @@ function updateDensityBars():Void
 		value1 = trimPreviewToken(value1);
 		value2 = trimPreviewToken(value2);
 		var lowerEvent:String = eventName.toLowerCase().trim();
-
-		switch(lowerEvent)
-		{
-			case '__initshader':
-				#if (!flash && sys)
-				initPreviewRuntimeShader(value1);
-				#end
-				return didCustomZoom;
-			case '__setspriteshader':
-				applyPreviewCameraShader(value1, value2);
-				return didCustomZoom;
-			case '__removespriteshader':
-				if(normalizePreviewShaderTarget(value1) == 'menu-camera')
-					clearPreviewCameraShader();
-				return didCustomZoom;
-			case '__setshaderuniform':
-				applyPreviewShaderUniform(value1);
-				return didCustomZoom;
-		}
 
 		if(lowerEvent == '__tweenzoom')
 		{
@@ -5561,103 +4524,56 @@ function updateDensityBars():Void
 			return didCustomZoom;
 		}
 
-		return false;
-		return false;
-
-		switch(lowerEvent)
+		if(lowerEvent == '__tweensongspeed')
 		{
-			case '__tweenzoom':
-				var tweenZoomTarget:String = value1;
-				var tweenZoom:Null<Float> = parsePreviewEventFloat(value1);
-				var tweenZoomTime:Null<Float> = null;
-				var tweenZoomEase:String = 'linear';
-				if(tweenZoom == null)
-				{
-					var tweenZoomPayload = parseTweenEventValueEx(value2);
-					tweenZoom = tweenZoomPayload.a;
-					tweenZoomTime = tweenZoomPayload.b;
-					tweenZoomEase = tweenZoomPayload.ease;
-				}
-				else
-				{
-					tweenZoomTarget = 'camhud';
-					var dz = parseDurationEase(value2);
-					tweenZoomTime = dz.duration;
-					tweenZoomEase = dz.ease;
-				}
+			var tweenSpeed:Null<Float> = parsePreviewEventFloat(value1);
+			var tweenSpeedSpec = parseDurationEase(value2);
+			var tweenSpeedTime:Null<Float> = tweenSpeedSpec.duration;
+			if(tweenSpeed != null)
+			{
+				if(tweenSpeedTime == null || tweenSpeedTime < 0)
+					tweenSpeedTime = 0;
+				applyPreviewSongSpeedTween(tweenSpeed, tweenSpeedTime, tweenSpeedSpec.ease);
+				didCustomZoom = true;
+			}
+			return didCustomZoom;
+		}
 
-				if(tweenZoom != null)
-				{
-					if(tweenZoomTime == null || tweenZoomTime < 0)
-						tweenZoomTime = 0;
-				applyPreviewCameraZoomTween(tweenZoomTarget, tweenZoom, tweenZoomTime, tweenZoomEase);
-					previewExternalZoomControl = true;
-					didCustomZoom = true;
-				}
+		if(lowerEvent == 'screen shake')
+		{
+			var split:Array<String> = value1.split(',');
+			var duration:Float = 0;
+			var intensity:Float = 0;
+			if(split[0] != null)
+				duration = Std.parseFloat(split[0].trim());
+			if(split[1] != null)
+				intensity = Std.parseFloat(split[1].trim());
+			if(Math.isNaN(duration)) duration = 0;
+			if(Math.isNaN(intensity)) intensity = 0;
+			if(duration > 0 && intensity != 0)
+				FlxG.camera.shake(intensity, duration);
+			return didCustomZoom;
+		}
 
-			case '__tweenangle':
-				var tweenAngleTarget:String = value1;
-				var tweenAnglePayload = parseTweenEventValueEx(value2);
-				if(tweenAnglePayload.a != null)
-				{
-					var tweenAngleDuration:Float = tweenAnglePayload.b != null && tweenAnglePayload.b >= 0 ? tweenAnglePayload.b : 0;
-					applyPreviewCameraAngleTween(tweenAngleTarget, tweenAnglePayload.a, tweenAngleDuration, tweenAnglePayload.ease);
-				}
-
-			case '__tweensongspeed':
-				var tweenSpeed:Null<Float> = parsePreviewEventFloat(value1);
-				var tweenSpeedSpec = parseDurationEase(value2);
-				var tweenSpeedTime:Null<Float> = tweenSpeedSpec.duration;
-				if(tweenSpeed != null)
-				{
-					if(tweenSpeedTime == null || tweenSpeedTime < 0)
-						tweenSpeedTime = 0;
-					applyPreviewSongSpeedTween(tweenSpeed, tweenSpeedTime, tweenSpeedSpec.ease);
-				}
-
-			case 'screen shake':
-				var split:Array<String> = value1.split(',');
-				var duration:Float = 0;
-				var intensity:Float = 0;
-				if(split[0] != null)
-					duration = Std.parseFloat(split[0].trim());
-				if(split[1] != null)
-					intensity = Std.parseFloat(split[1].trim());
-				if(Math.isNaN(duration)) duration = 0;
-				if(Math.isNaN(intensity)) intensity = 0;
-				if(duration > 0 && intensity != 0)
-					FlxG.camera.shake(intensity, duration);
-
-			case 'set property':
-				applyPreviewProperty(value1, value2);
-				if(isPreviewCameraZoomProperty(value1))
-				{
-					previewExternalZoomControl = true;
-					triggerPreviewCustomZoomReturn(0.16);
-					didCustomZoom = true;
-				}
-
-			default:
-				if(isPreviewCameraZoomProperty(value1) || isPreviewCameraAngleProperty(value1))
-				{
-					applyPreviewProperty(value1, value2);
-					if(isPreviewCameraZoomProperty(value1))
-					{
-						previewExternalZoomControl = true;
-						triggerPreviewCustomZoomReturn(0.16);
-						didCustomZoom = true;
-					}
-				}
-				else if(isPreviewBeatZoomEvent(eventName, value1, value2))
-				{
-					var fallbackCamZoom:Null<Float> = parsePreviewEventFloat(value1);
-					if(fallbackCamZoom != null)
-					{
-						FlxG.camera.zoom += fallbackCamZoom;
-						triggerPreviewCustomZoomReturn(0.16);
-						didCustomZoom = true;
-					}
-				}
+		if(isPreviewCameraZoomProperty(value1))
+		{
+			applyPreviewProperty(value1, value2);
+			if(isPreviewCameraZoomProperty(value1))
+			{
+				previewExternalZoomControl = true;
+				triggerPreviewCustomZoomReturn(0.16);
+				didCustomZoom = true;
+			}
+		}				
+		else if(isPreviewBeatZoomEvent(eventName, value1, value2))
+		{
+			var fallbackCamZoom:Null<Float> = parsePreviewEventFloat(value1);
+			if(fallbackCamZoom != null)
+			{
+				FlxG.camera.zoom += fallbackCamZoom;
+				triggerPreviewCustomZoomReturn(0.16);
+				didCustomZoom = true;
+			}
 		}
 		if(didCustomZoom)
 			previewSawCustomZoom = true;
@@ -5729,11 +4645,6 @@ function updateDensityBars():Void
 			previewCustomZoomTween.cancel();
 			previewCustomZoomTween = null;
 		}
-		if(previewCustomAngleTween != null)
-		{
-			previewCustomAngleTween.cancel();
-			previewCustomAngleTween = null;
-		}
 		if(previewSongSpeedTween != null)
 		{
 			previewSongSpeedTween.cancel();
@@ -5750,8 +4661,6 @@ function updateDensityBars():Void
 		FlxG.camera.visible = true;
 		FlxG.camera.alpha = 1;
 		FlxG.camera.zoom = previewBaseCamZoom;
-		FlxG.camera.angle = 0;
-		clearPreviewCameraShader();
 	}
 
 	function resetPreviewState():Void
