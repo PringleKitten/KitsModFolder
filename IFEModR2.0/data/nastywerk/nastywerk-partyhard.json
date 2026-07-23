@@ -1,0 +1,16 @@
+{
+	"player1": "bf",
+	"events": [],
+	"gfVersion": "redBar",
+	"notes": [],
+	"player2": "redBar",
+	"player3": null,
+	"offset": 0,
+	"song": "nastywerk",
+	"needsVoices": false,
+	"validScore": true,
+	"stage": "stage",
+	"bpm": 103,
+	"speed": 3,
+	"format": "psych_v1_convert"
+}
