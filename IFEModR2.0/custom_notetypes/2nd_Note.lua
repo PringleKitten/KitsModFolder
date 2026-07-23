@@ -4,6 +4,7 @@ function onCreate()
         if getPropertyFromGroup('unspawnNotes', i, 'noteType') == '2nd_Note' then
             setPropertyFromGroup('unspawnNotes', i, 'texture', 'me/notes/2nd_Note'); --Change texture
             setPropertyFromGroup('unspawnNotes', i, 'missHealth', 0.1); --Change amount of health to take when you miss
+            setPropertyFromGroup('unspawnNotes', i, 'noAnimation', true); --Don't play animation when hit
         end
     end
 end
