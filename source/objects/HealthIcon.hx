@@ -24,9 +24,15 @@ class HealthIcon extends FlxSprite
 
 	private var iconOffsets:Array<Float> = [0, 0];
 	public function changeIcon(char:String, ?allowGPU:Bool = true) {
-		if(this.char != char) {
-			var name:String = 'icons/' + char;
-			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-' + char; //Older versions support
+		var iconName:String = char != null ? char.trim() : '';
+		if(iconName.length < 1)
+			iconName = 'face';
+		var lookupName:String = iconName.toLowerCase();
+		if(this.char != lookupName) {
+			var name:String = 'icons/' + lookupName;
+			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-' + lookupName; //Older versions support
+			if(!Paths.fileExists('images/' + name + '.png', IMAGE) && iconName != lookupName) name = 'icons/' + iconName;
+			if(!Paths.fileExists('images/' + name + '.png', IMAGE) && iconName != lookupName) name = 'icons/icon-' + iconName;
 			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-face'; //Prevents crash from missing icon
 			
 			var graphic = Paths.image(name, allowGPU);
@@ -36,11 +42,11 @@ class HealthIcon extends FlxSprite
 			iconOffsets[1] = (height - 150) / iSize;
 			updateHitbox();
 
-			animation.add(char, [for(i in 0...frames.frames.length) i], 0, false, isPlayer);
-			animation.play(char);
-			this.char = char;
+			animation.add(lookupName, [for(i in 0...frames.frames.length) i], 0, false, isPlayer);
+			animation.play(lookupName);
+			this.char = lookupName;
 
-			if(char.endsWith('-pixel'))
+			if(lookupName.endsWith('-pixel'))
 				antialiasing = false;
 			else
 				antialiasing = ClientPrefs.data.antialiasing;

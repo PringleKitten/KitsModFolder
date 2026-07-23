@@ -20,6 +20,15 @@
 	
 	<!-- ______________________ CUSTOMIZATION ______________________ -->
 
+	<haxedef name="HXCPP_GC_BIG_BLOCKS"/>
+	<haxedef name="HXCPP_GC_GENERATIONAL"/>
+	<haxedef name="HXCPP_GC_DYNAMIC_SIZE"/>
+	<haxedef name="HXCPP_FAST_LINK" />
+	<haxedef name="HXCPP_CPP17" />
+	<haxedef name="HXCPP_GC_CHECK_LEAKS" />
+	<haxedef name="analyzer-optimize" />
+	<define name="MULTITHREADED_LOADING" />
+
 	<define name="MODS_ALLOWED" if="desktop || mobile" />
 	<define name="HSCRIPT_ALLOWED" if="desktop || mobile" />
 	<define name="LUA_ALLOWED" if="cpp" />
