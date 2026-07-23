@@ -58,7 +58,7 @@ local bulletsTexture = 'cup/bull/Cupheadshoot'
 local CupheadShotAnimations = {"pewLEFT","pewDOWN","pewUP","pewRIGHT"}
 
 local function isGameplayFrozen()
-    if getProperty('health') <= 0 then
+    if getProperty('health') <= 0 and not practice then
         return true
     end
     return getPropertyFromClass('states.PlayState', 'instance.generatedMusic') == false
@@ -162,14 +162,14 @@ function onEvent(name,value1,value2)
     if isGameplayFrozen() then
         return
     end
-    if name == '' and value1 == 'indieZoom' and value2 ~= 'h' then
+    if name == 'beatZoom' and value1 == '' and value2 ~= 'h' then
         hzE = false
         if not doneZO then
             doneZO = true
         else
             doneZO = false
         end
-    elseif value2 == 'h' and value1 == 'indieZoom' and name == '' then
+    elseif value2 == 'h' and value1 == '' and name == 'beatZoom' then
         hzE = true
     end
     if name == "Set Cam Zoom" then
@@ -668,11 +668,6 @@ function onTimerCompleted(tag)
         elseif dodge == 2 then
             bfHurt()
             if roundTag ~= nil and luaSpriteExists(roundTag) then
-                cancelTween('RoundaboutXBye'..roundTag)
-                cancelTween('RoundaboutScaleX'..roundTag)
-                cancelTween('RoundaboutScaleY'..roundTag)
-                setProperty(roundTag..'.velocity.x', 0)
-                setProperty(roundTag..'.velocity.y', 0)
                 local burst = 'RoundaboutBurst'..roundTag
                 makeAnimatedLuaSprite(burst, 'cup/bull/Cuphead Hadoken', getProperty(roundTag..'.x'), getProperty(roundTag..'.y'))
                 addAnimationByPrefix(burst, 'Burst', 'BurstFX instance 1', 24, false)
@@ -681,7 +676,6 @@ function onTimerCompleted(tag)
                 addLuaSprite(burst, true)
                 playAnim(burst, 'Burst', true)
                 scaleObject(burst, 1.5, 1.5)
-                setProperty(roundTag..'.alpha', 0.001)
             end
         end
         return
