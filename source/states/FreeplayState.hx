@@ -377,12 +377,12 @@ class FreeplayState extends MusicBeatState
 
 	function beginPreviewLoad():Void
 	{
-		if(currentDensityData != null && currentDensityData.rating >= 500 && !pendingHighDensityBypass)
+		if(currentDensityData != null && currentDensityData.rating >= 500)
 		{
 			pendingHighDensityConfirm = true;
 			highDensitySongIndex = curSelected;
 			highDensityDifficulty = curDifficulty;
-			missingText.text = 'HIGH CHART DENSITY DETECTED (${CoolUtil.floorDecimal(currentDensityData.rating, 2)})!\nPreviewing may cause performance issues.\n\nPress ACCEPT to preview anyway\nPress BACK to cancel';
+			missingText.text = 'HIGH CHART DENSITY DETECTED (${CoolUtil.floorDecimal(currentDensityData.rating, 2)})!\n\nPress ACCEPT or SPACE to load density data';
 			missingText.screenCenter(Y);
 			missingText.visible = true;
 			missingTextBG.visible = true;
@@ -945,6 +945,37 @@ class FreeplayState extends MusicBeatState
 
 	function queueDensityLoad(songName:String, difficulty:Int):Void
 	{
+		// Check chart JSON file size BEFORE loading any chart data into memory
+		if(!pendingHighDensityBypass)
+		{
+			var songPath:String = Paths.formatToSongPath(songName);
+			var fileSize:Float = getChartJsonFileSize(songPath, difficulty);
+			if(fileSize > 1048576)
+			{
+				// Only show the warning if this is the currently selected song
+				if(songs != null && curSelected >= 0 && curSelected < songs.length
+					&& Paths.formatToSongPath(songs[curSelected].songName) == songPath
+					&& curDifficulty == difficulty)
+				{
+					pendingHighDensityConfirm = true;
+					highDensitySongIndex = curSelected;
+					highDensityDifficulty = difficulty;
+					var sizeMB:String = Std.string(CoolUtil.floorDecimal(fileSize / 1048576, 2));
+					missingText.text = 'CHART FILE IS LARGE (' + sizeMB + ' MB)!\n\nPress ACCEPT or SPACE to load density data';
+					missingText.screenCenter(Y);
+					missingText.visible = true;
+					missingTextBG.visible = true;
+
+					currentDensityData = createFallbackDensityData();
+					bpmText.text = 'BPM  --';
+					bpmChangesText.text = '';
+					densityText.text = 'DENSITY RATING  --';
+				}
+				// Don't queue the load at all — nothing gets read into memory
+				return;
+			}
+		}
+
 		var key:String = getDensityCacheKey(songName, difficulty);
 		if(densityCache.exists(key) && densityCache.get(key) != null && densityCache.get(key).analyzed)
 			return;
@@ -1011,7 +1042,15 @@ class FreeplayState extends MusicBeatState
 			return;
 
 		for(song in songs)
+		{
+			// Check file size upfront (don't load large charts into memory automatically)
+			var songPath:String = Paths.formatToSongPath(song.songName);
+			var fileSize:Float = getChartJsonFileSize(songPath, curDifficulty);
+			if(fileSize > 1048576)
+				continue; // Skip large files during warm-up
+
 			queueDensityLoad(song.songName, curDifficulty);
+		}
 	}
 
 	static function buildSongDensityData(songName:String, difficulty:Int, densityBarCount:Int):SongDensityData
@@ -1170,6 +1209,31 @@ class FreeplayState extends MusicBeatState
 			CoolUtil.floorDecimal(bpm, 2), CoolUtil.floorDecimal(avgBpm, 2), CoolUtil.floorDecimal(maxBpm, 2), bpmChangesLabel, hasBpmChanges, true);
 	}
 
+	function loadAndDisplayDensity(songPath:String):Void
+	{
+		currentDensityData = loadSongDensityData(songs[curSelected].songName, curDifficulty);
+		var baseBpm:Float = currentDensityData.mainBpm;
+		if(baseBpm <= 0) baseBpm = currentDensityData.bpm;
+
+		if(currentDensityData.hasBpmChanges)
+		{
+			bpmText.text = 'BPM MAIN  ' + Std.string(CoolUtil.floorDecimal(baseBpm, 2))
+				+ '   AVG ' + Std.string(CoolUtil.floorDecimal(currentDensityData.avgBpm, 2))
+				+ '   MAX ' + Std.string(CoolUtil.floorDecimal(currentDensityData.maxBpm, 2));
+			bpmChangesText.text = 'Changes: ' + currentDensityData.bpmChangesLabel;
+		}
+		else
+		{
+			bpmText.text = 'BPM MAIN  ' + Std.string(CoolUtil.floorDecimal(baseBpm, 2));
+			bpmChangesText.text = 'Changes: None';
+		}
+		bpmChangesText.visible = bpmChangesExpanded && currentDensityData.hasBpmChanges;
+		densityText.text = currentDensityData.analyzed
+			? 'DENSITY RATING  ' + Std.string(CoolUtil.floorDecimal(currentDensityData.rating, 2))
+			: 'DENSITY RATING  --';
+		updateDensityBars();
+	}
+
 	function loadSongDensityData(songName:String, difficulty:Int):SongDensityData
 	{
 		var key:String = getDensityCacheKey(songName, difficulty);
@@ -1223,24 +1287,34 @@ class FreeplayState extends MusicBeatState
 			return;
 
 		var songPath:String = Paths.formatToSongPath(songs[curSelected].songName);
-		flushDensityResults();
-		currentDensityData = loadSongDensityData(songs[curSelected].songName, curDifficulty);
-		var densityKey:String = getDensityCacheKey(songs[curSelected].songName, curDifficulty);
-		var densityReady:Bool = !isDensityLoadPending(densityKey);
-		var bpmValue:Float = currentDensityData != null ? currentDensityData.bpm : 0;
-		var densityValue:Float = currentDensityData != null ? currentDensityData.rating : 0;
-		if(densityReady)
+		// Check chart JSON file size BEFORE loading any chart data into memory
+		if(!pendingHighDensityBypass)
 		{
-			updatePreviewBpmDisplay();
-			densityText.text = 'DENSITY RATING  ' + Std.string(CoolUtil.floorDecimal(densityValue, 2));
-			if(songs.length > 0)
-				queuePreviewPrewarm(songs[curSelected].songName, curDifficulty);
+			var fileSize:Float = getChartJsonFileSize(songPath, curDifficulty);
+			if(fileSize > 1048576)
+			{
+				pendingHighDensityConfirm = true;
+				highDensitySongIndex = curSelected;
+				highDensityDifficulty = curDifficulty;
+				var sizeMB:String = Std.string(CoolUtil.floorDecimal(fileSize / 1048576, 2));
+				missingText.text = 'CHART FILE IS LARGE (' + sizeMB + ' MB)!\n\nPress ACCEPT or SPACE to load density data';
+				missingText.screenCenter(Y);
+				missingText.visible = true;
+				missingTextBG.visible = true;
+
+				currentDensityData = createFallbackDensityData();
+				bpmText.text = 'BPM  --';
+				bpmChangesText.text = '';
+				densityText.text = 'DENSITY RATING  --';
+			}
+			else
+			{
+				loadAndDisplayDensity(songPath);
+			}
 		}
 		else
 		{
-			bpmText.text = 'BPM  ANALYZING...';
-			bpmChangesText.text = '';
-			densityText.text = 'DENSITY RATING  ANALYZING...';
+			loadAndDisplayDensity(songPath);
 		}
 		songTickerText.text = songs[curSelected].songName.toUpperCase();
 		var tickerSize:Int = 30;
@@ -1254,6 +1328,9 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 		var creditsSubtitle:String = getCreditsHeaderSubtitle(songPath);
+		var bpmValue:Float = (currentDensityData != null)
+			? (currentDensityData.mainBpm > 0 ? currentDensityData.mainBpm : currentDensityData.bpm)
+			: 0;
 		if(creditsSubtitle != null && creditsSubtitle.length > 0)
 			applySongHeaderSubtitleLayout(creditsSubtitle);
 		else
@@ -2068,7 +2145,7 @@ function updateDensityBars():Void
 		normalized = StringTools.replace(normalized, ' ', '');
 		normalized = StringTools.replace(normalized, '_', '');
 		normalized = StringTools.replace(normalized, '-', '');
-		if(normalized == 'beatzoom' || normalized == 'beatzoom2')
+		if(normalized == 'beatzoom' || normalized == 'beatzoom2' || normalized == 'customzoom')
 			return true;
 		return normalized.indexOf('beatzoom') != -1;
 	}
@@ -2082,7 +2159,7 @@ function updateDensityBars():Void
 		normalized = StringTools.replace(normalized, ' ', '');
 		normalized = StringTools.replace(normalized, '_', '');
 		normalized = StringTools.replace(normalized, '-', '');
-		return normalized == 'beatzoom' || normalized == 'beatzoom2' || normalized.indexOf('beatzoom') != -1;
+		return normalized == 'beatzoom' || normalized == 'beatzoom2'  || normalized == 'customzoom' || normalized.indexOf('beatzoom') != -1;
 	}
 
 	inline function isAddCameraZoomToken(value:String):Bool
@@ -4981,7 +5058,13 @@ function updateDensityBars():Void
 
 		if (controls.BACK)
 		{
-			if (player.playingMusic)
+			if(pendingHighDensityConfirm)
+			{
+				pendingHighDensityConfirm = false;
+				missingText.visible = false;
+				missingTextBG.visible = false;
+			}
+			else if (player.playingMusic)
 			{
 				if(FlxG.sound.music != null)
 					FlxG.sound.music.onComplete = null;
@@ -5012,7 +5095,16 @@ function updateDensityBars():Void
 		}
 		else if(FlxG.keys.justPressed.SPACE)
 		{
-			if(instPlaying != curSelected && !player.playingMusic)
+			if(pendingHighDensityConfirm)
+			{
+				pendingHighDensityConfirm = false;
+				pendingHighDensityBypass = true;
+				missingText.visible = false;
+				missingTextBG.visible = false;
+				queueDensityLoad(songs[curSelected].songName, curDifficulty);
+				refreshModernSongDetails();
+			}
+			else if(instPlaying != curSelected && !player.playingMusic)
 			{
 				beginPreviewLoad();
 			}
@@ -5025,7 +5117,19 @@ function updateDensityBars():Void
 		}
 		else if (controls.ACCEPT && !player.playingMusic)
 		{
-			beginSongLoad();
+			if(pendingHighDensityConfirm)
+			{
+				pendingHighDensityConfirm = false;
+				pendingHighDensityBypass = true;
+				missingText.visible = false;
+				missingTextBG.visible = false;
+				queueDensityLoad(songs[curSelected].songName, curDifficulty);
+				refreshModernSongDetails();
+			}
+			else
+			{
+				beginSongLoad();
+			}
 		}
 		else if(controls.RESET && !player.playingMusic)
 		{
@@ -5194,6 +5298,8 @@ function updateDensityBars():Void
 		if (player.playingMusic)
 			return;
 
+		pendingHighDensityBypass = false;
+		pendingHighDensityConfirm = false;
 		curDifficulty = FlxMath.wrap(curDifficulty + change, 0, Difficulty.list.length-1);
 		#if !switch
 		cheatedSC = Highscore.getCheatedStatus(songs[curSelected].songName, curDifficulty);
@@ -5216,8 +5322,6 @@ function updateDensityBars():Void
 		positionHighscore();
 		missingText.visible = false;
 		missingTextBG.visible = false;
-		queueDensityLoad(songs[curSelected].songName, curDifficulty);
-		queuePreviewPrewarm(songs[curSelected].songName, curDifficulty);
 		refreshModernSongDetails();
 	}
 
