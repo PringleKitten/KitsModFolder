@@ -62,6 +62,7 @@ class FreeplayState extends MusicBeatState
 
 	var missingTextBG:FlxSprite;
 	var missingText:FlxText;
+	var eventCalledThisFrame:Bool = false;
 
 	var bottomString:String;
 	var bottomText:FlxText;
@@ -2042,9 +2043,6 @@ function updateDensityBars():Void
 	var previewBeatLoopEvents:Array<EventNote> = [];
 	var previewHasSongCustomZoom:Bool = false;
 	var previewHasBeatZoomEvent:Bool = false;
-	var previewNZEventCount:Int = 0;
-	var previewNZDisableCount:Int = 0;
-	var previewNZEnableCount:Int = 0;
 	var previewBeatZoomEnabled:Bool = true;
 	var previewBeatZoomHud:Float = 0.03;
 	var previewBeatZoomToggleMode:Bool = false;
@@ -2103,9 +2101,6 @@ function updateDensityBars():Void
 		previewBeatLoopEvents = [];
 		previewHasSongCustomZoom = false;
 		previewHasBeatZoomEvent = false;
-		previewNZEventCount = 0;
-		previewNZDisableCount = 0;
-		previewNZEnableCount = 0;
 		previewBeatZoomEnabled = true;
 		previewBeatZoomHud = 0.03;
 		previewBeatZoomToggleMode = false;
@@ -2145,7 +2140,7 @@ function updateDensityBars():Void
 		normalized = StringTools.replace(normalized, ' ', '');
 		normalized = StringTools.replace(normalized, '_', '');
 		normalized = StringTools.replace(normalized, '-', '');
-		if(normalized == 'beatzoom' || normalized == 'beatzoom2' || normalized == 'customzoom')
+		if(normalized == 'beatzoom' || normalized == 'beatZoom' || normalized == 'beatzoom2' || normalized == 'customzoom')
 			return true;
 		return normalized.indexOf('beatzoom') != -1;
 	}
@@ -2159,7 +2154,7 @@ function updateDensityBars():Void
 		normalized = StringTools.replace(normalized, ' ', '');
 		normalized = StringTools.replace(normalized, '_', '');
 		normalized = StringTools.replace(normalized, '-', '');
-		return normalized == 'beatzoom' || normalized == 'beatzoom2'  || normalized == 'customzoom' || normalized.indexOf('beatzoom') != -1;
+		return normalized == 'beatzoom' || normalized == 'beatZoom' || normalized == 'beatzoom2'  || normalized == 'customzoom' || normalized.indexOf('beatzoom') != -1;
 	}
 
 	inline function isAddCameraZoomToken(value:String):Bool
@@ -2258,34 +2253,6 @@ function updateDensityBars():Void
 		return false;
 	}
 
-	inline function shouldApplyPreviewZoomDisable():Bool
-	{
-		// Ignore disable calls when the song/scripts never re-enable zoom later.
-		return previewZoomToggleHasEnable || previewNZEnableCount > 0;
-	}
-
-	function hasPreviewUpcomingZoomReenable():Bool
-	{
-		for(event in previewEventNotes)
-		{
-			if(event == null)
-				continue;
-
-			var eName:String = event.event != null ? trimPreviewToken(event.event).toLowerCase().trim() : '';
-			var v1:String = event.value1 != null ? trimPreviewToken(event.value1) : '';
-			var v2:String = event.value2 != null ? trimPreviewToken(event.value2) : '';
-
-			if(eName == 'nz')
-			{
-				var hudCmd:Null<Float> = parsePreviewEventFloat(v1);
-				if(hudCmd != null && hudCmd == 1)
-					return true;
-			}
-		}
-
-		return false;
-	}
-
 	inline function trackPreviewZoomToggleEvent(path:String, value:String):Void
 	{
 		if(!isPreviewZoomToggleProperty(path))
@@ -2307,12 +2274,11 @@ function updateDensityBars():Void
 
 		var lowerEvent:String = eventName.toLowerCase().trim();
 
+		if(isAddCameraZoomToken(lowerEvent) || isBeatZoomEventName(lowerEvent))
+			return true;
+
 		switch(lowerEvent)
 		{
-			case 'nz':
-				return true;
-			case 'add camera zoom', 'add camera zoom edit', 'beatzoom':
-				return true;
 			case '__tweenzoom':
 				return isPreviewCameraTarget(value1) || hasPreviewCamHUDReference(value1) || isPreviewCameraZoomProperty(value1);
 			case 'set property':
@@ -2396,11 +2362,54 @@ function updateDensityBars():Void
 		return Std.string(value);
 	}
 
+	// Some charts/scripts leave the event name blank but put the zoom event's name in one of
+	// the value slots instead (e.g. value1 = "BeatZoom", value2 = the intended zoom amount, or
+	// vice versa). When that happens, recover the event name from whichever value slot matches
+	// (exactly or via the same fuzzy/normalized matching used elsewhere) a known zoom event
+	// name, and treat the remaining value slot as the HUD zoom amount for that event.
+	function resolvePreviewEmptyEventName(eventName:String, value1:String, value2:String):{event:String, value1:String, value2:String}
+	{
+		if(eventName != null && eventName.trim().length > 0)
+			return {event: eventName, value1: value1, value2: value2};
+
+		var v1:String = value1 != null ? value1 : '';
+		var v2:String = value2 != null ? value2 : '';
+
+		var recoveredName:String = null;
+		var otherValue:String = '';
+		if(isBeatZoomToken(v1) || isAddCameraZoomToken(v1))
+		{
+			recoveredName = v1;
+			otherValue = v2;
+		}
+		else if(isBeatZoomToken(v2) || isAddCameraZoomToken(v2))
+		{
+			recoveredName = v2;
+			otherValue = v1;
+		}
+
+		if(recoveredName == null)
+			return {event: eventName, value1: value1, value2: value2};
+
+		// The remaining value slot is treated as the HUD zoom amount for the recovered event.
+		var recoveredHudZoom:Null<Float> = parsePreviewEventFloat(otherValue);
+		if(recoveredHudZoom != null && isBeatZoomToken(recoveredName))
+			previewBeatZoomHud = recoveredHudZoom;
+
+		return {event: recoveredName, value1: otherValue, value2: ''};
+	}
+
 	function pushPreviewEvent(strumTime:Float, eventName:String, value1:String, value2:String):Void
 	{
 		var normalizedEvent:String = trimPreviewToken(coercePreviewEventValue(eventName));
 		var normalizedValue1:String = trimPreviewToken(coercePreviewEventValue(value1));
 		var normalizedValue2:String = trimPreviewToken(coercePreviewEventValue(value2));
+
+		var recovered = resolvePreviewEmptyEventName(normalizedEvent, normalizedValue1, normalizedValue2);
+		normalizedEvent = recovered.event;
+		normalizedValue1 = recovered.value1;
+		normalizedValue2 = recovered.value2;
+
 		var loweredEvent:String = normalizedEvent.toLowerCase().trim();
 		var loweredValue1:String = normalizePreviewPropertyPath(normalizedValue1);
 
@@ -2412,15 +2421,6 @@ function updateDensityBars():Void
 		{
 			if(loweredEvent == 'set property')
 				trackPreviewZoomToggleEvent(normalizedValue1, normalizedValue2);
-			else if(loweredEvent == 'nz')
-			{
-				var nzHudCmd:Null<Float> = parsePreviewEventFloat(normalizedValue1);
-				var nzBgCmd:Null<Float> = parsePreviewEventFloat(normalizedValue2);
-				if((nzHudCmd != null && nzHudCmd == 1) || (nzBgCmd != null && nzBgCmd == 1))
-					previewNZDisableCount++;
-				if((nzHudCmd != null && nzHudCmd == 2) || (nzBgCmd != null && nzBgCmd == 2))
-					previewNZEnableCount++;
-			}
 
 			if(isBeatZoomEventName(normalizedEvent) || isBeatZoomToken(normalizedValue1) || isBeatZoomToken(normalizedValue2))
 				previewHasBeatZoomEvent = true;
@@ -4445,12 +4445,6 @@ function updateDensityBars():Void
 		queuePreviewEventsFromLua(songPath);
 
 		previewEventNotes.sort(sortPreviewEventsByTime);
-		previewNZEventCount = 0;
-		for(event in previewEventNotes)
-		{
-			if(event != null && event.event != null && event.event.toLowerCase().trim() == 'nz')
-				previewNZEventCount++;
-		}
 
 		if(previewBeatZoomToggleMode)
 			previewBeatZoomEnabled = false;
@@ -4532,10 +4526,12 @@ function updateDensityBars():Void
 		value2 = trimPreviewToken(value2);
 		var lowerEvent:String = eventName.toLowerCase().trim();
 
+		// Recognize explicit zoom events only
 		if(lowerEvent == '__tweenzoom')
 		{
 			if(isPreviewCameraTarget(value1))
 			{
+				eventCalledThisFrame = true;
 				var tweenZoomPayload = parseTweenEventValueEx(value2);
 				if(tweenZoomPayload.a != null)
 				{
@@ -4548,26 +4544,29 @@ function updateDensityBars():Void
 			return didCustomZoom;
 		}
 
+		// Recognize explicit set property zoom
 		if(lowerEvent == 'set property')
 		{
-			applyPreviewProperty(value1, value2);
+			// Recognize if property relates to zoom
 			if(isPreviewCameraZoomProperty(value1))
 			{
+				applyPreviewProperty(value1, value2);
 				triggerPreviewCustomZoomReturn(0.16);
 				didCustomZoom = true;
 			}
 			return didCustomZoom;
 		}
 
-		if(lowerEvent == 'add camera zoom' || lowerEvent == 'add camera zoom edit')
+		// Recognize explicit add camera zoom
+		if(isAddCameraZoomToken(lowerEvent))
 		{
 			if(!previewScriptCamZoomHud)
 				return didCustomZoom;
 
-			var addCamZoom:Null<Float> = parsePreviewEventFloat(value1);
-			if(addCamZoom == null)
-				addCamZoom = 0.03;
-			FlxG.camera.zoom += addCamZoom;
+			var addZoomVal:Null<Float> = parsePreviewEventFloat(value1);
+			if(addZoomVal == null)
+				addZoomVal = 0.03;
+			FlxG.camera.zoom += addZoomVal;
 			previewExternalZoomControl = true;
 
 			if(previewCustomZoomTween == null)
@@ -4578,29 +4577,28 @@ function updateDensityBars():Void
 			return didCustomZoom;
 		}
 
-		if(lowerEvent == 'beatzoom')
+		// Recognize explicit beat zoom event only
+		if(isPreviewBeatZoomEvent(lowerEvent, value1, value2))
 		{
-			var beatToggle:Null<Bool> = parsePreviewToggleValue(value1);
-			previewBeatZoomToggleMode = true;
+			// Only trigger if explicitly called with the event name
+			// No fallback or automatic zoom per beat
 			previewHasBeatZoomEvent = true;
+			previewBeatZoomToggleMode = true;
+
+			var beatToggle:Null<Bool> = parsePreviewToggleValue(value1);
+
 			if(beatToggle != null)
 				previewBeatZoomEnabled = beatToggle;
 			else
 				previewBeatZoomEnabled = !previewBeatZoomEnabled;
+
+			// Only do zoom if called explicitly, no fallback
+			// Optional: you can add zoom logic here if the explicit call includes zoom value
+			// but based on instructions, avoid auto zoom per beat
 			return didCustomZoom;
 		}
 
-		if(lowerEvent == 'nz')
-		{
-			var hudZoomToggle:Null<Bool> = parsePreviewToggleValue(value1);
-			if(hudZoomToggle != null)
-				previewScriptCamZoomHud = hudZoomToggle;
-
-			if(hudZoomToggle != null)
-				previewExternalZoomControl = true;
-			return didCustomZoom;
-		}
-
+		// Recognize explicit tween song speed
 		if(lowerEvent == '__tweensongspeed')
 		{
 			var tweenSpeed:Null<Float> = parsePreviewEventFloat(value1);
@@ -4616,44 +4614,52 @@ function updateDensityBars():Void
 			return didCustomZoom;
 		}
 
-		if(lowerEvent == 'screen shake')
+		// Do not auto zoom per beat unless explicitly called
+		// Check if the event name or values contain similar known zoom event names
+		// Handle the case where eventName is empty but values contain the name
+		if(lowerEvent == '' || lowerEvent == null || lowerEvent.length < 1)
 		{
-			var split:Array<String> = value1.split(',');
-			var duration:Float = 0;
-			var intensity:Float = 0;
-			if(split[0] != null)
-				duration = Std.parseFloat(split[0].trim());
-			if(split[1] != null)
-				intensity = Std.parseFloat(split[1].trim());
-			if(Math.isNaN(duration)) duration = 0;
-			if(Math.isNaN(intensity)) intensity = 0;
-			if(duration > 0 && intensity != 0)
-				FlxG.camera.shake(intensity, duration);
+			var eventNameInValues:String = '';
+
+			// Check if value1 or value2 contains a known zoom event name
+			if(isPreviewBeatZoomEvent(value1, value1, value2))
+			{
+				eventNameInValues = value1;
+			}
+			else if(isPreviewBeatZoomEvent(value2, value1, value2))
+			{
+				eventNameInValues = value2;
+			}
+
+			// If found, treat the other value as the HUD zoom value
+			if(eventNameInValues.length > 0)
+			{
+				// Determine which value is the zoom value
+				var zoomValStr:String = (eventNameInValues == value1) ? value2 : value1;
+				var zoomVal:Null<Float> = parsePreviewEventFloat(zoomValStr);
+				if(zoomVal != null)
+				{
+					// Apply zoom explicitly only if called with the recognized event name
+					// No fallback to auto zoom per beat
+					if(eventNameInValues.toLowerCase().indexOf('beatzoom') != -1 || eventNameInValues.toLowerCase().indexOf('customzoom') != -1)
+					{
+						// Explicit call with recognized zoom event in values
+						// Apply zoom
+						if(isPreviewCameraTarget(eventNameInValues))
+						{
+							applyPreviewCameraZoomTween(eventNameInValues, zoomVal, 0.2);
+							previewExternalZoomControl = true;
+							didCustomZoom = true;
+						}
+					}
+				}
+			}
+
+			// No auto zoom unless explicitly called, so just return
 			return didCustomZoom;
 		}
 
-		if(isPreviewCameraZoomProperty(value1))
-		{
-			applyPreviewProperty(value1, value2);
-			if(isPreviewCameraZoomProperty(value1))
-			{
-				previewExternalZoomControl = true;
-				triggerPreviewCustomZoomReturn(0.16);
-				didCustomZoom = true;
-			}
-		}				
-		else if(isPreviewBeatZoomEvent(eventName, value1, value2))
-		{
-			var fallbackCamZoom:Null<Float> = parsePreviewEventFloat(value1);
-			if(fallbackCamZoom != null)
-			{
-				FlxG.camera.zoom += fallbackCamZoom;
-				triggerPreviewCustomZoomReturn(0.16);
-				didCustomZoom = true;
-			}
-		}
-		if(didCustomZoom)
-			previewSawCustomZoom = true;
+		// Default: No zoom unless recognized explicitly
 		return didCustomZoom;
 	}
 
@@ -4667,15 +4673,6 @@ function updateDensityBars():Void
 				return didCustomZoom;
 
 			var queuedEventName:String = previewEventNotes[0].event != null ? previewEventNotes[0].event.toLowerCase().trim() : '';
-			if(queuedEventName == 'nz')
-			{
-				var startupWindowMs:Float = Math.max(350, ClientPrefs.data.noteOffset + 350);
-				if(leStrumTime <= startupWindowMs)
-				{
-					previewEventNotes.shift();
-					continue;
-				}
-			}
 
 			var value1:String = '';
 			if(previewEventNotes[0].value1 != null)
@@ -4939,6 +4936,7 @@ function updateDensityBars():Void
 	var stopMusicPlay:Bool = false;
 	override function update(elapsed:Float)
 	{
+		eventCalledThisFrame = false;
 		if(WeekData.weeksList.length < 1)
 			return;
 
@@ -5222,7 +5220,7 @@ function updateDensityBars():Void
 								allowNormalBop = allowNormalBop && isPreviewDownbeat(curBeat);
 						}
 
-						if(allowNormalBop)
+						if(allowNormalBop && eventCalledThisFrame)
 						{
 							triggerPreviewZoom(beatCrochetMs);
 							didCustomZoomThisFrame = true;
